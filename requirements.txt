@@ -1,8 +1,12 @@
+pip>=24.2
+setuptools>=67.6.1
+wheel>=0.38.4
+python-docx
+python-dotenv
 streamlit
 pandas
 psycopg2-binary
 python-docx
 shareplum
 msal
-dotenv
 reportlab
