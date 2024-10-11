@@ -115,7 +115,7 @@ def gerar_pdf():
         dados_iniciais = st.session_state['dados_iniciais']
         elementos_dados_iniciais = [
             Paragraph(f"Proposta: BT-{st.session_state['dados_iniciais'].get('bt', '')}-Rev{st.session_state['dados_iniciais'].get('rev', '')}", styles['Heading1']),
-            Paragraph("<b>Proposta :</b>", styles['Heading2']),
+            Paragraph("<b>Dados da Proposta :</b>", styles['Heading2']),
             Paragraph(f"<b>Cliente:</b> {dados_iniciais.get('cliente', '')}", styles['Normal']),
             Paragraph(f"<b>Nome do Cliente:</b> {dados_iniciais.get('nomeCliente', '')}", styles['Normal']),
             Paragraph(f"<b>Telefone:</b> {dados_iniciais.get('fone', '')}", styles['Normal']),
