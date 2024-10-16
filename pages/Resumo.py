@@ -215,8 +215,7 @@ def gerar_pdf():
         total_geral = 0  # Variável para somar o total geral
 
         for item in itens_configurados:
-            potencia_item = item.get('Potência', '')
-            potencia_item = float(potencia_item)
+            potencia_item = item.get('Potência Equivalente', '')
             potencia_str = f"{potencia_item:g} kVA"  # Formata a potência
             codigo_item = potencia_to_code.get(potencia_str, 'Não especificado')
 
