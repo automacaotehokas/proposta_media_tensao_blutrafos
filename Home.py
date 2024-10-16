@@ -3,13 +3,14 @@ import pandas as pd
 from io import BytesIO
 from config_db import conectar_banco  # Função já existente para conexão com o banco de dados
 from PIL import Image
+import os
 
 # Configuração da página inicial - deve ser a primeira chamada
 st.set_page_config(page_title="Proposta Automatizada - Média Tensão", layout="wide")
 
 # Função para verificar a senha de administração
 def autenticar_adm(senha):
-    return senha == st.secrets["SENHAADM"]
+    return senha == os.getenv("SENHAADM")
 
 # Função para apagar todos os dados e inserir os novos dados no banco de dados
 def atualizar_dados(df):
