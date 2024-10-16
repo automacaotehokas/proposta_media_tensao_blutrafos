@@ -4,6 +4,7 @@ from config_db import conectar_banco
 import os
 from dotenv import load_dotenv
 from pages.Inicial import carregar_cidades
+import numpy as np
 
 load_dotenv()
 
@@ -207,10 +208,62 @@ for item in range(len(st.session_state['itens_configurados'])):
     )
     st.session_state['itens_configurados'][item]['IP'] = ip_escolhido
 
-    if ip_escolhido == '00':
-        adicional_ip = 0.0
-    else:
-        adicional_ip = valor_ip_baixo / (1 - percentuais - p_caixa) if int(ip_escolhido) < 54 else valor_ip_alto / (1 - percentuais - p_caixa)
+    # Se o Fator K for maior que 5, calcular a potência equivalente
+fator_k_escolhido = st.selectbox(
+    f'Selecione o Fator K do Item {item + 1}:',
+    fator_k_opcoes,
+    key=f'fator_k_{item}',
+    index=fator_k_opcoes.index(st.session_state['itens_configurados'][item]['Fator K'])
+)
+st.session_state['itens_configurados'][item]['Fator K'] = fator_k_escolhido
+
+ip_escolhido = st.selectbox(
+    f'Selecione o IP do Item {item + 1}:',
+    opcoes_ip,
+    key=f'ip_{item}',
+    index=opcoes_ip.index(st.session_state['itens_configurados'][item]['IP'])
+)
+st.session_state['itens_configurados'][item]['IP'] = ip_escolhido
+
+# Se o Fator K for maior que 5, calcular a potência equivalente
+potencia = st.session_state['itens_configurados'][item]['Potência']
+
+if fator_k_escolhido > 5:
+    potencia_equivalente = potencia / (
+        (-0.000000391396 * fator_k_escolhido**6) +
+        (0.000044437349 * fator_k_escolhido**5) -
+        (0.001966117106 * fator_k_escolhido**4) +
+        (0.040938237195 * fator_k_escolhido**3) -
+        (0.345600795014 * fator_k_escolhido**2) -
+        (1.369407483908 * fator_k_escolhido) +
+        101.826204136368
+    ) / 100
+
+    # Arredondar para o valor mais próximo para cima na coluna 'potencia' da base de dados
+    potencias_disponiveis = df['potencia'].values
+    potencia_equivalente = np.ceil(potencia_equivalente)
+    potencia_equivalente = min(potencias_disponiveis, key=lambda x: x if x >= potencia_equivalente else np.inf)
+
+    st.session_state['itens_configurados'][item]['Potência Equivalente'] = potencia_equivalente
+
+    # Usar valores de IP e p_caixa da potência equivalente
+    detalhes_item_equivalente = df[df['potencia'] == potencia_equivalente].iloc[0]
+    valor_ip_baixo = detalhes_item_equivalente['valor_ip_baixo']
+    valor_ip_alto = detalhes_item_equivalente['valor_ip_alto']
+    p_caixa = detalhes_item_equivalente['p_caixa']
+else:
+    # Usar os valores da potência original caso Fator K seja <= 5
+    valor_ip_baixo = detalhes_item['valor_ip_baixo']
+    valor_ip_alto = detalhes_item['valor_ip_alto']
+    p_caixa = detalhes_item['p_caixa']
+
+# Cálculo do adicional IP baseado no IP escolhido e os valores adequados (potência original ou equivalente)
+if ip_escolhido == '00':
+    adicional_ip = 0.0
+else:
+    adicional_ip = valor_ip_baixo / (1 - percentuais - p_caixa) if int(ip_escolhido) < 54 else valor_ip_alto / (1 - percentuais - p_caixa)
+
+# Atualizar o preço total considerando o adicional IP e demais fatores
 
     classe_tensao = detalhes_item['classe_tensao']
     adicional_caixa_classe = 0
@@ -301,3 +354,5 @@ st.markdown("---")
 
 total_fornecimento = resumo_df['Preço Total'].sum()
 st.subheader(f"Valor Total do Fornecimento: R$ {total_fornecimento:,.2f}")
+
+
