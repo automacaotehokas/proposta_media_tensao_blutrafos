@@ -192,22 +192,14 @@ for item in range(len(st.session_state['itens_configurados'])):
     
     preco_base1 = preco_base / (1 - p_trafo - percentuais)
 
-    fator_k_escolhido = st.selectbox(
-        f'Selecione o Fator K do Item {item + 1}:',
-        fator_k_opcoes,
-        key=f'fator_k_{item}_unique',
-        index=fator_k_opcoes.index(st.session_state['itens_configurados'][item]['Fator K'])
-    )
-    st.session_state['itens_configurados'][item]['Fator K'] = fator_k_escolhido
-
-    ip_escolhido = st.selectbox(
+ip_escolhido = st.selectbox(
         f'Selecione o IP do Item {item + 1}:',
         opcoes_ip,
         key=f'ip_{item}_unique',
         index=opcoes_ip.index(st.session_state['itens_configurados'][item]['IP'])
     )
-    st.session_state['itens_configurados'][item]['IP'] = ip_escolhido
-    
+st.session_state['itens_configurados'][item]['IP'] = ip_escolhido
+
     # Se o Fator K for maior que 5, calcular a potência equivalente
 fator_k_escolhido = st.selectbox(
     f'Selecione o Fator K do Item {item + 1}:',
@@ -262,6 +254,11 @@ if ip_escolhido == '00':
     adicional_ip = 0.0
 else:
     adicional_ip = valor_ip_baixo / (1 - percentuais - p_caixa) if int(ip_escolhido) < 54 else valor_ip_alto / (1 - percentuais - p_caixa)
+
+    st.write(potencia_equivalente)
+    st.write(valor_ip_alto)
+    st.write(valor_ip_alto)
+    st.write(p_caixa)
 
 # Atualizar o preço total considerando o adicional IP e demais fatores
 
