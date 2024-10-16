@@ -12,7 +12,7 @@ def atualizar_dados(df):
     cur.execute("DELETE FROM custos_media_tensao")
     conn.commit()
 
-    # Insere os novos dados
+    # Insere os novos dados com as colunas corretas
     for index, row in df.iterrows():
         cur.execute("""
             INSERT INTO custos_media_tensao (p_caixa, p_trafo, potencia, preco, perdas, classe, valor_ip_baixo, valor_ip_alto)
@@ -36,25 +36,29 @@ st.markdown("""
     """)
 st.markdown("---")
 
-# Botão ADM visível
-st.subheader("Área Administrativa")
+# Cria o estado de autenticação se ainda não existir
 if 'autenticado' not in st.session_state:
     st.session_state['autenticado'] = False
 
+# Verifica se o usuário está autenticado
 if not st.session_state['autenticado']:
+    st.subheader("Área Administrativa")
+
+    # Campo para digitar a senha
     senha_adm = st.text_input("Digite a senha de administração", type="password")
     
     # Botão para verificar a senha
     if st.button("Verificar senha"):
         senha_correta = os.getenv("SENHAADM")  # Usando os.getenv para acessar a variável de ambiente
-        
+
         if senha_adm == senha_correta:
-            st.session_state['autenticado'] = True
+            st.session_state['autenticado'] = True  # Marca como autenticado
             st.success("Acesso concedido à área administrativa.")
         else:
             st.error("Senha incorreta. Tente novamente.")
-else:
-    # Se a senha estiver correta, mostra a parte de upload
+
+# Se estiver autenticado, mostra a área administrativa
+if st.session_state['autenticado']:
     st.subheader("Atualizar Base de Dados: custos_media_tensao")
     
     # Upload do arquivo Excel
