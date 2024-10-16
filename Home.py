@@ -17,7 +17,7 @@ def atualizar_dados(df):
         descricao = f"Transformador Trifásico {row['potencia']} kVA, {row['classe']} kV, perdas {row['perdas']}"
         potencia_formatada = f"{row['potencia']} kVA"
         cur.execute("""
-            INSERT INTO custos_media_tensao (p_caixa, p_trafo, potencia, preco, perdas, classe, valor_ip_baixo, valor_ip_alto, descricao, potencia_formatada)
+            INSERT INTO custos_media_tensao (p_caixa, p_trafo, potencia, preco, perdas, classe_tensao, valor_ip_baixo, valor_ip_alto, descricao, potencia_formatada)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """, (row['p_caixa'], row['p_trafo'], row['potencia'], row['preco'], row['perdas'], row['classe'], row['valor_ip_baixo'], row['valor_ip_alto'], descricao, potencia_formatada))
     
