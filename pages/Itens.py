@@ -247,15 +247,6 @@ for item in range(len(st.session_state['itens_configurados'])):
     else:
         adicional_ip = valor_ip_baixo / (1 - percentuais - p_caixa) if int(ip_escolhido) < 54 else valor_ip_alto / (1 - percentuais - p_caixa)
 
-    # Exibir valores para depuração (pode remover quando não precisar mais)
-    st.write(f"Potência Disponiveis: {potencias_disponiveis}")
-    st.write(f"Potência Original: {potencia}")
-    st.write(f"Potência Equivalente: {potencia_equivalente}")
-    st.write(f"Valor IP Baixo: {valor_ip_baixo}")
-    st.write(f"Valor IP Alto: {valor_ip_alto}")
-    st.write(f"P Caixa: {p_caixa}")
-
-
 # Atualizar o preço total considerando o adicional IP e demais fatores
 
     classe_tensao = detalhes_item['classe_tensao']
