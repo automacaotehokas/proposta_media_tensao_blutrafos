@@ -186,6 +186,7 @@ for item in range(len(st.session_state['itens_configurados'])):
     
     preco_base1 = preco_base / (1 - p_trafo - percentuais)
 
+    # Seleção do Fator K e IP
     fator_k_escolhido = st.selectbox(
         f'Selecione o Fator K do Item {item + 1}:',
         fator_k_opcoes,
@@ -202,26 +203,13 @@ for item in range(len(st.session_state['itens_configurados'])):
     )
     st.session_state['itens_configurados'][item]['IP'] = ip_escolhido
 
-
-    # Pegar a potência do item
+    # Pegar a potência do item (a partir da descrição selecionada anteriormente)
     potencia = st.session_state['itens_configurados'][item]['Potência']
 
     # Inicializa a potência equivalente com 0
     potencia_equivalente = 0
 
-    # Verificação do fator K escolhido
-    fator_k_escolhido = st.selectbox(
-        f'Selecione o Fator K do Item {item + 1}:',
-        fator_k_opcoes,
-        key=f'fator_k_{item}',
-        index=fator_k_opcoes.index(st.session_state['itens_configurados'][item]['Fator K'])
-    )
-    st.session_state['itens_configurados'][item]['Fator K'] = fator_k_escolhido
-
-    # Pegar a potência original do item
-    potencia = st.session_state['itens_configurados'][item]['Potência']
-
-    # Cálculo da potência equivalente apenas se o fator K for maior que 5
+    # Se o Fator K for maior que 5, calcular a potência equivalente
     if fator_k_escolhido > 5:
         potencia_equivalente = potencia / (
             (-0.000000391396 * fator_k_escolhido**6) +
@@ -259,12 +247,13 @@ for item in range(len(st.session_state['itens_configurados'])):
     else:
         adicional_ip = valor_ip_baixo / (1 - percentuais - p_caixa) if int(ip_escolhido) < 54 else valor_ip_alto / (1 - percentuais - p_caixa)
 
-        # Exibir valores para depuração
-        st.write(f"Potência Original: {potencia}")
-        st.write(f"Potência Equivalente: {potencia_equivalente}")
-        st.write(f"Valor IP Baixo: {valor_ip_baixo}")
-        st.write(f"Valor IP Alto: {valor_ip_alto}")
-        st.write(f"P Caixa: {p_caixa}")
+    # Exibir valores para depuração
+    st.write(f"Potência Original: {potencia}")
+    st.write(f"Potência Equivalente: {potencia_equivalente}")
+    st.write(f"Valor IP Baixo: {valor_ip_baixo}")
+    st.write(f"Valor IP Alto: {valor_ip_alto}")
+    st.write(f"P Caixa: {p_caixa}")
+
 
 
 
