@@ -41,7 +41,7 @@ def calcular_preco_total(preco_unit, quantidade):
 if 'itens_configurados' not in st.session_state:
     st.session_state['itens_configurados'] = []
 
-st.title('Configuração')
+st.title('Configuração Itens')
 st.markdown("---")
 df = buscar_dados()
 icms_base = 12 / 100
@@ -195,7 +195,7 @@ for item in range(len(st.session_state['itens_configurados'])):
     fator_k_escolhido = st.selectbox(
         f'Selecione o Fator K do Item {item + 1}:',
         fator_k_opcoes,
-        key=f'fator_k_{item}',
+        key=f'fator_k_{item}_unique',
         index=fator_k_opcoes.index(st.session_state['itens_configurados'][item]['Fator K'])
     )
     st.session_state['itens_configurados'][item]['Fator K'] = fator_k_escolhido
@@ -203,11 +203,11 @@ for item in range(len(st.session_state['itens_configurados'])):
     ip_escolhido = st.selectbox(
         f'Selecione o IP do Item {item + 1}:',
         opcoes_ip,
-        key=f'ip_{item}',
+        key=f'ip_{item}_unique',
         index=opcoes_ip.index(st.session_state['itens_configurados'][item]['IP'])
     )
     st.session_state['itens_configurados'][item]['IP'] = ip_escolhido
-
+    
     # Se o Fator K for maior que 5, calcular a potência equivalente
 fator_k_escolhido = st.selectbox(
     f'Selecione o Fator K do Item {item + 1}:',
