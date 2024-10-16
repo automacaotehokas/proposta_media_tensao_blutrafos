@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
-from config_db import conectar_banco
-import os  # Função de conexão com o banco de dados
+import os  # Para utilizar os.getenv
+from config_db import conectar_banco  # Função de conexão com o banco de dados
 
 # Função para apagar todos os dados e inserir os novos dados no banco de dados
 def atualizar_dados(df):
@@ -17,7 +17,7 @@ def atualizar_dados(df):
         cur.execute("""
             INSERT INTO custos_media_tensao (p_caixa, p_trafo, potencia, preco, perdas, classe, valor_ip_baixo, valor_ip_alto)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-        """, (row['p_caixa'], row['p_trafo'], row['potencia'], row['custo'], row['valor'], row['classe'], row['valor_ip_baixo'], row['valor_ip_alto']))
+        """, (row['p_caixa'], row['p_trafo'], row['potencia'], row['preco'], row['perdas'], row['classe'], row['valor_ip_baixo'], row['valor_ip_alto']))
     
     conn.commit()
     cur.close()
@@ -44,7 +44,9 @@ with col2:
         senha_adm = st.text_input("Digite a senha de administração", type="password")
 
         # Verifica a senha fornecida
-        if senha_adm == os.getenv["SENHAADM"]:
+        senha_correta = os.getenv("SENHAADM")  # Usando os.getenv para acessar a variável de ambiente
+
+        if senha_adm == senha_correta:
             st.success("Acesso concedido à área administrativa.")
             
             # Agora exibe a funcionalidade de upload e atualização de dados
@@ -74,3 +76,4 @@ with col2:
                     st.error(f"Erro ao ler o arquivo: {e}")
         else:
             st.error("Senha incorreta. Tente novamente.")
+
