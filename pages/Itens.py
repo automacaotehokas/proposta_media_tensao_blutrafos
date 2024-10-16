@@ -249,7 +249,7 @@ for item in range(len(st.session_state['itens_configurados'])):
     st.write(f"Potência Original: {potencia}")
     st.write(f"Potência Equivalente: {potencia_equivalente}")
     st.write(f"Valor IP Baixo: {valor_ip_baixo}")
-    st.write(f"Valor IP Alto: {valor_ip_alto}")
+    st.write(f"Caixa: {adicional_ip}")
     st.write(f"P Caixa: {p_caixa}")
 
 
