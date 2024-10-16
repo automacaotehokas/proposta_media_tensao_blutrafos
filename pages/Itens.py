@@ -213,10 +213,22 @@ st.session_state['itens_configurados'][item]['IP'] = ip_escolhido
 # Pegar a potência do item
 potencia = st.session_state['itens_configurados'][item]['Potência']
 
-# Inicializa a potência equivalente
+# Inicializa a potência equivalente com 0
 potencia_equivalente = 0
 
-# Se o Fator K for maior que 5, calcular a potência equivalente
+# Verificação do fator K escolhido
+fator_k_escolhido = st.selectbox(
+    f'Selecione o Fator K do Item {item + 1}:',
+    fator_k_opcoes,
+    key=f'fator_k_{item}',
+    index=fator_k_opcoes.index(st.session_state['itens_configurados'][item]['Fator K'])
+)
+st.session_state['itens_configurados'][item]['Fator K'] = fator_k_escolhido
+
+# Pegar a potência original do item
+potencia = st.session_state['itens_configurados'][item]['Potência']
+
+# Cálculo da potência equivalente apenas se o fator K for maior que 5
 if fator_k_escolhido > 5:
     potencia_equivalente = potencia / (
         (-0.000000391396 * fator_k_escolhido**6) +
@@ -229,20 +241,21 @@ if fator_k_escolhido > 5:
     ) / 100
 
     # Arredondar para o valor mais próximo para cima na coluna 'potencia' da base de dados
-    potencias_disponiveis = df['potencia'].values
-    potencia_equivalente = np.ceil(potencia_equivalente)  # Arredonda para cima
-    potencia_equivalente = min([p for p in potencias_disponiveis if p >= potencia_equivalente], default=potencias_disponiveis[-1])
+    potencias_disponiveis = sorted(df['potencia'].values)
+    
+    # Encontrar a menor potência disponível que seja maior ou igual à potência equivalente calculada
+    potencia_equivalente = next((p for p in potencias_disponiveis if p >= potencia_equivalente), potencias_disponiveis[-1])
 
-    # Salva no session_state a potência equivalente
+    # Salvar a potência equivalente no session_state
     st.session_state['itens_configurados'][item]['Potência Equivalente'] = potencia_equivalente
 
-    # Buscar os valores de valor_ip_baixo, valor_ip_alto, e p_caixa da potência equivalente
+    # Buscar valores da potência equivalente
     detalhes_item_equivalente = df[df['potencia'] == potencia_equivalente].iloc[0]
     valor_ip_baixo = detalhes_item_equivalente['valor_ip_baixo']
     valor_ip_alto = detalhes_item_equivalente['valor_ip_alto']
     p_caixa = detalhes_item_equivalente['p_caixa']
 else:
-    # Usar os valores da potência original caso Fator K seja <= 5
+    # Usar os valores da potência original se o fator K for <= 5
     valor_ip_baixo = detalhes_item['valor_ip_baixo']
     valor_ip_alto = detalhes_item['valor_ip_alto']
     p_caixa = detalhes_item['p_caixa']
@@ -253,12 +266,13 @@ if ip_escolhido == '00':
 else:
     adicional_ip = valor_ip_baixo / (1 - percentuais - p_caixa) if int(ip_escolhido) < 54 else valor_ip_alto / (1 - percentuais - p_caixa)
 
-    # Debug para verificar os valores calculados
+    # Exibir valores para depuração
     st.write(f"Potência Original: {potencia}")
     st.write(f"Potência Equivalente: {potencia_equivalente}")
     st.write(f"Valor IP Baixo: {valor_ip_baixo}")
     st.write(f"Valor IP Alto: {valor_ip_alto}")
     st.write(f"P Caixa: {p_caixa}")
+
 
 
 # Atualizar o preço total considerando o adicional IP e demais fatores
