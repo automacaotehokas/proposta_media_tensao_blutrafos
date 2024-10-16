@@ -223,9 +223,7 @@ for item in range(len(st.session_state['itens_configurados'])):
 
         # Arredondar para o valor mais próximo para cima na coluna 'potencia' da base de dados
         potencias_disponiveis = sorted(df['potencia'].values)
-        
-        # Encontrar a menor potência disponível que seja maior ou igual à potência equivalente calculada
-        potencia_equivalente = next((p for p in potencias_disponiveis if p >= potencia_equivalente), potencias_disponiveis[-1])
+    
 
         # Salvar a potência equivalente no session_state
         st.session_state['itens_configurados'][item]['Potência Equivalente'] = potencia_equivalente
