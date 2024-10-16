@@ -14,7 +14,7 @@ def atualizar_dados(df):
     # Insere os novos dados
     for index, row in df.iterrows():
         cur.execute("""
-            INSERT INTO custos_media_tensao (p_caixa, p_trafo, potencia, custo, valor, classe, valor_ip_baixo, valor_ip_alto)
+            INSERT INTO custos_media_tensao (p_caixa, p_trafo, potencia, preco, valor, classe_tensao, valor_ip_baixo, valor_ip_alto)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
         """, (row['p_caixa'], row['p_trafo'], row['potencia'], row['custo'], row['valor'], row['classe'], row['valor_ip_baixo'], row['valor_ip_alto']))
     
