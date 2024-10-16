@@ -41,7 +41,7 @@ def calcular_preco_total(preco_unit, quantidade):
 if 'itens_configurados' not in st.session_state:
     st.session_state['itens_configurados'] = []
 
-st.title('Configuração Itens')
+st.title('Configuração')
 st.markdown("---")
 df = buscar_dados()
 icms_base = 12 / 100
