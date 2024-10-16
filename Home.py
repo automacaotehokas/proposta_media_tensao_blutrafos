@@ -12,12 +12,14 @@ def atualizar_dados(df):
     cur.execute("DELETE FROM custos_media_tensao")
     conn.commit()
 
-    # Insere os novos dados com as colunas corretas
+    # Insere os novos dados com as colunas corretas e colunas formatadas
     for index, row in df.iterrows():
+        descricao = f"Transformador Trifásico {row['potencia']} kVA, {row['classe']} kV, perdas {row['perdas']}"
+        potencia_formatada = f"{row['potencia']} kVA"
         cur.execute("""
-            INSERT INTO custos_media_tensao (p_caixa, p_trafo, potencia, preco, perdas, classe_tensao, valor_ip_baixo, valor_ip_alto)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s)
-        """, (row['p_caixa'], row['p_trafo'], row['potencia'], row['preco'], row['perdas'], row['classe'], row['valor_ip_baixo'], row['valor_ip_alto']))
+            INSERT INTO custos_media_tensao (p_caixa, p_trafo, potencia, preco, perdas, classe, valor_ip_baixo, valor_ip_alto, descricao, potencia_formatada)
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+        """, (row['p_caixa'], row['p_trafo'], row['potencia'], row['preco'], row['perdas'], row['classe'], row['valor_ip_baixo'], row['valor_ip_alto'], descricao, potencia_formatada))
     
     conn.commit()
     cur.close()
@@ -59,7 +61,7 @@ if not st.session_state['autenticado']:
 
 # Se estiver autenticado, mostra a área administrativa
 if st.session_state['autenticado']:
-    st.subheader("Atualizar Base de Dados: custos_media_tensao")
+    st.subheader("Atualizar Base de Dados")
     
     # Upload do arquivo Excel
     uploaded_file = st.file_uploader("Escolha o arquivo Excel com a planilha 'atualizacao'", type="xlsx")
