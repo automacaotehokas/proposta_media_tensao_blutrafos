@@ -63,7 +63,7 @@ def gerar_documento_word():
         '{{REV}}': str(st.session_state['dados_iniciais'].get('rev', '')),
         '{{LOCAL}}': str(st.session_state['dados_iniciais'].get('local_frete', '')),
         '{{LOCALFRETE}}': str(st.session_state['local_frete_itens']),
-        '{{ICMS}}': str(st.session_state['icms']),
+        '{{ICMS}}': str(st.session_state['icms']).replace('.', ',') + "%",
         '{{IP}}': ', '.join(set(
             str(item['IP']) for item in st.session_state['itens_configurados'] if item['IP'] != '00'
         ))
