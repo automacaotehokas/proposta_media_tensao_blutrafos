@@ -217,20 +217,23 @@ def gerar_pdf():
         for item in itens_configurados:
             potencia_item = item.get('Potência Equivalente', '')
 
-            # Correção: Agora o if está corretamente dentro do loop para cada item
+            # Imprimir para verificar o valor real da potência antes de qualquer formatação
+            st.write(f"Potência original do item: {potencia_item}")
+
+            # Verificação do tipo de dado e formatação apropriada
             if isinstance(potencia_item, (int, float)):
-                if potencia_item.is_integer():
-                    potencia_str = f"{int(potencia_item)} kVA"  # Formata como inteiro se for um número inteiro
-                else:
-                    potencia_str = f"{potencia_item:.1f} kVA"  # Formata com uma casa decimal se necessário
+                potencia_str = f"{potencia_item:,.0f} kVA"  # Formata a potência, removendo casas decimais se não forem necessárias
             else:
-                potencia_str = f"{potencia_item} kVA"  # Se for string, apenas concatene com "kVA"
-            
-             # Exibe a potência formatada para depuração
+                potencia_str = f"{potencia_item} kVA"  # Se já for string, apenas concatena
+
+            # Agora vamos tentar comparar a potência formatada ao mapeamento
             st.write(f"Potência formatada: {potencia_str}")
 
-            
-            codigo_item = potencia_to_code.get(potencia_str, 'Não especificado')
+            # Obtenção do código do item a partir do mapeamento
+            codigo_item = potencia_to_code.get(potencia_str.strip(), 'Não especificado')
+
+            # Exibir para verificar a correspondência com o mapeamento
+            st.write(f"Código do item para {potencia_str}: {codigo_item}")
 
             
 
