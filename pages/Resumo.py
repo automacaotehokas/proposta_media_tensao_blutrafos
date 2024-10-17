@@ -172,16 +172,16 @@ def gerar_pdf():
             {"code": "0013.0613.000", "potencia": "300 kVA"},
             {"code": "0013.0606.000", "potencia": "500 kVA"},
             {"code": "0013.0922.000", "potencia": "750 kVA"},
-            {"code": "0013.1182.000", "potencia": "1000 kVA"},
-            {"code": "0013.0639.000", "potencia": "1250 kVA"},
-            {"code": "0013.0643.000", "potencia": "1500 kVA"},
-            {"code": "0013.0805.000", "potencia": "2000 kVA"},
-            {"code": "0013.0725.000", "potencia": "2500 kVA"},
-            {"code": "0013.1074.000", "potencia": "3000 kVA"},
-            {"code": "Não especificado", "potencia": "3500 kVA"},
-            {"code": "0013.0679.000", "potencia": "4000 kVA"},
-            {"code": "Não especificado", "potencia": "5000 kVA"},
-            {"code": "Não especificado", "potencia": "6000 kVA"},
+            {"code": "0013.1182.000", "potencia": "1,000 kVA"},
+            {"code": "0013.0639.000", "potencia": "1,250 kVA"},
+            {"code": "0013.0643.000", "potencia": "1,500 kVA"},
+            {"code": "0013.0805.000", "potencia": "2,000 kVA"},
+            {"code": "0013.0725.000", "potencia": "2,500 kVA"},
+            {"code": "0013.1074.000", "potencia": "3,000 kVA"},
+            {"code": "Não especificado", "potencia": "3,500 kVA"},
+            {"code": "0013.0679.000", "potencia": "4,000 kVA"},
+            {"code": "Não especificado", "potencia": "5,000 kVA"},
+            {"code": "Não especificado", "potencia": "6,000 kVA"},
         ]
         potencia_to_code = {item['potencia']: item['code'] for item in mapping}
 
@@ -217,22 +217,17 @@ def gerar_pdf():
         total_geral = 0  # Variável para somar o total geral
 
         for item in itens_configurados:
-            potencia_item = item.get('Potência Equivalente', '')
-
-            # Imprimir para verificar o valor real da potência antes de qualquer formatação
-            st.write(f"Potência original do item: {potencia_item}")
-
-            # Verificação do tipo de dado e formatação apropriada
+            # Pega a potência equivalente ou a original se a equivalente estiver vazia
+            potencia_item = item.get('Potência Equivalente') or item.get('Potência')
+            
+            # Verifica o tipo de dado e formata a potência
             if isinstance(potencia_item, (int, float)):
-                potencia_str = f"{potencia_item:,.0f} kVA"  # Formata a potência, removendo casas decimais se não forem necessárias
+                potencia_str = f"{potencia_item:g} kVA"  # Formata a potência se for número
             else:
-                potencia_str = f"{potencia_item} kVA"  # Se já for string, apenas concatena
-
-            # Agora vamos tentar comparar a potência formatada ao mapeamento
-            st.write(f"Potência formatada: {potencia_str}")
-
-            # Obtenção do código do item a partir do mapeamento
-            codigo_item = potencia_to_code.get(potencia_str.strip(), 'Não especificado')
+                potencia_str = f"{potencia_item} kVA"  # Se for string, apenas concatene com "kVA"
+            
+            # Mapeia o código de acordo com a potência
+            codigo_item = potencia_to_code.get(potencia_str, 'Não especificado')                                                                    
 
             # Exibir para verificar a correspondência com o mapeamento
             st.write(f"Código do item para {potencia_str}: {codigo_item}")
