@@ -328,7 +328,7 @@ def pagina_gerar_documento():
     st.markdown("---")
 
     # Mostrar as variáveis comuns apenas uma vez
-    st.subheader("Resumo das Variáveis")
+    st.subheader("Resumo")
     st.write(f"**Contribuinte:** {st.session_state['contribuinte_icms']}")
     st.write(f"**Lucro:** {st.session_state['lucro']:.2f}%")
     st.write(f"**ICMS:** {st.session_state['icms']:.2f}%")
