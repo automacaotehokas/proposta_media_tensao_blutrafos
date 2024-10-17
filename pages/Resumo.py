@@ -13,8 +13,6 @@ from replace import inserir_tabelas_word  # Certifique-se de ter esta função
 
 st.set_page_config(layout="wide")
 
-st.write("Itens configurados no session_state:", st.session_state.get('itens_configurados', []))
-
 # Inicialização do session_state
 for key in ['local_frete', 'icms', 'contribuinte_icms', 'lucro', 'frete', 'local_frete_itens', 'difal', 'f_pobreza', 'comissao']:
     if key not in st.session_state:
