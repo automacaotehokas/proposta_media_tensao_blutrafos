@@ -44,7 +44,7 @@ if 'autenticado' not in st.session_state:
 
 # Verifica se o usuário está autenticado
 if not st.session_state['autenticado']:
-    st.subheader("Área Administrativa")
+    st.subheader("Área Administrativa:")
 
     # Campo para digitar a senha
     senha_adm = st.text_input("Digite a senha de administração", type="password")
