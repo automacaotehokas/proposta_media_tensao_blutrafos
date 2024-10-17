@@ -226,9 +226,13 @@ def gerar_pdf():
             else:
                 potencia_str = f"{potencia_item} kVA"  # Se for string, apenas concatene com "kVA"
             
+             # Exibe a potência formatada para depuração
+            st.write(f"Potência formatada: {potencia_str}")
+
+            
             codigo_item = potencia_to_code.get(potencia_str, 'Não especificado')
 
-            st.write(potencia_str)
+            
 
             # Calcula o preço total do item
             preco_unitario = item.get('Preço Unitário', 0)
