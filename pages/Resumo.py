@@ -228,6 +228,8 @@ def gerar_pdf():
             
             codigo_item = potencia_to_code.get(potencia_str, 'Não especificado')
 
+            st.write(potencia_str)
+
             # Calcula o preço total do item
             preco_unitario = item.get('Preço Unitário', 0)
             quantidade = item.get('Quantidade', 0)
@@ -344,6 +346,7 @@ def pagina_gerar_documento():
         st.write(f"**% Caixa Item {idx}:** {percentual_considerado}%")
 
     st.write("---")
+    
 
     # Mostrando os itens configurados
     st.subheader("Itens Configurados")
