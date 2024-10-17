@@ -284,10 +284,7 @@ def create_custom_table_escopo(doc, itens_configurados):
     return table
 
 
-
-
-# Outras funções permanecem inalteradas
-
+# Função para substituir texto no documento, inclusive nas tabelas e no cabeçalho
 # Função para substituir texto no documento, inclusive nas tabelas e no cabeçalho
 def substituir_texto_documento(doc, replacements):
     def remove_paragraph(paragraph):
@@ -299,7 +296,7 @@ def substituir_texto_documento(doc, replacements):
     for paragraph in doc.paragraphs:
         for old_text, new_text in replacements.items():
             if old_text in paragraph.text:
-                if not new_text.strip():
+                if old_text == "{{IP}}" and not new_text.strip():  # Condicionar a remoção apenas ao campo IP
                     # Remove o parágrafo se o texto de substituição estiver vazio
                     remove_paragraph(paragraph)
                     break  # Sai do loop interno após remover o parágrafo
@@ -317,7 +314,7 @@ def substituir_texto_documento(doc, replacements):
                 for paragraph in paragraphs:
                     for old_text, new_text in replacements.items():
                         if old_text in paragraph.text:
-                            if not new_text.strip():
+                            if old_text == "{{IP}}" and not new_text.strip():  # Condicionar a remoção apenas ao campo IP
                                 # Remove o parágrafo se o texto de substituição estiver vazio
                                 remove_paragraph(paragraph)
                                 break  # Sai do loop interno após remover o parágrafo
@@ -333,7 +330,7 @@ def substituir_texto_documento(doc, replacements):
         for paragraph in header.paragraphs:
             for old_text, new_text in replacements.items():
                 if old_text in paragraph.text:
-                    if not new_text.strip():
+                    if old_text == "{{IP}}" and not new_text.strip():  # Condicionar a remoção apenas ao campo IP
                         # Remove o parágrafo se o texto de substituição estiver vazio
                         remove_paragraph(paragraph)
                         break  # Sai do loop interno após remover o parágrafo
@@ -342,6 +339,7 @@ def substituir_texto_documento(doc, replacements):
                         for run in inline:
                             if old_text in run.text:
                                 run.text = run.text.replace(old_text, new_text)
+
 
 # Função para inserir as tabelas e realizar substituições de texto
 def inserir_tabelas_word(doc, itens_configurados, observacao, replacements):
