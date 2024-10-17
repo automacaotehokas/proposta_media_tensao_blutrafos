@@ -56,7 +56,7 @@ def gerar_documento_word():
         '{{FONE}}': str(st.session_state['dados_iniciais'].get('fone', '')),
         '{{EMAIL}}': str(st.session_state['dados_iniciais'].get('email', '')),
         '{{BT}}': str(st.session_state['dados_iniciais'].get('bt', '')),
-        '{{OBRA}}': str(st.session_state['dados_iniciais'].get('obra', '')) if st.session_state['dados_iniciais'].get('obra') else '',
+        '{{OBRA}}': str(st.session_state['dados_iniciais'].get('obra', ' ')) if st.session_state['dados_iniciais'].get('obra') else ' ',
         '{{DIA}}': str(st.session_state['dados_iniciais'].get('dia', '')),
         '{{MES}}': str(st.session_state['dados_iniciais'].get('mes', '')),
         '{{ANO}}': str(st.session_state['dados_iniciais'].get('ano', '')),
