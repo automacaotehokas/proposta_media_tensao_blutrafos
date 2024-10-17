@@ -216,7 +216,10 @@ def gerar_pdf():
 
         for item in itens_configurados:
             potencia_item = item.get('Potência Equivalente', '')
-            potencia_str = f"{potencia_item:g} kVA"  # Formata a potência
+        if isinstance(potencia_item, (int, float)):
+            potencia_str = f"{potencia_item:g} kVA"  # Formata a potência se for número
+        else:
+            potencia_str = f"{potencia_item} kVA"
             codigo_item = potencia_to_code.get(potencia_str, 'Não especificado')
 
             # Calcula o preço total do item
