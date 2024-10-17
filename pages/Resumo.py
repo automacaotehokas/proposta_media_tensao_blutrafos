@@ -1,7 +1,3 @@
-
-
-
-
 import os
 from dotenv import load_dotenv
 import streamlit as st
@@ -60,14 +56,14 @@ def gerar_documento_word():
         '{{FONE}}': str(st.session_state['dados_iniciais'].get('fone', '')),
         '{{EMAIL}}': str(st.session_state['dados_iniciais'].get('email', '')),
         '{{BT}}': str(st.session_state['dados_iniciais'].get('bt', '')),
-        '{{OBRA}}': str(st.session_state['dados_iniciais'].get('obra', '')),
+        '{{OBRA}}': str(st.session_state['dados_iniciais'].get('obra', '')) if st.session_state['dados_iniciais'].get('obra') else '',
         '{{DIA}}': str(st.session_state['dados_iniciais'].get('dia', '')),
         '{{MES}}': str(st.session_state['dados_iniciais'].get('mes', '')),
         '{{ANO}}': str(st.session_state['dados_iniciais'].get('ano', '')),
         '{{REV}}': str(st.session_state['dados_iniciais'].get('rev', '')),
         '{{LOCAL}}': str(st.session_state['dados_iniciais'].get('local_frete', '')),
         '{{LOCALFRETE}}': str(st.session_state['local_frete_itens']),
-        '{{ICMS}}': str(st.session_state['icms']),
+        '{{ICMS}}': str(st.session_state['icms']).replace('.', ',') + "%",
         '{{IP}}': ', '.join(set(
             str(item['IP']) for item in st.session_state['itens_configurados'] if item['IP'] != '00'
         ))

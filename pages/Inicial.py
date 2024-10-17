@@ -39,7 +39,7 @@ if 'dados_iniciais' not in st.session_state:
         'bt': '',
         'rev': '',
         'cliente': '',
-        'obra': '',
+        'obra': None,
         'nomeCliente': '',
         'email': '',
         'local': '',
