@@ -72,7 +72,7 @@ def gerar_documento_word():
     itens_configurados = st.session_state.get('itens_configurados', [])
 
     if not itens_configurados:
-        st.error("Por favor, preencha todos os itens antes de gerar o documento.")
+        st.error("Por favor, preencha todos os itens antes de gerar o documento:")
         return None, None
 
     buffer = BytesIO()
