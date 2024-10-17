@@ -1,3 +1,7 @@
+
+
+
+
 import os
 from dotenv import load_dotenv
 import streamlit as st
@@ -63,7 +67,7 @@ def gerar_documento_word():
         '{{REV}}': str(st.session_state['dados_iniciais'].get('rev', '')),
         '{{LOCAL}}': str(st.session_state['dados_iniciais'].get('local_frete', '')),
         '{{LOCALFRETE}}': str(st.session_state['local_frete_itens']),
-        '{{ICMS}}': str(st.session_state['icms']).replace('.', ',') + "%",
+        '{{ICMS}}': str(st.session_state['icms']),
         '{{IP}}': ', '.join(set(
             str(item['IP']) for item in st.session_state['itens_configurados'] if item['IP'] != '00'
         ))
@@ -72,7 +76,7 @@ def gerar_documento_word():
     itens_configurados = st.session_state.get('itens_configurados', [])
 
     if not itens_configurados:
-        st.error("Por favor, preencha todos os itens antes de gerar o documento:")
+        st.error("Por favor, preencha todos os itens antes de gerar o documento.")
         return None, None
 
     buffer = BytesIO()
@@ -170,16 +174,16 @@ def gerar_pdf():
             {"code": "0013.0613.000", "potencia": "300 kVA"},
             {"code": "0013.0606.000", "potencia": "500 kVA"},
             {"code": "0013.0922.000", "potencia": "750 kVA"},
-            {"code": "0013.1182.000", "potencia": "1,000 kVA"},
-            {"code": "0013.0639.000", "potencia": "1,250 kVA"},
-            {"code": "0013.0643.000", "potencia": "1,500 kVA"},
-            {"code": "0013.0805.000", "potencia": "2,000 kVA"},
-            {"code": "0013.0725.000", "potencia": "2,500 kVA"},
-            {"code": "0013.1074.000", "potencia": "3,000 kVA"},
-            {"code": "Não especificado", "potencia": "3,500 kVA"},
-            {"code": "0013.0679.000", "potencia": "4,000 kVA"},
-            {"code": "Não especificado", "potencia": "5,000 kVA"},
-            {"code": "Não especificado", "potencia": "6,000 kVA"},
+            {"code": "0013.1182.000", "potencia": "1000 kVA"},
+            {"code": "0013.0639.000", "potencia": "1250 kVA"},
+            {"code": "0013.0643.000", "potencia": "1500 kVA"},
+            {"code": "0013.0805.000", "potencia": "2000 kVA"},
+            {"code": "0013.0725.000", "potencia": "2500 kVA"},
+            {"code": "0013.1074.000", "potencia": "3000 kVA"},
+            {"code": "Não especificado", "potencia": "3500 kVA"},
+            {"code": "0013.0679.000", "potencia": "4000 kVA"},
+            {"code": "Não especificado", "potencia": "5000 kVA"},
+            {"code": "Não especificado", "potencia": "6000 kVA"},
         ]
         potencia_to_code = {item['potencia']: item['code'] for item in mapping}
 
@@ -229,8 +233,6 @@ def gerar_pdf():
 
             # Exibir para verificar a correspondência com o mapeamento
             st.write(f"Código do item para {potencia_str}: {codigo_item}")
-
-            
 
             # Calcula o preço total do item
             preco_unitario = item.get('Preço Unitário', 0)
@@ -328,7 +330,7 @@ def pagina_gerar_documento():
     st.markdown("---")
 
     # Mostrar as variáveis comuns apenas uma vez
-    st.subheader("Resumo")
+    st.subheader("Resumo das Variáveis")
     st.write(f"**Contribuinte:** {st.session_state['contribuinte_icms']}")
     st.write(f"**Lucro:** {st.session_state['lucro']:.2f}%")
     st.write(f"**ICMS:** {st.session_state['icms']:.2f}%")
@@ -348,7 +350,6 @@ def pagina_gerar_documento():
         st.write(f"**% Caixa Item {idx}:** {percentual_considerado}%")
 
     st.write("---")
-    
 
     # Mostrando os itens configurados
     st.subheader("Itens Configurados")
