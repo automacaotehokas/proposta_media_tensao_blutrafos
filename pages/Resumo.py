@@ -219,7 +219,7 @@ def gerar_pdf():
 
             # Correção: Agora o if está corretamente dentro do loop para cada item
             if isinstance(potencia_item, (int, float)):
-                potencia_str = f"{potencia_item:g} kVA"  # Formata a potência se for número
+                potencia_str = f"{int(potencia_item)} kVA"  # Formata a potência se for número
             else:
                 potencia_str = f"{potencia_item} kVA"  # Se for string, apenas concatene com "kVA"
             
