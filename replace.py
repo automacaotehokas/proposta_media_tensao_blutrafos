@@ -88,7 +88,7 @@ def create_custom_table(doc, itens_configurados, observacao):
 
     # Cabeçalho
     header_row = table.rows[0]
-    header_data = ["Item", "Qtde", "Potência", "K", "Tensões", "IP", "Norma", "Preço Uni. R$", "Preço Total R$", "IPI"]
+    header_data = ["Item", "Qtde", "Potência", "K", "Tensões", "IP", "Perda", "Preço Uni. R$", "Preço Total R$", "IPI"]
     for idx, cell in enumerate(header_row.cells):
         cell.text = header_data[idx]
         paragraph = cell.paragraphs[0]
