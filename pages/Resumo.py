@@ -136,6 +136,7 @@ def gerar_pdf():
             Paragraph(f"<b>Lucro:</b> {st.session_state['lucro']:.2f}%", styles['Normal']),
             Paragraph(f"<b>ICMS:</b> {st.session_state['icms']:.2f}%", styles['Normal']),
             Paragraph(f"<b>Frete:</b> {st.session_state['frete']:.2f}%", styles['Normal']),
+            Paragraph(f"<b>Comissão:</b> {st.session_state['comissao']:.2f}%", styles['Normal']),
             Paragraph(f"<b>Local Frete:</b> {st.session_state['local_frete_itens']}", styles['Normal']),
         ]
 
@@ -331,6 +332,7 @@ def pagina_gerar_documento():
     st.write(f"**Lucro:** {st.session_state['lucro']:.2f}%")
     st.write(f"**ICMS:** {st.session_state['icms']:.2f}%")
     st.write(f"**Frete:** {st.session_state['frete']:.2f}%")
+    st.write(f"**Comissão:** {st.session_state['comissao']:.2f}%")
     st.write(f"**Local Frete:** {st.session_state['local_frete_itens']}")
 
     # Adicionar informação de percentual considerado para cada item

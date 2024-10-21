@@ -17,7 +17,7 @@ def carregar_cidades():
                 st.error("Erro ao buscar as cidades. Por favor, tente novamente mais tarde.")
                 st.session_state['cidades'] = []
         except Exception as e:
-            st.error(f"Erro ao conectar com a API: {e}")
+            st.error(f"Erro ao conectar com a API: {e}")    
             st.session_state['cidades'] = []
 
 def aplicar_mascara_telefone():
