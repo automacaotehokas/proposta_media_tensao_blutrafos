@@ -262,8 +262,8 @@ for item in range(len(st.session_state['itens_configurados'])):
     if fator_k_escolhido in percentuais_k:
         adicional_k = preco_base1 * percentuais_k[fator_k_escolhido]
 
-    preco_unitario = ((preco_base1 + adicional_ip + adicional_k + adicional_caixa_classe) * (1 - 0.12)) / \
-                      (1 - (st.session_state['difal'] / 100) - (st.session_state['f_pobreza'] / 100) - (st.session_state['icms'] / 100))
+    preco_unitario = int(((preco_base1 + adicional_ip + adicional_k + adicional_caixa_classe) * (1 - 0.12)) / \
+                      (1 - (st.session_state['difal'] / 100) - (st.session_state['f_pobreza'] / 100) - (st.session_state['icms'] / 100)))
 
     st.session_state['itens_configurados'][item]['Preço Unitário'] = preco_unitario
 
