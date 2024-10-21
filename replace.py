@@ -170,11 +170,27 @@ def create_custom_table(doc, itens_configurados, observacao):
 
     return table
 
+
+def set_table_left_indent(table, indent):
+    tbl_pr = table._tbl.tblPr
+    tbl_indent = tbl_pr.xpath("w:tblInd")
+    if tbl_indent:
+        tbl_indent[0].set(qn('w:w'), str(indent))
+        tbl_indent[0].set(qn('w:type'), 'dxa')
+    else:
+        tbl_indent_element = OxmlElement('w:tblInd')
+        tbl_indent_element.set(qn('w:w'), str(indent))
+        tbl_indent_element.set(qn('w:type'), 'dxa')
+        tbl_pr.append(tbl_indent_element)
+
+
 def create_custom_table_escopo(doc, itens_configurados):
     table = doc.add_table(rows=len(itens_configurados) + 1, cols=2)  # Tabela com 2 colunas (Item e Escopo do Fornecimento)
 
     # Ajustar o alinhamento da tabela para a esquerda
     table.alignment = WD_TABLE_ALIGNMENT.LEFT
+    
+    set_table_left_indent(table, 0)
 
     # Definir a indentação esquerda da tabela como zero
     table.left_indent = Cm(0) # Tabela com 2 colunas (Item e Escopo do Fornecimento)
