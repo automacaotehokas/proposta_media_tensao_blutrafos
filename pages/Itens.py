@@ -269,13 +269,13 @@ for item in range(len(st.session_state['itens_configurados'])):
 
     # Regras para valores padrão de Tensão Primária, Tensão Secundária e Derivações
     if classe_tensao == "15 kV":
-        tensao_primaria_padrao = 13,8
+        tensao_primaria_padrao = "13,8"
         derivacoes_padrao = "13,8/13,2/12,6/12,0/11,4kV"
     elif classe_tensao == "24 kV":
-        tensao_primaria_padrao = 23,1
+        tensao_primaria_padrao = "23,1"
         derivacoes_padrao = "23,1/22,0/20kV"
     elif classe_tensao == "36 kV":
-        tensao_primaria_padrao = 34,5
+        tensao_primaria_padrao = "34,5"
         derivacoes_padrao = "+/- 2x2,5%"
     else:
         tensao_primaria_padrao = st.session_state['itens_configurados'][item]['Tensão Primária']
