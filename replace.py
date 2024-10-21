@@ -78,7 +78,7 @@ def create_custom_table(doc, itens_configurados, observacao):
     table.left_indent = Cm(0)  # Adicionando a coluna de IPI
 
     # Definir larguras fixas para as colunas
-    col_widths = [Cm(1.1), Cm(1.25), Cm(1.90), Cm(1.0), Cm(2.7), Cm(1.0), Cm(1.75), Cm(2.63), Cm(2.63), Cm(1.15)]
+    col_widths = [Cm(1.1), Cm(1.25), Cm(2.2), Cm(1.0), Cm(2.7), Cm(1.0), Cm(1.75), Cm(2.63), Cm(2.63), Cm(1.15)]
 
     # Desabilitar o ajuste automático
     table.autofit = False  # Desativa o autofit
@@ -110,7 +110,7 @@ def create_custom_table(doc, itens_configurados, observacao):
         row = table.rows[idx]
         row.cells[0].text = str(idx)  # Número do item
         row.cells[1].text = str(item["Quantidade"])  # Quantidade
-        row.cells[2].text = f"{item['Potência']} kVA" if item["Potência"] % 1 != 0 else f"{int(item['Potência'])} kVA"  # Potência
+        row.cells[2].text = f"{item['Potência']:.2f}".replace('.', ',') + " kVA" if item["Potência"] % 1 != 0 else f"{int(item['Potência'])} kVA"
         row.cells[3].text = str(item["Fator K"])  # Fator K
         row.cells[4].text = f"{item['Tensão Primária']}kV /{item['Tensão Secundária']} V"  # Tensão
         row.cells[5].text = str(item["IP"])  # IP
@@ -221,8 +221,14 @@ def create_custom_table_escopo(doc, itens_configurados):
         tensao_secundaria = item.get('Tensão Secundária', 'N/A').replace('kV', '').strip()  # Tensão Secundária
         eficiencia = determinar_eficiencia(item['Perdas'])
 
-        # Formatar a potência
-        potencia_formatada = f"{item.get('Potência', 'N/A'):.0f} kVA" if isinstance(item.get('Potência'), (int, float)) else item.get('Potência', 'N/A')
+        potencia = item.get('Potência', 'N/A')
+    if isinstance(potencia, (int, float)):
+        if potencia % 1 == 0:  # Verifica se a parte decimal é 0
+            potencia_formatada = f"{int(potencia)} kVA"  # Converte para inteiro
+        else:
+            potencia_formatada = f"{potencia:.1f}".replace('.', ',') + " kVA"  # Formata com uma casa decimal e troca ponto por vírgula
+    else:
+        potencia_formatada = potencia 
 
         # Pegando o valor da Tensão Secundária como texto e tentando convertê-lo para float
         tensao_secundaria_str = item.get('Tensão Secundária', '0')
