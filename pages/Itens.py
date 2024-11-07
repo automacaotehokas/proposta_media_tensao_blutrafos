@@ -125,7 +125,9 @@ percentuais = (lucro / 100) + (icms_base) + (comissao / 100) + (frete / 100) + i
 quantidade_itens = st.number_input('Quantidade de Itens:', min_value=1, step=1, value=len(st.session_state.get('itens_configurados', [])) or 1)
 
 while len(st.session_state['itens_configurados']) < quantidade_itens:
+    
     item_index = len(st.session_state['itens_configurados'])
+
     st.session_state['itens_configurados'].append({
         'ID': None,
         'Item': item_index + 1,
@@ -186,8 +188,8 @@ for item in range(len(st.session_state['itens_configurados'])):
     
     preco_base1 = preco_base / (1 - p_trafo - percentuais)
 
-        # Seleção do Fator K e IP
-    # Seleção do Fator K e IP
+    item_index = 0 
+
     fator_k_escolhido = st.selectbox(
         f'Selecione o Fator K do Item: ',
         fator_k_opcoes,
