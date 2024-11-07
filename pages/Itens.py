@@ -4,7 +4,7 @@ from config_db import conectar_banco
 import os
 from dotenv import load_dotenv
 from pages.Inicial import carregar_cidades
-import numpy as np
+
 
 load_dotenv()
 
@@ -189,17 +189,17 @@ for item in range(len(st.session_state['itens_configurados'])):
         # Seleção do Fator K e IP
     # Seleção do Fator K e IP
     fator_k_escolhido = st.selectbox(
-        f'Selecione o Fator K do Item {item + 1}:',
+        f'Selecione o Fator K do Item: ',
         fator_k_opcoes,
-        key=f'fator_k_{item}_unique_key',
+        key=f'fator_k_{item_index}_unique_key',
         index=fator_k_opcoes.index(st.session_state['itens_configurados'][item]['Fator K'])
     )
     st.session_state['itens_configurados'][item]['Fator K'] = fator_k_escolhido
 
     ip_escolhido = st.selectbox(
-        f'Selecione o IP do Item {item + 1}:',
+        f'Selecione o IP do Item: ',
         opcoes_ip,
-        key=f'ip_{item}_unique_key',
+        key=f'ip_{item_index}_unique_key',
         index=opcoes_ip.index(st.session_state['itens_configurados'][item]['IP'])
     )
     st.session_state['itens_configurados'][item]['IP'] = ip_escolhido
