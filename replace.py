@@ -255,15 +255,15 @@ def create_custom_table_escopo(doc, itens_configurados):
             tensao_secundaria_float = float(tensao_secundaria_str)
 
             # Cálculo correto da tensão secundária a partir da tensão de linha (usando sqrt(3))
-            raiz_tensao_secundaria = math.sqrt(3)
+            raiz_tensao_secundaria = 1.73
             tensao_calculada = tensao_secundaria_float / raiz_tensao_secundaria
 
             # Forçando o arredondamento para cima (próximo número inteiro)
-            tensao_calculada_arredondada = math.ceil(tensao_calculada)  # Arredonda sempre para cima
-            tensao_secundaria_arredondada = math.ceil(tensao_secundaria_float)  # Arredonda sempre para cima
+            tensao_calculada_arredondada = round(tensao_calculada)  # Arredonda sempre para cima
+            tensao_secundaria_arredondada = round(tensao_secundaria_float)  # Arredonda sempre para cima
 
             # Formata o texto com os dois valores arredondados
-            tensao_secundaria_texto = f"{tensao_secundaria_arredondada}V/{tensao_calculada_arredondada}V"
+            tensao_secundaria_texto = f"{tensao_secundaria_arredondada}/{tensao_calculada_arredondada}V"
         
         except ValueError:
             # Se a conversão falhar, exibe apenas o valor original como texto e um aviso
