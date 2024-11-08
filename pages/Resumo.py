@@ -65,9 +65,13 @@ def gerar_documento_word():
         '{{LOCALFRETE}}': str(st.session_state['local_frete_itens']),
         '{{ICMS}}': str(st.session_state['icms']).replace('.', ',') + "%",
         '{{IP}}': ', '.join(set(
-            str(item['IP']) for item in st.session_state['itens_configurados'] if item['IP'] != '00'
-        ))
-    }
+            str(item['IP']) for item in st.session_state['itens_configurados'] if item['IP'] != '00')),
+    '{obra}': '' if not st.session_state['dados_iniciais'].get('obra', '').strip() else 'Obra:'
+}
+
+    # Se {{OBRA}} for vazio, também remover {obra}
+    if replacements['{{OBRA}}'] == '':
+        replacements['{obra}'] = ''
 
     itens_configurados = st.session_state.get('itens_configurados', [])
 
@@ -137,6 +141,8 @@ def gerar_pdf():
             Paragraph(f"<b>ICMS:</b> {st.session_state['icms']:.2f}%", styles['Normal']),
             Paragraph(f"<b>Frete:</b> {st.session_state['frete']:.2f}%", styles['Normal']),
             Paragraph(f"<b>Comissão:</b> {st.session_state['comissao']:.2f}%", styles['Normal']),
+            Paragraph(f"<b>DIFAL:</b> {st.session_state['difal']:.2f}%", styles['Normal']),
+            Paragraph(f"<b>F.pobreza:</b> {st.session_state['f_pobreza']:.2f}%", styles['Normal']),
             Paragraph(f"<b>Local Frete:</b> {st.session_state['local_frete_itens']}", styles['Normal']),
         ]
 
@@ -152,7 +158,7 @@ def gerar_pdf():
             # Obter a classe de tensão corretamente
             classe_tensao = item.get('classe_tensao', '')
             percentual_considerado = voltage_class_percentage.get(classe_tensao, 'Não especificado')
-            if item['IP'] == "Sem caixa":
+            if item['IP'] == 00:
                 percentual_considerado = 0
             elementos_variaveis.append(
                 Paragraph(f"<b>% Caixa Item {idx}:</b> {percentual_considerado}%", styles['Normal'])
@@ -229,7 +235,8 @@ def gerar_pdf():
             
             # Mapeia o código de acordo com a potência
             codigo_item = potencia_to_code.get(potencia_str, 'Não especificado')                                                                    
-
+            if item.get('IP') == "00": 
+                codigo_item="N/A"
             # Exibir para verificar a correspondência com o mapeamento
             st.write(f"Código do item para {potencia_str}: {codigo_item}")
 
@@ -335,6 +342,8 @@ def pagina_gerar_documento():
     st.write(f"**ICMS:** {st.session_state['icms']:.2f}%")
     st.write(f"**Frete:** {st.session_state['frete']:.2f}%")
     st.write(f"**Comissão:** {st.session_state['comissao']:.2f}%")
+    st.write(f"**DIFAL:** {st.session_state['difal']:.2f}%")
+    st.write(f"**F.pobreza:** {st.session_state['f_pobreza']:.2f}%")
     st.write(f"**Local Frete:** {st.session_state['local_frete_itens']}")
 
     # Adicionar informação de percentual considerado para cada item
@@ -347,6 +356,10 @@ def pagina_gerar_documento():
     for idx, item in enumerate(itens_configurados, start=1):
         classe_tensao = item.get('classe_tensao', '')
         percentual_considerado = voltage_class_percentage.get(classe_tensao, 'Não especificado')
+        # Ajustar o percentual_considerado com base no valor do IP
+        if item.get('IP') == "00":
+            percentual_considerado = 0
+        
         st.write(f"**% Caixa Item {idx}:** {percentual_considerado}%")
 
     st.write("---")
