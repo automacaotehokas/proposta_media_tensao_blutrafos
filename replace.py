@@ -318,7 +318,7 @@ def substituir_texto_documento(doc, replacements):
     for paragraph in doc.paragraphs:
         for old_text, new_text in replacements.items():
             if old_text in paragraph.text:
-                if old_text == "{{IP}}" and not new_text.strip():  # Condicionar a remoção apenas ao campo IP
+                if (old_text == "{{IP}}" or old_text == "{{OBRA}}") and not new_text.strip():  # Condicionar a remoção apenas ao campo IP
                     # Remove o parágrafo se o texto de substituição estiver vazio
                     remove_paragraph(paragraph)
                     break  # Sai do loop interno após remover o parágrafo
@@ -336,7 +336,7 @@ def substituir_texto_documento(doc, replacements):
                 for paragraph in paragraphs:
                     for old_text, new_text in replacements.items():
                         if old_text in paragraph.text:
-                            if old_text == "{{IP}}" and not new_text.strip():  # Condicionar a remoção apenas ao campo IP
+                            if (old_text =="{{IP}}" or old_text == "{{OBRA}}") and not new_text.strip():  # Condicionar a remoção apenas ao campo IP
                                 # Remove o parágrafo se o texto de substituição estiver vazio
                                 remove_paragraph(paragraph)
                                 break  # Sai do loop interno após remover o parágrafo
@@ -352,7 +352,7 @@ def substituir_texto_documento(doc, replacements):
         for paragraph in header.paragraphs:
             for old_text, new_text in replacements.items():
                 if old_text in paragraph.text:
-                    if old_text == "{{IP}}" and not new_text.strip():  # Condicionar a remoção apenas ao campo IP
+                    if (old_text =="{{IP}}" or old_text == "{{OBRA}}") and not new_text.strip():  # Condicionar a remoção apenas ao campo IP
                         # Remove o parágrafo se o texto de substituição estiver vazio
                         remove_paragraph(paragraph)
                         break  # Sai do loop interno após remover o parágrafo

@@ -152,6 +152,8 @@ def gerar_pdf():
             # Obter a classe de tensão corretamente
             classe_tensao = item.get('classe_tensao', '')
             percentual_considerado = voltage_class_percentage.get(classe_tensao, 'Não especificado')
+            if item['IP'] == "Sem caixa":
+                percentual_considerado = 0
             elementos_variaveis.append(
                 Paragraph(f"<b>% Caixa Item {idx}:</b> {percentual_considerado}%", styles['Normal'])
             )
