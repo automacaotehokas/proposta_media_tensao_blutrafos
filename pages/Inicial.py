@@ -23,7 +23,7 @@ def carregar_cidades():
 def aplicar_mascara_telefone():
     telefone = ''.join(filter(str.isdigit, st.session_state['fone_raw']))  # Remove todos os caracteres que não são dígitos
     if len(telefone) == 11:
-        telefone_formatado = f"({telefone[:2]}) 9 {telefone[2:7]}-{telefone[7:]}"
+        telefone_formatado = f"({telefone[:2]})  {telefone[2:7]}-{telefone[7:]}"
     elif len(telefone) == 10:
         telefone_formatado = f"({telefone[:2]}) {telefone[2:6]}-{telefone[6:]}"
     else:
