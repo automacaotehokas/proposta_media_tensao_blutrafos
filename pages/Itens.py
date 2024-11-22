@@ -193,7 +193,7 @@ for item in range(len(st.session_state['itens_configurados'])):
     fator_k_escolhido = st.selectbox(
         f'Selecione o Fator K do Item: ',
         fator_k_opcoes,
-        key=f'fator_k_{item_index}_unique_key_{id_item}',
+        key=f'fator_k_{item}_unique_key_{id_item}',
         index=fator_k_opcoes.index(st.session_state['itens_configurados'][item]['Fator K'])
     )
     st.session_state['itens_configurados'][item]['Fator K'] = fator_k_escolhido
@@ -201,7 +201,7 @@ for item in range(len(st.session_state['itens_configurados'])):
     ip_escolhido = st.selectbox(
         f'Selecione o IP do Item: ',
         opcoes_ip,
-        key=f'ip_{item_index}_unique_key_{id_item}',
+        key=f'ip_{item}_unique_key_{id_item}',
         index=opcoes_ip.index(st.session_state['itens_configurados'][item]['IP'])
     )
     st.session_state['itens_configurados'][item]['IP'] = ip_escolhido
@@ -259,6 +259,21 @@ for item in range(len(st.session_state['itens_configurados'])):
         adicional_caixa_classe = p_caixa_36 * adicional_ip
     elif classe_tensao == "15 kV":
         adicional_caixa_classe = 0
+
+    adicional_k = 0
+    if fator_k_escolhido in percentuais_k:
+        adicional_k = preco_base1 * percentuais_k[fator_k_escolhido]
+    
+
+    if classe_tensao == "24 kV":
+        NBI = '95kV'
+    elif classe_tensao == "36 kV":
+        NBI = '125kV'
+    elif classe_tensao == "15 kV":
+        NBI = '150kV'
+    else:
+        NBI = '0'
+    st.session_state['itens_configurados'][item]['NBI'] = NBI
 
     adicional_k = 0
     if fator_k_escolhido in percentuais_k:

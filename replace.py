@@ -236,6 +236,7 @@ def create_custom_table_escopo(doc, itens_configurados):
         classe_tensao = item.get('classe_tensao', 'N/A').replace('kV', '').strip()  # Remove 'kV'
         tensao_secundaria = item.get('Tensão Secundária', 'N/A').replace('kV', '').strip()  # Tensão Secundária
         eficiencia = determinar_eficiencia(item['Perdas'])
+        NBI = item.get('NBI', 'N/A')
 
         potencia = item.get('Potência', 'N/A')
         if isinstance(potencia, (int, float)):
@@ -275,7 +276,7 @@ def create_custom_table_escopo(doc, itens_configurados):
             f"Marca e Fabricação Blutrafos, Potência: **{potencia_formatada}**, Fator: **K={item.get('Fator K', 'N/A')}**, "
             f"Tensão **Primária**: **{item.get('Tensão Primária', 'N/A')}kV**, Derivações: **{item.get('Derivações', 'N/A')}**, "
             f"Tensão **Secundária**: **{tensao_secundaria_texto}**, Grupo de Ligação: **Dyn-1**, "
-            f"Frequência: **60Hz**, NBI: **95kV**, Classe de Temperatura: F (155ºC), "
+            f"Frequência: **60Hz**, NBI: **{NBI}**, Classe de Temperatura: F (155ºC), "
             f"Elevação Temperatura média dos enrolamentos: **100ºC**, Materiais dos enrolamentos: **Alumínio**, "
             f"Altitude de Instalação: **≤1000m**, Temperatura ambiente máxima: 40°C, "
             f"Alta tensão Encapsulado em Resina Epóxi à Vácuo, Regime de Serviço: Contínuo, "
