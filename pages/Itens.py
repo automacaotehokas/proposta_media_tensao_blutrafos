@@ -265,11 +265,11 @@ for item in range(len(st.session_state['itens_configurados'])):
         adicional_k = preco_base1 * percentuais_k[fator_k_escolhido]
     
 
-    if classe_tensao == "24 kV":
+    if classe_tensao == "15 kV":
         NBI = '95kV'
-    elif classe_tensao == "36 kV":
+    elif classe_tensao == "24 kV":
         NBI = '125kV'
-    elif classe_tensao == "15 kV":
+    elif classe_tensao == "36 kV":
         NBI = '150kV'
     else:
         NBI = '0'
