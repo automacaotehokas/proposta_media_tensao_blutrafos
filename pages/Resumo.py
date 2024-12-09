@@ -10,6 +10,8 @@ from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from docx import Document
 from sharepoint_code import SharePoint  # Certifique-se de ter este módulo
 from replace import inserir_tabelas_word  # Certifique-se de ter esta função
+import locale
+locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
 
 st.set_page_config(layout="wide")
 
@@ -92,7 +94,6 @@ def gerar_documento_word():
     except Exception as e:
         st.error(f"Erro ao gerar o documento: {e}")
         return None, None
-
 # Função para gerar PDF com ReportLab
 def gerar_pdf():
     # Cria um buffer para o PDF
@@ -167,31 +168,6 @@ def gerar_pdf():
         elementos_variaveis.append(Spacer(1, 12))
         elements.extend(elementos_variaveis)
 
-        # Mapeamento de código e potência (usando strings com "kVA")
-        mapping = [
-            {"code": "0013.0760.000", "potencia": "15 kVA"},
-            {"code": "0013.0480.000", "potencia": "30 kVA"},
-            {"code": "0013.0480.000", "potencia": "45 kVA"},
-            {"code": "0013.0896.000", "potencia": "75 kVA"},
-            {"code": "0013.0735.000", "potencia": "112.5 kVA"},
-            {"code": "0013.0735.000", "potencia": "150 kVA"},
-            {"code": "0013.0478.000", "potencia": "225 kVA"},
-            {"code": "0013.0613.000", "potencia": "300 kVA"},
-            {"code": "0013.0606.000", "potencia": "500 kVA"},
-            {"code": "0013.0922.000", "potencia": "750 kVA"},
-            {"code": "0013.1182.000", "potencia": "1000 kVA"},
-            {"code": "0013.0639.000", "potencia": "1250 kVA"},
-            {"code": "0013.0643.000", "potencia": "1500 kVA"},
-            {"code": "0013.0805.000", "potencia": "2000 kVA"},
-            {"code": "0013.0725.000", "potencia": "2500 kVA"},
-            {"code": "0013.1074.000", "potencia": "3000 kVA"},
-            {"code": "Não especificado", "potencia": "3500 kVA"},
-            {"code": "0013.0679.000", "potencia": "4000 kVA"},
-            {"code": "Não especificado", "potencia": "5000 kVA"},
-            {"code": "Não especificado", "potencia": "6000 kVA"},
-        ]
-        potencia_to_code = {item['potencia']: item['code'] for item in mapping}
-
         # Estilo para as células da tabela
         table_cell_style = ParagraphStyle(
             'TableCell',
@@ -204,7 +180,7 @@ def gerar_pdf():
         )
 
         # Tabela de itens configurados (mantendo o formato original)
-        data = [['Cód. Proj Caixa', 'Descrição', 'K', 'IP', 'Qtde', 'Preço Unitário']]
+        data = [['Cód. Proj Trafo', 'Cód. Proj Caixa', 'Descrição', 'K', 'IP', 'Qtde', 'Preço Unitário','Preço Total']]
 
         # Estilo para o cabeçalho
         header_style = ParagraphStyle(
@@ -234,42 +210,40 @@ def gerar_pdf():
                 potencia_str = f"{potencia_item} kVA"  # Se for string, apenas concatene com "kVA"
             
             # Mapeia o código de acordo com a potência
-            codigo_item = potencia_to_code.get(potencia_str, 'Não especificado')                                                                    
+            codigo_item = item.get('cod_proj_caixa')  
+
             if item.get('IP') == "00": 
                 codigo_item="N/A"
-            # Exibir para verificar a correspondência com o mapeamento
-            st.write(f"Código do item para {potencia_str}: {codigo_item}")
-
             # Calcula o preço total do item
-            preco_unitario = item.get('Preço Unitário', 0)
-            quantidade = item.get('Quantidade', 0)
+            preco_unitario = float(item.get('Preço Unitário', 0) or 0)
+            quantidade = float(item.get('Quantidade', 0) or 0)
             preco_total_item = preco_unitario * quantidade
             total_geral += preco_total_item
-
+            
+            codigo_custo = item.get('cod_proj_custo') 
+            preco_total_str = locale.format_string("%.2f", preco_total_item, grouping=True)
+            preco_unitario_str= locale.format_string("%.2f", preco_unitario, grouping=True)
             data.append([
+                codigo_custo,
                 codigo_item,
                 Paragraph(item.get('Descrição', ''), table_cell_style),
                 str(item.get('Fator K', '')),
                 item.get('IP', ''),
                 str(quantidade),
-                f"R$ {preco_unitario:,.2f}",
+                f"R$ {preco_unitario_str}",  # Substitui vírgula por ponto
+                f"R$ {preco_total_str}", 
             ])
-
-        # Adiciona a linha de total geral
-        data.append([
-            Paragraph('<b>Total Geral</b>', table_cell_style),
-            '', '', '', '',
-            Paragraph(f"<b>R$ {total_geral:,.2f}</b>", table_cell_style),
-        ])
 
         # Definição de pesos para as colunas (ajustado para 6 colunas)
         column_widths_weights = [
+            1.5,
             1.5,  # 'Código'
-            4,    # 'Descrição'
-            0.6,  # 'Fator K'
-            0.6,  # 'IP'
-            0.6,  # 'Quantidade'
+            2.5,    # 'Descrição'
+            0.5,  # 'Fator K'
+            0.5,  # 'IP'
+            0.5,  # 'Quantidade'
             1.5,  # 'Preço Unitário'
+             1.5,  # 'Preço TOtal'
         ]
         total_weight = sum(column_widths_weights)
         column_widths = [(available_width * (weight / total_weight)) for weight in column_widths_weights]
@@ -289,17 +263,19 @@ def gerar_pdf():
             ('TOPPADDING', (0, 0), (-1, -1), 4),
             ('BOTTOMPADDING', (0, 0), (-1, -1), 4),
             # Alinha à esquerda o texto da coluna 'Descrição'
-            ('ALIGN', (1, 1), (1, -1), 'LEFT'),
-            # Estilo para a linha de total geral
-            ('SPAN', (0, len(data)-1), (4, len(data)-1)),  # Mescla as células da primeira à quinta coluna na última linha
-            ('ALIGN', (0, len(data)-1), (0, len(data)-1), 'CENTER'),  # Centraliza o texto "Total Geral" na célula mesclada
-            ('ALIGN', (5, len(data)-1), (5, len(data)-1), 'RIGHT'),   # Alinha o valor total à direita
-            ('BACKGROUND', (0, len(data)-1), (-1, -1), colors.HexColor('#F0F0F0')),
+            ('ALIGN', (2, 1), (2, -1), 'LEFT')
         ])
+
         tabela.setStyle(table_style)
 
         elements.append(Paragraph("<b>Itens Configurados</b>", styles['Heading2']))
         elements.append(tabela)
+
+                # Converte o preço total para string, substitui vírgula por ponto
+        preco_total_str = locale.format_string("%.2f", preco_total_item, grouping=True)
+
+        # Adiciona a frase de total abaixo da tabela
+        elements.append(Paragraph(f"<b>Total: R$ {preco_total_str}</b>", styles['Heading2']))
 
         # Construir o PDF
         doc.build(elements)
@@ -311,6 +287,7 @@ def gerar_pdf():
         import traceback
         st.error(traceback.format_exc())
         return None
+
 
 # Página para gerar o documento
 def pagina_gerar_documento():

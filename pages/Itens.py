@@ -21,7 +21,7 @@ def verificar_dados_iniciais():
 def buscar_dados():
     conn = conectar_banco()
     query = """
-        SELECT id, descricao, potencia, classe_tensao, perdas, preco, p_trafo, valor_ip_baixo, valor_ip_alto, p_caixa
+        SELECT id, descricao, potencia, classe_tensao, perdas, preco, p_trafo, valor_ip_baixo, valor_ip_alto, p_caixa , cod_proj_caixa , cod_proj_custo
         FROM custos_media_tensao
         ORDER BY potencia ASC
     """
@@ -179,7 +179,9 @@ for item in range(len(st.session_state['itens_configurados'])):
     st.session_state['itens_configurados'][item]['Potência'] = detalhes_item['potencia']
     st.session_state['itens_configurados'][item]['Perdas'] = detalhes_item['perdas']
     st.session_state['itens_configurados'][item]['classe_tensao'] = detalhes_item['classe_tensao']
-
+    st.session_state['itens_configurados'][item]['cod_proj_caixa'] = detalhes_item['cod_proj_caixa']
+    st.session_state['itens_configurados'][item]['cod_proj_custo'] = detalhes_item['cod_proj_custo']
+    
     valor_ip_baixo = detalhes_item['valor_ip_baixo']
     valor_ip_alto = detalhes_item['valor_ip_alto']
     p_caixa = detalhes_item['p_caixa']
