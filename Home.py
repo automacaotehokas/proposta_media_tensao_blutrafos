@@ -14,13 +14,11 @@ def atualizar_dados(df):
 
     # Insere os novos dados com as colunas corretas e colunas formatadas
     for index, row in df.iterrows():
-        descricao = f"Transformador Trifásico {row['potencia']} kVA, {row['classe']} kV, perdas {row['perdas']}"
-        potencia_formatada = f"{row['potencia']} kVA"
+
         cur.execute("""
-            INSERT INTO custos_media_tensao (p_caixa, p_trafo, potencia, preco, perdas, classe_tensao, valor_ip_baixo, valor_ip_alto, descricao, potencia_formatada)
+            INSERT INTO custos_media_tensao (p_caixa, p_trafo, potencia, preco, perdas, classe_tensao, valor_ip_baixo, valor_ip_alto, descricao, potencia_formatada,cod_proj_caixa,cod_proj_custo)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
-        """, (row['p_caixa'], row['p_trafo'], row['potencia'], row['preco'], row['perdas'], row['classe'], row['valor_ip_baixo'], row['valor_ip_alto'], descricao, potencia_formatada))
-    
+        """, (row['p_caixa'], row['p_trafo'], row['potencia'], row['preco'], row['perdas'], row['classe'], row['valor_ip_baixo'], row['valor_ip_alto'], row['descricao'], row['potencia_formatada'],row['cod_proj_caixa'],row['cod_proj_custo']))
     conn.commit()
     cur.close()
     conn.close()
