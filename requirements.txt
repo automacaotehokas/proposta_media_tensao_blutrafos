@@ -13,4 +13,6 @@ reportlab
 openpyxl>=3.0.9
 sqlalchemy>=1.4.46
 Pillow
-locale
+babel
+
+

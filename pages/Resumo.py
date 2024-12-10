@@ -10,8 +10,7 @@ from reportlab.lib.styles import getSampleStyleSheet, ParagraphStyle
 from docx import Document
 from sharepoint_code import SharePoint  # Certifique-se de ter este módulo
 from replace import inserir_tabelas_word  # Certifique-se de ter esta função
-import locale
-locale.setlocale(locale.LC_ALL, 'pt_BR.UTF-8')
+from babel import numbers
 
 st.set_page_config(layout="wide")
 
@@ -221,8 +220,11 @@ def gerar_pdf():
             total_geral += preco_total_item
             
             codigo_custo = item.get('cod_proj_custo') 
-            preco_total_str = locale.format_string("%.2f", preco_total_item, grouping=True)
-            preco_unitario_str= locale.format_string("%.2f", preco_unitario, grouping=True)
+            # Formatar o preço total em reais
+            preco_total_str = numbers.format_currency(preco_total_item, 'BRL', locale='pt_BR')
+
+            # Formatar o preço unitário em reais
+            preco_unitario_str = numbers.format_currency(preco_unitario, 'BRL', locale='pt_BR')
             data.append([
                 codigo_custo,
                 codigo_item,
@@ -270,9 +272,6 @@ def gerar_pdf():
 
         elements.append(Paragraph("<b>Itens Configurados</b>", styles['Heading2']))
         elements.append(tabela)
-
-                # Converte o preço total para string, substitui vírgula por ponto
-        preco_total_str = locale.format_string("%.2f", preco_total_item, grouping=True)
 
         # Adiciona a frase de total abaixo da tabela
         elements.append(Paragraph(f"<b>Total: R$ {preco_total_str}</b>", styles['Heading2']))
