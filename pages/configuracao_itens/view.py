@@ -6,6 +6,23 @@ from utils.constants import TAX_CONSTANTS
 from typing import Dict, Any, Optional , List
 from utils.constants import VOLTAGE_DEFAULTS
 
+# Abordagem alternativa mais robusta
+def calcular_total(df):
+    try:
+        # Converte para float e soma, tratando valores problemáticos
+        valores = pd.to_numeric(df['Preço Total'], errors='coerce')
+        return valores.fillna(0).sum()
+    except Exception as e:
+        print(f"Erro ao calcular total: {e}")
+        # Retorna valores brutos para debug
+        print("Valores na coluna:", df['Preço Total'].tolist())
+        return 0
+
+def formatar_valor_br(valor):
+    return f"R$ {valor:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+
+
+
 
 def pagina_configuracao():
     st.title('Configuração Itens')
@@ -82,21 +99,32 @@ def render_summary(itens: List[Dict[str, Any]]):
         st.warning("Nenhum item configurado.")
         return
     
+    # Mantém um DataFrame original para cálculos
     resumo_df = pd.DataFrame(itens)
     
+    # Cria uma cópia para formatação e display
+    display_df = resumo_df.copy()
+    
+    # Formatação das colunas monetárias para display
+    if 'Preço Unitário' in display_df.columns:
+        display_df['Preço Unitário'] = display_df['Preço Unitário'].apply(formatar_valor_br)
+    
+    if 'Preço Total' in display_df.columns:
+        display_df['Preço Total'] = display_df['Preço Total'].apply(formatar_valor_br)
+    
     # Verificação e formatação da potência
-    if 'Potência' in resumo_df.columns:
-        resumo_df['Potência'] = resumo_df['Potência'].apply(
+    if 'Potência' in display_df.columns:
+        display_df['Potência'] = display_df['Potência'].apply(
             lambda x: f"{x:,.0f} kVA" if pd.notnull(x) else ""
         )
     else:
-        resumo_df['Potência'] = ""
+        display_df['Potência'] = ""
     
     # Verificação e concatenação das tensões
-    if 'Tensão Primária' in resumo_df.columns and 'Tensão Secundária' in resumo_df.columns:
-        resumo_df['Tensões'] = resumo_df['Tensão Primária'].astype(str) + "kV" + " / " + resumo_df['Tensão Secundária'].astype(str) + " V"
+    if 'Tensão Primária' in display_df.columns and 'Tensão Secundária' in display_df.columns:
+        display_df['Tensões'] = display_df['Tensão Primária'].astype(str) + "kV" + " / " + display_df['Tensão Secundária'].astype(str) + " V"
     else:
-        resumo_df['Tensões'] = ""
+        display_df['Tensões'] = ""
     
     # Seleção e ordenação das colunas para exibição
     colunas_resumo = [
@@ -105,15 +133,15 @@ def render_summary(itens: List[Dict[str, Any]]):
     ]
     
     # Filtragem das colunas existentes no DataFrame
-    colunas_existentes = [col for col in colunas_resumo if col in resumo_df.columns]
+    colunas_existentes = [col for col in colunas_resumo if col in display_df.columns]
     
     # Exibição da tabela resumo
-    st.table(resumo_df[colunas_existentes])
+    st.table(display_df[colunas_existentes])
     
-    # Cálculo e exibição do total
+    # Cálculo e exibição do total usando o DataFrame original
     if 'Preço Total' in resumo_df.columns:
-        total_fornecimento = resumo_df['Preço Total'].sum()
-        st.subheader(f"Valor Total do Fornecimento: R$ {total_fornecimento:,.2f}")
+        total_fornecimento = calcular_total(resumo_df)
+        st.subheader(f"Valor Total do Fornecimento: {formatar_valor_br(total_fornecimento)}")
     
     # Armazenamento do resumo no session_state para uso posterior
     st.session_state['resumo_df'] = resumo_df

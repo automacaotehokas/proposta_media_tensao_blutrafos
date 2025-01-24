@@ -6,9 +6,29 @@ from .components import (
     render_dados_iniciais, render_variaveis, 
     render_itens_configurados, render_botoes_download
 )
-
 from config.database import DatabaseConfig
 from services.sharepoint.sharepoint_service import SharePoint
+
+
+def is_ultima_revisao(id_proposta: str, id_revisao: str) -> bool:
+   conn = DatabaseConfig.get_connection()
+   try:
+       with conn.cursor() as cur:
+           cur.execute("""
+               SELECT id_revisao = (
+                   SELECT id_revisao 
+                   FROM revisoes
+                   WHERE id_proposta_id = %s
+                   ORDER BY revisao DESC, dt_revisao DESC
+                   LIMIT 1
+               ) as is_latest
+               FROM revisoes 
+               WHERE id_revisao = %s
+           """, (id_proposta, id_revisao))
+           result = cur.fetchone()
+           return result[0] if result else False
+   finally:
+       conn.close()
 
 def verificar_dados_completos():
     """Verifica se todos os dados necessários estão preenchidos"""
@@ -50,13 +70,17 @@ def pagina_resumo():
             key='comentario_revisao'
         )
     
-    render_itens_configurados(st.session_state.get('resumo_df'))
+
 
     # Botão de confirmação
     dados_completos = verificar_dados_completos()
     st.write("O botão abaixo estará disponível após o preenchimento de todos os dados")
 
-    if st.button('Confirmar', disabled=not dados_completos, key='btn_salvar'):
+    if st.button("Confirmar", type="primary", use_container_width=True):
+        dados_completos = verificar_dados_completos()
+        escopo = RevisionService.buscar_escopo_transformador(
+                        st.session_state.get('itens_configurados', [])
+                    )
         try:
             if dados_completos:
                 # Gerar documentos
@@ -84,10 +108,12 @@ def pagina_resumo():
                     output_filename_word = f"Proposta Blutrafos nº BT {bt}-Rev{rev}.docx"
                     pdf_filename = f"Resumo_Proposta_BT_{bt}-Rev{rev}_EXTRATO.pdf"
 
-                                        # Obter a conexão com o banco de dados
-                    conn = DatabaseConfig.get_connection()
+                    escopo = RevisionService.buscar_escopo_transformador(
+                        st.session_state.get('itens_configurados', [])
+                    )
 
-                    # Criar um cursor a partir da conexão
+
+                    conn = DatabaseConfig.get_connection()
                     cur = conn.cursor()
 
                     # Salvar a revisão
@@ -103,9 +129,10 @@ def pagina_resumo():
                                     'dados_iniciais': st.session_state.get('dados_iniciais', {})
                                 },
                                 valor=valor_total,
-                                numero_revisao=st.session_state['dados_iniciais']['rev'],
+                                numero_revisao=int(st.session_state['dados_iniciais']['rev']),
                                 word_path=output_filename_word,
                                 pdf_path=output_filename_word,
+                                escopo=escopo,
                                 revisao_id=st.session_state['id_revisao']
                             )
 
@@ -120,10 +147,11 @@ def pagina_resumo():
                                 'downloads_gerados': True
                             })
                             
-                            st.success("Revisão atualizada com sucesso no banco de dados.")
+                            st.success("Revisão atualizada com sucesso!")
                         else:
                             valor_total = sum(float(item['Preço Total']) for item in st.session_state.get('itens_configurados', []))
                             
+                            # Usa o número da revisão que já foi definido no session_state
                             result = RevisionService._inserir_revisao(
                                 cur=cur,
                                 dados={
@@ -134,12 +162,14 @@ def pagina_resumo():
                                 },
                                 id_proposta=st.session_state['id_proposta'],
                                 valor=valor_total,
-                                numero_revisao=int(st.session_state['dados_iniciais']['rev']),
+                                numero_revisao=int(st.session_state['dados_iniciais']['rev']),  # Usa o número que já foi definido
                                 word_path=output_filename_word,
-                                pdf_path=pdf_filename
+                                pdf_path=pdf_filename,
+                                escopo=escopo
                             )
 
                             conn.commit()
+                            
                             if result:
                                 st.success("Revisão salva com sucesso no banco de dados.")
                             
@@ -205,4 +235,5 @@ if __name__ == "__main__":
                 'frete', 'local_frete_itens', 'difal', 'f_pobreza', 'comissao']:
         if key not in dadosimpostos:
             dadosimpostos[key] = 0.0 if 'f' in key or 'c' in key else ''
-    
+
+

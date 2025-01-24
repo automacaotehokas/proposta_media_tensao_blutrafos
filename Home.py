@@ -12,8 +12,6 @@ from pages.resumo.view import pagina_resumo
 from pages.adm.view import admin_section
 from datetime import datetime
 
-
-
 def selecionar_tipo_proposta():
     """Função para selecionar se é nova revisão ou atualização"""
     params = st.query_params
@@ -44,94 +42,75 @@ def selecionar_tipo_proposta():
     return True
 
 def carregar_dados_revisao(revisao_id: str):
-   """Carrega dados de uma revisão existente"""
-   try:
-       conn = DatabaseConfig.get_connection()
-       cur = conn.cursor()
-       
-       query = """
-           SELECT 
-               r.conteudo::text, 
-               r.revisao, 
-               p.cliente, 
-               p.proposta, 
-               p.obra,
-               p.dt_oferta,
-               p.contato
-           FROM revisoes r 
-           JOIN propostas p ON r.id_proposta_id = p.id_proposta 
-           WHERE r.id_revisao = %s
-       """
-       
-       cur.execute(query, (revisao_id,))
-       resultado = cur.fetchone()
-       
-       if resultado:
-           conteudo_json, numero_revisao, cliente, proposta, obra, dt_oferta, contato = resultado
-           
-           if conteudo_json:
-               dados = json.loads(conteudo_json)
-               for key in ['configuracoes_itens', 'impostos', 
-                         'itens_configurados', 'dados_iniciais']:
-                   if key in dados:
-                       st.session_state[key] = dados[key]
-           else:
-               dt = dt_oferta or datetime.now()
-               st.session_state['dados_iniciais'] = {
-                   'cliente': cliente,
-                   'bt': str(proposta),
-                   'obra': obra,
-                   'rev': str(numero_revisao).zfill(2),
-                   'dia': dt.strftime('%d'),
-                   'mes': dt.strftime('%m'),
-                   'ano': dt.strftime('%Y'),
-                   'nomeCliente': contato,
-                   'email': '',
-                   'fone': '',
-                   'local_frete': 'São Paulo/SP'
-               }
-           
-           st.session_state['revisao_loaded'] = True
-           st.session_state['revisao_atual'] = revisao_id
-           
-       cur.close()
-       conn.close()
-       
-   except Exception as e:
-       st.error(f"Erro ao carregar dados da revisão: {str(e)}")
+    """Carrega dados de uma revisão existente"""
+    try:
+        conn = DatabaseConfig.get_connection()
+        cur = conn.cursor()
+        
+        query = """
+            SELECT 
+                r.conteudo::text, 
+                r.revisao, 
+                p.cliente, 
+                p.proposta, 
+                p.obra,
+                p.dt_oferta,
+                p.contato
+            FROM revisoes r 
+            JOIN propostas p ON r.id_proposta_id = p.id_proposta 
+            WHERE r.id_revisao = %s
+        """
+        
+        cur.execute(query, (revisao_id,))
+        resultado = cur.fetchone()
+        
+        if resultado:
+            conteudo_json, numero_revisao, cliente, proposta, obra, dt_oferta, contato = resultado
+            
+            if conteudo_json:
+                dados = json.loads(conteudo_json)
+                for key in ['configuracoes_itens', 'impostos', 
+                          'itens_configurados', 'dados_iniciais']:
+                    if key in dados:
+                        st.session_state[key] = dados[key]
+            else:
+                dt = dt_oferta or datetime.now()
+                st.session_state['dados_iniciais'] = {
+                    'cliente': cliente,
+                    'bt': str(proposta),
+                    'obra': obra,
+                    'rev': str(numero_revisao).zfill(2),
+                    'dia': dt.strftime('%d'),
+                    'mes': dt.strftime('%m'),
+                    'ano': dt.strftime('%Y'),
+                    'nomeCliente': contato,
+                    'email': '',
+                    'fone': '',
+                    'local_frete': 'São Paulo/SP'
+                }
+            
+            st.session_state['revisao_loaded'] = True
+            st.session_state['revisao_atual'] = revisao_id
+            
+        cur.close()
+        conn.close()
+        
+    except Exception as e:
+        st.error(f"Erro ao carregar dados da revisão: {str(e)}")
 
 def inicializar_dados():
-    """Inicializa dados da proposta baseado nos parâmetros da URL"""
+    """
+    Inicializa dados da proposta baseado nos parâmetros da URL.
+    O número da revisão é definido apenas uma vez no início.
+    """
     try:
-        # Se a seleção de tipo não foi feita, não continua
         if not selecionar_tipo_proposta():
             return
             
         params = st.query_params
-        # Marca se é primeira inicialização
-        if 'app_initialized' not in st.session_state:
-            st.session_state['app_initialized'] = False
         
-        # Se já foi inicializado, só verifica se precisa atualizar o número da revisão
-        if st.session_state['app_initialized']:
-            if st.session_state.get('tipo_proposta') == "Nova revisão":
-                id_proposta = st.session_state.get('id_proposta')
-                if id_proposta:
-                    conn = DatabaseConfig.get_connection()
-                    cur = conn.cursor()
-                    
-                    cur.execute("""
-                        SELECT MAX(revisao)
-                        FROM revisoes 
-                        WHERE id_proposta_id = %s
-                    """, (id_proposta,))
-                    
-                    ultima_revisao = cur.fetchone()[0]
-                    proxima_revisao = str(ultima_revisao + 1 if ultima_revisao is not None else 0).zfill(2)
-                    st.session_state['dados_iniciais']['rev'] = proxima_revisao
-                    
-                    cur.close()
-                    conn.close()
+        # Se já foi inicializado, mantém os dados existentes
+        if st.session_state.get('app_initialized'):
             return
 
         id_revisao = params.get('id_revisao')
@@ -141,98 +120,87 @@ def inicializar_dados():
         st.session_state['id_proposta'] = id_proposta
 
         if id_revisao:
+            # Carrega dados da revisão existente
             carregar_dados_revisao(id_revisao)
             
-            # Se for Nova revisão, atualiza o número
-            if st.session_state.get('tipo_proposta') == "Nova revisão":
+            # Calcula próxima revisão APENAS se for nova revisão e primeira inicialização
+            if (st.session_state.get('tipo_proposta') == "Nova revisão" and 
+                not st.session_state.get('revisao_numero_definido')):
                 conn = DatabaseConfig.get_connection()
-                cur = conn.cursor()
-                
-                cur.execute("""
-                    SELECT MAX(revisao)
-                    FROM revisoes 
-                    WHERE id_proposta_id = (
-                        SELECT id_proposta_id 
-                        FROM revisoes 
-                        WHERE id_revisao = %s
-                    )
-                """, (id_revisao,))
-                
-                ultima_revisao = cur.fetchone()[0]
-                proxima_revisao = str(ultima_revisao + 1 if ultima_revisao is not None else 0).zfill(2)
-                st.session_state['dados_iniciais']['rev'] = proxima_revisao
-                
-                cur.close()
-                conn.close()
+                try:
+                    with conn.cursor() as cur:
+                        cur.execute("""
+                            SELECT MAX(CAST(revisao AS INTEGER))
+                            FROM revisoes 
+                            WHERE id_proposta_id = (
+                                SELECT id_proposta_id 
+                                FROM revisoes 
+                                WHERE id_revisao = %s
+                            )
+                        """, (id_revisao,))
+                        
+                        ultima_revisao = cur.fetchone()[0]
+                        proxima_revisao = str(ultima_revisao + 1 if ultima_revisao is not None else 0).zfill(2)
+                        st.session_state['dados_iniciais']['rev'] = proxima_revisao
+                        st.session_state['revisao_numero_definido'] = True
+                finally:
+                    conn.close()
             
-            st.session_state['app_initialized'] = True
-            
-        elif id_proposta and 'proposta_loaded' not in st.session_state:
-            # Se tiver id_proposta e dados ainda não foram carregados
+        elif id_proposta and not st.session_state.get('proposta_loaded'):
             conn = DatabaseConfig.get_connection()
-            cur = conn.cursor()
-            
-            # Primeiro busca a última revisão
-            cur.execute("""
-                SELECT MAX(revisao)
-                FROM revisoes 
-                WHERE id_proposta_id = %s
-            """, (id_proposta,))
-            
-            ultima_revisao = cur.fetchone()[0]
-            proxima_revisao = str(ultima_revisao + 1 if ultima_revisao is not None else 0).zfill(2)
-            
-            # Depois busca os dados da proposta
-            cur.execute("""
-                SELECT 
-                    proposta,
-                    cliente,
-                    obra,
-                    contato
-                FROM propostas 
-                WHERE id_proposta = %s
-            """, (id_proposta,))
-            
-            resultado = cur.fetchone()
-            if resultado:
-                proposta, cliente, obra, contato = resultado
-                
-                # Atualiza session_state com os dados do banco
-                st.session_state['dados_iniciais'] = {
-                    'cliente': cliente,
-                    'bt': proposta,
-                    'obra': obra,
-                    'id_proposta': id_proposta,
-                    'rev': proxima_revisao,  # Usa a próxima revisão
-                    'dia': st.session_state.get('dia', ''),
-                    'mes': st.session_state.get('mes', ''),
-                    'ano': st.session_state.get('ano', ''),
-                    'nomeCliente': contato,
-                    'email': '',
-                    'fone': '',
-                    'local_frete': 'São Paulo/SP'
-                }
-                
-                # Marca que os dados foram carregados
-                st.session_state['proposta_loaded'] = True
-                st.session_state['app_initialized'] = True
-            
-            cur.close()
-            conn.close()
+            try:
+                with conn.cursor() as cur:
+                    # Busca a última revisão se ainda não foi definida
+                    if not st.session_state.get('revisao_numero_definido'):
+                        cur.execute("""
+                            SELECT MAX(CAST(revisao AS INTEGER))
+                            FROM revisoes 
+                            WHERE id_proposta_id = %s
+                        """, (id_proposta,))
+                        
+                        ultima_revisao = cur.fetchone()[0]
+                        proxima_revisao = str(ultima_revisao + 1 if ultima_revisao is not None else 0).zfill(2)
+                        
+                        # Busca dados da proposta
+                        cur.execute("""
+                            SELECT 
+                                proposta,
+                                cliente,
+                                obra,
+                                contato
+                            FROM propostas 
+                            WHERE id_proposta = %s
+                        """, (id_proposta,))
+                        
+                        resultado = cur.fetchone()
+                        if resultado:
+                            proposta, cliente, obra, contato = resultado
+                            
+                            st.session_state['dados_iniciais'] = {
+                                'cliente': cliente,
+                                'bt': proposta,
+                                'obra': obra,
+                                'id_proposta': id_proposta,
+                                'rev': proxima_revisao,
+                                'dia': st.session_state.get('dia', ''),
+                                'mes': st.session_state.get('mes', ''),
+                                'ano': st.session_state.get('ano', ''),
+                                'nomeCliente': contato,
+                                'email': '',
+                                'fone': '',
+                                'local_frete': 'São Paulo/SP'
+                            }
+                            
+                            st.session_state['revisao_numero_definido'] = True
+                            st.session_state['proposta_loaded'] = True
+            finally:
+                conn.close()
+        
+        st.session_state['app_initialized'] = True
             
     except Exception as e:
         st.error(f"Erro ao inicializar dados: {str(e)}")
-        print(f"Erro detalhado: {str(e)}")  # Debug
-
-
-### Configutsção das páginas
-PAGES = {
-    "Inicial": pagina_inicial,
-    "Configuração de Itens": pagina_configuracao,
-    "Resumo": pagina_resumo,
-    "Administrativo": admin_section
-}
-
+        print(f"Erro detalhado: {str(e)}")
 
 
 def main():
@@ -240,10 +208,10 @@ def main():
     st.set_page_config(layout="wide")
     st.title("Proposta Automatizada - Média Tensão")
     st.markdown("---")
+    
     if selecionar_tipo_proposta():
-        # Carregar cidades
         carregar_cidades()
-            # Garante a inicialização do estado
+        
         st.session_state.setdefault('dados_iniciais', {
             'cliente': '',
             'bt': '',
@@ -259,13 +227,8 @@ def main():
             'local_frete': 'São Paulo/SP'
         })
 
-
-
         inicializar_dados()
         
-
-        
-        # Mostrar informações da proposta se disponível
         if 'dados_iniciais' in st.session_state:
             st.info(f"""
             Cliente: {st.session_state['dados_iniciais'].get('cliente')}
@@ -277,8 +240,8 @@ def main():
             Bem-vindo à Proposta Automatizada de Média Tensão. Este sistema foi desenvolvido para facilitar
             o processo de criação de propostas comerciais personalizadas. Com ele, você pode configurar
             itens técnicos, calcular preços e gerar documentos de forma automatizada.
-            """
-            )
+            """)
+
 
         st.sidebar.title('Navegação')
         selection = st.sidebar.radio("Ir para", list(PAGES.keys()))
@@ -286,10 +249,13 @@ def main():
         page()
         
         st.markdown("---")
-    
-
-
-
+        ### Configuração das páginas
+PAGES = {
+    "Inicial": pagina_inicial,
+    "Configuração de Itens": pagina_configuracao,
+    "Resumo": pagina_resumo,
+    "Administrativo": admin_section
+}
 
 if __name__ == "__main__":
     load_dotenv()

@@ -5,6 +5,16 @@ from utils.constants import TAX_CONSTANTS,K_FACTOR_PERCENTAGES
 from .utils import verificar_regra_aplicacao
 import streamlit as st
 
+def to_decimal(value) -> Decimal:
+    """Converte qualquer valor para Decimal de forma segura"""
+    if isinstance(value, Decimal):
+        return value
+    if isinstance(value, (int, float)):
+        return Decimal(str(value))
+    if isinstance(value, str):
+        return Decimal(value.replace(',', '.'))
+    return Decimal('0') 
+
 def calcular_potencia_equivalente(potencia: float, fator_k: int) -> float:
     """Calcula a potência equivalente baseada no fator K"""
     if fator_k <= 5:
@@ -21,75 +31,76 @@ def calcular_potencia_equivalente(potencia: float, fator_k: int) -> float:
     ) / 100 * 10000
 
 def calcular_preco_item(item_data: Dict, percentuais: float, dados_impostos: Dict, 
-                       acessorios: List[Dict] = None) -> float:
+                       acessorios: List[Dict] = None) -> Decimal:
     """Calcula o preço final do item considerando todos os fatores"""
-    preco_base = item_data['preco']
-    p_trafo = item_data['p_trafo']
+    # Conversão inicial dos valores para Decimal
+    preco_base = to_decimal(item_data['preco'])
+    p_trafo = to_decimal(item_data['p_trafo'])
+    percentuais = to_decimal(percentuais)
     classe_tensao = item_data.get('classe_tensao', '')
     ip_escolhido = item_data.get('ip', '00')
-    fator_k = item_data.get('fator_k', 1)
-    valor_acessorios_com_percentuais = 0
+    fator_k = to_decimal(item_data.get('fator_k', 1))
+    valor_acessorios_com_percentuais = Decimal('0')
     
     # Cálculo do preço base ajustado
-    preco_base1 = preco_base / (1 - Decimal(p_trafo) - Decimal(percentuais))
-
+    preco_base1 = preco_base / (Decimal('1') - p_trafo - percentuais)
     preco_base_com_percentuais = preco_base1
-
+    
     st.session_state['preco_trafo'] = preco_base1
 
     if acessorios:
         for acessorio in acessorios:
             if acessorio['tipo'] == 'VALOR_FIXO':
                 if acessorio['base_calculo'] == 'PRECO_BASE1':
-                    valor_acessorio = acessorio['valor'] / (1 - Decimal(percentuais))
+                    valor_acessorio = to_decimal(acessorio['valor']) / (Decimal('1') - percentuais)
                     valor_acessorios_com_percentuais += valor_acessorio
     
     # Cálculo do adicional IP
-    valor_ip_baixo = item_data['valor_ip_baixo']
-    valor_ip_alto = item_data['valor_ip_alto']
-    p_caixa = item_data['p_caixa']
+    valor_ip_baixo = to_decimal(item_data['valor_ip_baixo'])
+    valor_ip_alto = to_decimal(item_data['valor_ip_alto'])
+    p_caixa = to_decimal(item_data['p_caixa'])
     
     if ip_escolhido == '00':
-        adicional_ip = 0.0
+        adicional_ip = Decimal('0')
     else:
-        adicional_ip = valor_ip_baixo / (1 - percentuais - p_caixa) if int(ip_escolhido) < 54 else valor_ip_alto / (1 - percentuais - p_caixa)
+        adicional_ip = (valor_ip_baixo if int(ip_escolhido) < 54 else valor_ip_alto) / (Decimal('1') - percentuais - p_caixa)
     
     # Cálculo do adicional da caixa baseado na classe de tensão
-    adicional_caixa_classe = 0
+    adicional_caixa_classe = Decimal('0')
     if classe_tensao == "24 kV":
-        adicional_caixa_classe = TAX_CONSTANTS['P_CAIXA_24'] * adicional_ip
+        adicional_caixa_classe = to_decimal(TAX_CONSTANTS['P_CAIXA_24']) * adicional_ip
     elif classe_tensao == "36 kV":
-        adicional_caixa_classe = TAX_CONSTANTS['P_CAIXA_36'] * adicional_ip
+        adicional_caixa_classe = to_decimal(TAX_CONSTANTS['P_CAIXA_36']) * adicional_ip
     
     # Cálculo do adicional do fator K
-    adicional_k = Decimal(preco_base1) * Decimal(K_FACTOR_PERCENTAGES.get(fator_k, 0))
+    adicional_k = preco_base1 * to_decimal(K_FACTOR_PERCENTAGES.get(fator_k, 0))
 
     if acessorios:
-        preco_atual = Decimal(preco_base1) + Decimal(adicional_ip) +Decimal(adicional_k) + Decimal(adicional_caixa_classe)
+        preco_atual = preco_base1 + adicional_ip + adicional_k + adicional_caixa_classe
 
         for acessorio in acessorios:
             if acessorio['tipo'] == 'PERCENTUAL':
-                percentual = acessorio['percentual'] / 100
+                percentual = to_decimal(acessorio['percentual']) / Decimal('100')
 
                 if acessorio['base_calculo'] == 'PRECO_BASE1':
                     preco_atual += preco_base1 * percentual
-                    
                 else:
-                    preco_atual += Decimal(preco_atual)* Decimal(percentual)
+                    preco_atual += preco_atual * percentual
 
-        preco_base1= preco_atual
+        preco_base1 = preco_atual
     
-
     # Cálculo do preço final
-    preco_unitario = int(((Decimal(preco_base1) + Decimal(adicional_ip) + Decimal(adicional_k) + Decimal(adicional_caixa_classe)) * Decimal(1 - 0.12)) / \
-                      (1 - (Decimal(dados_impostos['difal'] / 100)) - (Decimal(dados_impostos['f_pobreza'] / 100)) - Decimal((dados_impostos['icms'] / 100))))
+    difal = to_decimal(dados_impostos['difal']) / Decimal('100')
+    f_pobreza = to_decimal(dados_impostos['f_pobreza']) / Decimal('100')
+    icms = to_decimal(dados_impostos['icms']) / Decimal('100')
+    
+    preco_unitario = ((preco_base1 + adicional_ip + adicional_k + adicional_caixa_classe) * 
+                      (Decimal('1') - Decimal('0.12'))) / \
+                     (Decimal('1') - difal - f_pobreza - icms)
     
     preco_unitario += valor_acessorios_com_percentuais
 
-    st.write(st.session_state)
-
-
-    return preco_unitario
+    return preco_unitario.quantize(Decimal('1')) 
 
 
 # Função para determinar o percentual do frete
