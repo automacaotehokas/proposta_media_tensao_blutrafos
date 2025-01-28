@@ -19,6 +19,7 @@ class CustoMediaTensao:
     cod_proj_custo: Optional[str] = None
     cod_proj_caixa: Optional[str] = None
 
+
     @staticmethod
     def from_db_row(row: tuple) -> 'CustoMediaTensao':
         """Cria uma instância a partir de uma linha do banco"""

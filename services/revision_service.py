@@ -1,15 +1,9 @@
 import json
-import os
 from typing import Dict, Any, Optional, Tuple, List
 from decimal import Decimal
 from config.database import DatabaseConfig
 from io import BytesIO
-import streamlit as st
-from repositories.proposta_repository import PropostaRepository 
-from models.proposta import Proposta
 from pathlib import Path
-from logging import getLogger
-
 import logging
 import sys
 from datetime import datetime
@@ -37,8 +31,6 @@ logging.basicConfig(
 
 # Configuração do logger específico
 logger = logging.getLogger(__name__)
-
-
 
 def atualizar_proposta(id_proposta: str, escopo: str, valor: float, ultima_revisao: int, id_revisao: str = None) -> None:
     """

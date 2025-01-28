@@ -3,6 +3,7 @@ from datetime import datetime
 from .api import buscar_cidades
 from .utils import aplicar_mascara_telefone, get_meses_pt
 
+
 def carregar_cidades():
     """Carrega e armazena a lista de cidades no session_state"""
     if 'cidades' not in st.session_state:
@@ -13,7 +14,6 @@ def configurar_informacoes():
     """Renderiza e configura a página de informações iniciais"""
     st.title('Dados Iniciais')
     st.markdown("---")
-    
     # Configuração da data
     data_hoje = datetime.today()
     data_selecionada = st.date_input('Data da Proposta:', value=data_hoje)
@@ -94,4 +94,5 @@ def _atualizar_telefone():
 
 def pagina_inicial():
     configurar_informacoes()
+    st.write(st.session_state)
 

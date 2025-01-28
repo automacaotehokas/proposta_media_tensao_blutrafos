@@ -54,8 +54,6 @@ def pagina_resumo():
     # Renderiza as seções da página
     render_dados_iniciais(st.session_state['dados_iniciais'])
     st.markdown("---")
-
-
     
     render_variaveis(st.session_state['impostos'], 
                     st.session_state['itens_configurados'])

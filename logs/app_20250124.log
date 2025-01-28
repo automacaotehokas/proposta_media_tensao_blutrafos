@@ -437,3 +437,123 @@ LINE 2:             SELECT escopo, valor, ultima_revisao, id_revisao...
 2025-01-24 08:36:37,726 - googlemaps.client - INFO - API queries_quota: 60
 2025-01-24 08:37:09,859 - googlemaps.client - INFO - API queries_quota: 60
 2025-01-24 08:37:39,100 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-24 09:38:59,723 - services.revision_service - INFO - 
+        Iniciando inserção/atualização de revisão:
+        - ID Proposta: be50593c-0208-4131-935f-26a78a6e95fc
+        - Valor: 233795.0
+        - Número Revisão: 0
+        - Word Path: Proposta Blutrafos nº BT 810001-Rev00.docx
+        - PDF Path: Resumo_Proposta_BT_810001-Rev00_EXTRATO.pdf
+        - Escopo: 1,500 MVA
+        
+2025-01-24 09:38:59,727 - services.revision_service - INFO - Verificando se já existe uma revisão com este número...
+2025-01-24 09:39:00,242 - services.revision_service - INFO - Resultado da busca por revisão existente: None
+2025-01-24 09:39:00,244 - services.revision_service - INFO - Verificando se é a próxima revisão válida...
+2025-01-24 09:39:00,447 - services.revision_service - INFO - Última revisão: -1, Próxima revisão: 0
+2025-01-24 09:39:00,447 - services.revision_service - INFO - Preparando dados para nova revisão 0...
+2025-01-24 09:39:00,447 - services.revision_service - INFO - Inserindo nova revisão no banco...
+2025-01-24 09:39:00,747 - services.revision_service - INFO - Nova revisão criada com ID: 2956b3f9-21b8-4778-8dee-db4c0f7045d6
+2025-01-24 09:39:00,747 - services.revision_service - INFO - Verificando necessidade de atualizar proposta (última revisão: -1)
+2025-01-24 09:39:03,089 - services.revision_service - INFO - Nenhuma revisão encontrada para proposta be50593c-0208-4131-935f-26a78a6e95fc. Esta será a primeira.
+2025-01-24 09:39:03,091 - services.revision_service - INFO - Chamando atualização da proposta...
+2025-01-24 09:39:03,092 - services.revision_service - INFO - 
+    Iniciando atualização da proposta:
+    - ID: be50593c-0208-4131-935f-26a78a6e95fc
+    - Escopo: 1,500 MVA
+    - Valor: 233795.0
+    - Última Revisão: 0
+    - ID Revisão (se fornecido): 2956b3f9-21b8-4778-8dee-db4c0f7045d6
+    
+2025-01-24 09:39:05,826 - services.revision_service - INFO - ID da revisão para atualização: 2956b3f9-21b8-4778-8dee-db4c0f7045d6
+2025-01-24 09:39:06,356 - services.revision_service - INFO - 
+            Valores atuais da proposta antes da atualização:
+            - Escopo: 0 mVA
+            - Valor: 0.00
+            - Última Revisão: 0
+            
+2025-01-24 09:39:06,358 - services.revision_service - INFO - 
+        Executando query de atualização com parâmetros:
+        - Escopo: 1,500 MVA
+        - Valor: 233795.0
+        - Última Revisão: 0
+        - ID Proposta: be50593c-0208-4131-935f-26a78a6e95fc
+        
+2025-01-24 09:39:06,776 - services.revision_service - INFO - 
+            Proposta atualizada com sucesso:
+            - ID: be50593c-0208-4131-935f-26a78a6e95fc
+            - Novo Escopo: 1,500 MVA
+            - Novo Valor: 233795.00
+            - Nova Última Revisão: 0
+            
+2025-01-24 09:39:07,094 - services.revision_service - INFO - Commit realizado com sucesso
+2025-01-24 09:39:07,697 - services.revision_service - INFO - 
+            Valores finais da proposta após atualização:
+            - Escopo: 1,500 MVA
+            - Valor: 233795.00
+            - Última Revisão: 0
+            
+2025-01-24 09:39:07,701 - services.revision_service - INFO - Conexão fechada com sucesso
+2025-01-24 10:02:06,632 - services.revision_service - INFO - 
+        Iniciando inserção/atualização de revisão:
+        - ID Proposta: be50593c-0208-4131-935f-26a78a6e95fc
+        - Valor: 20655.0
+        - Número Revisão: 1
+        - Word Path: Proposta Blutrafos nº BT 810001-Rev01.docx
+        - PDF Path: Resumo_Proposta_BT_810001-Rev01_EXTRATO.pdf
+        - Escopo: 0,015 MVA
+        
+2025-01-24 10:02:06,634 - services.revision_service - INFO - Verificando se já existe uma revisão com este número...
+2025-01-24 10:02:07,246 - services.revision_service - INFO - Resultado da busca por revisão existente: None
+2025-01-24 10:02:07,246 - services.revision_service - INFO - Verificando se é a próxima revisão válida...
+2025-01-24 10:02:07,653 - services.revision_service - INFO - Última revisão: 0, Próxima revisão: 1
+2025-01-24 10:02:07,657 - services.revision_service - INFO - Preparando dados para nova revisão 1...
+2025-01-24 10:02:07,658 - services.revision_service - INFO - Inserindo nova revisão no banco...
+2025-01-24 10:02:07,921 - services.revision_service - INFO - Nova revisão criada com ID: cfbf3b83-cda3-49b8-886b-c5a41303fcd1
+2025-01-24 10:02:07,923 - services.revision_service - INFO - Verificando necessidade de atualizar proposta (última revisão: 0)
+2025-01-24 10:02:10,011 - services.revision_service - INFO - 
+                Verificando se revisão 1 é a maior:
+                - Maior revisão encontrada: 0
+                - Nova revisão: 1
+                - É a maior? True
+            
+2025-01-24 10:02:10,014 - services.revision_service - INFO - Chamando atualização da proposta...
+2025-01-24 10:02:10,014 - services.revision_service - INFO - 
+    Iniciando atualização da proposta:
+    - ID: be50593c-0208-4131-935f-26a78a6e95fc
+    - Escopo: 0,015 MVA
+    - Valor: 20655.0
+    - Última Revisão: 1
+    - ID Revisão (se fornecido): cfbf3b83-cda3-49b8-886b-c5a41303fcd1
+    
+2025-01-24 10:02:11,757 - services.revision_service - INFO - ID da revisão para atualização: cfbf3b83-cda3-49b8-886b-c5a41303fcd1
+2025-01-24 10:02:12,366 - services.revision_service - INFO - 
+            Valores atuais da proposta antes da atualização:
+            - Escopo: 1,500 MVA
+            - Valor: 233795.00
+            - Última Revisão: 0
+            
+2025-01-24 10:02:12,367 - services.revision_service - INFO - 
+        Executando query de atualização com parâmetros:
+        - Escopo: 0,015 MVA
+        - Valor: 20655.0
+        - Última Revisão: 1
+        - ID Proposta: be50593c-0208-4131-935f-26a78a6e95fc
+        
+2025-01-24 10:02:12,674 - services.revision_service - INFO - 
+            Proposta atualizada com sucesso:
+            - ID: be50593c-0208-4131-935f-26a78a6e95fc
+            - Novo Escopo: 0,015 MVA
+            - Novo Valor: 20655.00
+            - Nova Última Revisão: 1
+            
+2025-01-24 10:02:12,981 - services.revision_service - INFO - Commit realizado com sucesso
+2025-01-24 10:02:13,595 - services.revision_service - INFO - 
+            Valores finais da proposta após atualização:
+            - Escopo: 0,015 MVA
+            - Valor: 20655.00
+            - Última Revisão: 1
+            
+2025-01-24 10:02:13,597 - services.revision_service - INFO - Conexão fechada com sucesso
+2025-01-24 15:53:20,694 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-24 15:57:13,460 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-24 16:33:50,837 - googlemaps.client - INFO - API queries_quota: 60
