@@ -1,13 +1,108 @@
 import streamlit as st
 import pandas as pd
-from .components import render_tax_inputs, render_item_config
+from .componentsMT import render_tax_inputs, render_item_config
 from repositories.custos_media_tensao_repository import CustoMediaTensaoRepository
+from repositories.custos_baixa_tensao import CustoBaixaTensaoRepository
 from utils.constants import TAX_CONSTANTS
 from typing import Dict, Any, Optional , List
 from utils.constants import VOLTAGE_DEFAULTS
+import streamlit as st
+import pandas as pd
+from typing import List, Dict
+from componentsBT import (
+    render_item_description,
+    render_item_specifications,
+    render_item_accessories
+)
+from calculo_item_bt import (
+    buscar_cod_caixa_proj,
+    buscar_preco_por_potencia,
+    calcular_percentuais
+)
 
+def initialize_item() -> Dict:
+    """
+    Inicializa um novo item com valores padrão.
+    """
+    return {
+        'ID': None,
+        'Produto': "",
+        'Descrição': "",
+        'Potência': None,
+        'Fator K': 1,
+        'IP': '00',
+        'Preço Unitário': 0.0,
+        'Preço Total': 0.0,
+        'Quantidade': 1,
+        'Tensão Primária': None,
+        'Tensão Secundária': None,
+        'Material': None,
+        'Conector': "Nenhum",
+        'Frequencia 50Hz': False,
+        'Blindagem Eletrostática': False,
+        'Rele': "Nenhum",
+        'Sensor PT - 100': 0,
+        'Ensaios': {
+            'Elev. Temperat.': False,
+            'Nível de Ruído': False,
+            'Flange': 0
+        },
+        'cod_caixa': None,
+        'cod_proj': None,
+        'Derivações': {
+            'taps': 'nenhum',
+            'tensoes_primarias': 'nenhum'
+        },
+        'taps_tensoes': None,
+        'Taps': None
+    }
 
-def pagina_configuracao():
+def exibir_resumo_resultados():
+    """
+    Exibe o resumo dos itens calculados em formato de tabela.
+    """
+    st.markdown("---")
+    st.subheader("Resumo dos Itens Configurados")
+    
+    # Cria DataFrame para exibição
+    resumo_data = []
+    for idx, item in enumerate(st.session_state['itens_configurados'], 1):
+        resumo_data.append({
+            'Item': idx,
+            'Quantidade': item['Quantidade'],
+            'Produto': item['Produto'],
+            'Potência': item.get('Potência ', ''),
+            'Fator K': item['Fator K'],
+            'Tensões': f"{item['Tensão Primária']} V / {item['Tensão Secundária']} V",
+            'IP': item['IP'],
+            'Preço Unitário': f"R$ {item['Preço Unitário']:,.2f}",
+            'Preço Total': f"R$ {item['Preço Total']:,.2f}",
+            'IPI': '0%'
+        })
+
+    df_resumo = pd.DataFrame(resumo_data)
+    st.table(df_resumo)
+
+    # Exibe o valor total
+    total = sum(item['Preço Total'] for item in st.session_state['itens_configurados'])
+    st.subheader(f"Valor Total do Fornecimento: R$ {total:,.2f}")
+
+def carregar_tensoes_padrao(item: Dict, df: pd.DataFrame, index: int):
+    """
+    Carrega as tensões padrão para um item se necessário.
+    """
+    if item['Produto'] == "ATT" and (item.get('Tensão Primária') != 380 or item.get('Tensão Secundária') != 220):
+        st.warning(f"As tensões padrão (380V e 220V) não serão carregadas para o Item {index + 1}.")
+    else:
+        if item['Descrição']:
+            descricao_selecionada = df[df['descricao'] == item['Descrição']].iloc[0]
+            item['Tensão Primária'] = descricao_selecionada['tensao_primaria']
+            item['Tensão Secundária'] = descricao_selecionada['tensao_secundaria']
+            st.success(f"Tensões carregadas para o Item {index + 1}!")
+
+            
+
+def pagina_configuracao_MT():
     st.title('Configuração Itens')
     st.markdown("---")
     
@@ -57,9 +152,103 @@ def pagina_configuracao():
             st.session_state['itens_configurados'][i],
             calcular_percentuais(st.session_state['impostos'])
         )
-    
+
     # Renderização do resumo
     render_summary(st.session_state['itens_configurados'])
+
+def pagina_configuracao_BT():
+    """
+    Renderiza a página de configuração de transformadores de baixa tensão com cálculos automáticos.
+    Os cálculos são realizados à medida que os valores são inseridos, eliminando a necessidade
+    de um botão específico para calcular.
+    """
+    st.title("Configuração de Transformadores de Baixa Tensão")
+
+    # Inicialização do session state para itens
+    if 'itens_configurados' not in st.session_state:
+        st.session_state['itens_configurados'] = []
+
+    # Carregamento dos dados
+    df = CustoBaixaTensaoRepository.buscar_todos()
+
+    # Input para quantidade de itens
+    quantidade_itens = st.number_input(
+        'Quantidade de Itens:',
+        min_value=1,
+        step=1,
+        value=len(st.session_state['itens_configurados']) or 1
+    )
+
+    # Ajusta a lista de itens conforme a quantidade
+    while len(st.session_state['itens_configurados']) < quantidade_itens:
+        st.session_state['itens_configurados'].append(initialize_item())
+
+    # Renderiza cada item e calcula automaticamente
+    for index, item in enumerate(st.session_state['itens_configurados']):
+        st.subheader(f"Item {index + 1}")
+        
+        # Renderiza os componentes do item
+        item = render_item_description(index, item, df)
+        item = render_item_specifications(index, item)
+        item = render_item_accessories(index, item)
+
+        # Realiza os cálculos automaticamente se tivermos todas as informações necessárias
+        if item['Material'] and item['Descrição']:
+            percentuais = calcular_percentuais()
+            
+            # Verifica e carrega tensões se necessário
+            if not item['Tensão Primária'] or not item['Tensão Secundária']:
+                carregar_tensoes_padrao(item, df, index)
+
+            # Calcula os preços
+            codigos = buscar_cod_caixa_proj(df, item['ID'])
+            item['cod_caixa'] = codigos['cod_caixa']
+            item['cod_proj'] = codigos['proj']
+            
+            item['Preço Base'] = buscar_preco_por_potencia(
+                df,
+                item['Potência'],
+                item['Produto'],
+                item['IP'],
+                item['Tensão Primária'],
+                item['Tensão Secundária'],
+                item['Material'],
+                item
+            )
+            
+            item['Preço Unitário'] = int(item['Preço Base']) / (1 - percentuais)
+            item['Preço Total'] = item['Quantidade'] * item['Preço Unitário']
+
+            # Exibe os valores calculados para este item
+            with st.expander(f"Valores calculados para Item {index + 1}", expanded=False):
+                st.write(f"Preço Base: R$ {item['Preço Base']:,.2f}")
+                st.write(f"Preço Unitário: R$ {item['Preço Unitário']:,.2f}")
+                st.write(f"Preço Total: R$ {item['Preço Total']:,.2f}")
+
+        # Botão para excluir item
+        if st.button(f"Excluir Item {index + 1}"):
+            del st.session_state['itens_configurados'][index]
+            st.rerun()
+
+        st.markdown("---")
+
+    # Exibe o resumo dos resultados automaticamente se houver itens calculados
+    if any(item.get('Preço Total', 0) > 0 for item in st.session_state['itens_configurados']):
+        exibir_resumo_resultados()
+
+def pagina_configuracao():
+    checkbox_type = st.session_state['configuracao']
+    if checkbox_type not in st.session_state:
+        st.session_state[checkbox_type] = 'MT'
+
+    st.checkbox("Opções de itens: ", ['MT', 'BT', 'BT-MT'], key='opcoes_itens' , index = ['MT', 'BT', 'BT-MT'].index )
+    if st.session_state['opcoes_itens'] == 'MT':
+        pagina_configuracao_MT()
+    elif st.session_state['configuracao'] == 'BT':
+        pagina_configuracao_BT()
+    elif st.session_state['opcoes_itens'] == 'BT-MT':
+        pagina_configuracao_MT()
+        pagina_configuracao_BT()
 
 def calcular_percentuais(impostos: Dict[str, float]) -> float:
     """Calcula os percentuais totais baseados nos impostos"""

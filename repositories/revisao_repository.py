@@ -1,6 +1,6 @@
 # repositories/revisao_repository.py
 from typing import List, Optional
-from config.database import DatabaseConfig
+from proposta_media_tensao_blutrafos.config.databaseMT import DatabaseConfig
 from models.revisao import Revisao
 import json
 

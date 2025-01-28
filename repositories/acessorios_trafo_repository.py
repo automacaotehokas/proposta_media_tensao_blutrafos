@@ -1,5 +1,5 @@
 from typing import List
-from config.database import DatabaseConfig
+from proposta_media_tensao_blutrafos.config.databaseMT import DatabaseConfig
 from models.acessorios import Acessorio
 
 class AcessorioRepository:

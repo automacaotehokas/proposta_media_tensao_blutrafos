@@ -7,7 +7,26 @@ from .components import (
     render_itens_configurados, render_botoes_download
 )
 
-from config.database import DatabaseConfig
+def init_session_state():
+    """Initialize all required session state variables"""
+    initial_states = {
+        'icms': 0.0,
+        'contribuinte': 0.0,
+        'lucro': 0.0,
+        'frete': 0.0,
+        'localentrega': '',
+        'difal': 0.0,
+        'f_pobreza': 0.0,
+        'comissao': 0.0,
+        'buffer_word': None,
+        'buffer_pdf': None,
+        'output_filename_word': None,
+        'pdf_filename': None,
+        'downloads_gerados': False
+    }
+    
+
+from proposta_media_tensao_blutrafos.config.databaseMT import DatabaseConfig
 from services.sharepoint.sharepoint_service import SharePoint
 
 def verificar_dados_completos():
@@ -65,7 +84,7 @@ def pagina_resumo():
                 
                 # Documento Word
                 buffer_word = WordDocumentService.gerar_documento(
-                    template_path=template_path,
+                    template_path=template_path,    
                     dados_iniciais=st.session_state['dados_iniciais'],
                     impostos=st.session_state['impostos'],
                     itens_configurados=st.session_state['itens_configurados']

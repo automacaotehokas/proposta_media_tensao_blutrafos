@@ -5,7 +5,7 @@ import json
 from dotenv import load_dotenv
 from repositories.custos_media_tensao_repository import CustoMediaTensaoRepository
 from pages.inicial.view import carregar_cidades
-from config.database import DatabaseConfig
+from .config.databaseMT import DatabaseConfig
 from pages.inicial.view import pagina_inicial
 from pages.configuracao_itens.view import pagina_configuracao
 from pages.resumo.view import pagina_resumo

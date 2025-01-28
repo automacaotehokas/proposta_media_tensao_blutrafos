@@ -2,7 +2,7 @@
 import json
 import os
 from typing import Dict, Any, Optional, Tuple
-from config.database import DatabaseConfig
+from proposta_media_tensao_blutrafos.config.databaseMT import DatabaseConfig
 from io import BytesIO
 from repositories.proposta_repository import PropostaRepository
 from models.proposta import Proposta
