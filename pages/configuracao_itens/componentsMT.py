@@ -131,11 +131,10 @@ class componentsMT:
         """Renderiza a configuração de um único item"""
         st.subheader(f"Item {item_index + 1}")
 
-        #Converte df em um Dataframe
+        # Converte df em um Dataframe
         df = pd.DataFrame(df)
 
         # Seleção da descrição
-
         descricao_opcoes = [""] + df['descricao'].unique().tolist()
         descricao_escolhida = st.selectbox(
             f'Digite ou Selecione a Descrição do Item {item_index + 1}:',
@@ -151,6 +150,21 @@ class componentsMT:
         # Detalhes do item baseado na descrição
         detalhes_item = df[df['descricao'] == descricao_escolhida].iloc[0]
 
+        # Atualiza os dados do item com os detalhes do DataFrame
+        item_data.update({
+            'Descrição': descricao_escolhida,
+            'classe_tensao': detalhes_item['classe_tensao'],
+            'Perdas': detalhes_item['perdas'],
+            'Potência': detalhes_item['potencia'],
+            'cod_proj_custo': detalhes_item['cod_proj_custo'],
+            'cod_proj_caixa': detalhes_item['cod_proj_caixa'],
+            'preco': float(detalhes_item['preco']),
+            'p_trafo': float(detalhes_item['p_trafo']),
+            'valor_ip_baixo': float(detalhes_item['valor_ip_baixo']),
+            'valor_ip_alto': float(detalhes_item['valor_ip_alto']),
+            'p_caixa': float(detalhes_item['p_caixa'])
+        })
+
         cod_proj_custo = detalhes_item['cod_proj_custo']
         
         # Seleção de Fator K e IP
@@ -163,6 +177,7 @@ class componentsMT:
             key=f'fator_k_{item_index}',
             index=fator_k_opcoes.index(item_data['Fator K'])
         )
+        item_data['Fator K'] = fator_k
         
         ip = st.selectbox(
             f'Selecione o IP do Item:',
@@ -170,6 +185,7 @@ class componentsMT:
             key=f'ip_{item_index}',
             index=opcoes_ip.index(item_data['IP'])
         )
+        item_data['IP'] = ip
         
         # Campos de tensão
         tensao_primaria = st.text_input(
@@ -177,18 +193,21 @@ class componentsMT:
             value=get_default_voltage_values(detalhes_item['classe_tensao'])['tensao_primaria'],
             key=f'tensao_primaria_{item_index}'
         )
+        item_data['Tensão Primária'] = tensao_primaria
         
         tensao_secundaria = st.text_input(
             f'Tensão Secundária do Item {item_index + 1}:',
-            value=item_data['Tensão Secundária'],
+            value=item_data['Tensão Secundária'] if item_data['Tensão Secundária'] else "",
             key=f'tensao_secundaria_{item_index}'
         )
+        item_data['Tensão Secundária'] = tensao_secundaria
         
         derivacoes = st.text_input(
             f'Derivações do Item {item_index + 1}:',
             value=get_default_voltage_values(detalhes_item['classe_tensao'])['derivacoes'],
             key=f'derivacoes_{item_index}'
         )
+        item_data['Derivações'] = derivacoes
         
         quantidade = st.number_input(
             f'Quantidade para o Item {item_index + 1}:',
@@ -197,6 +216,7 @@ class componentsMT:
             step=1,
             key=f'qtd_{item_index}'
         )
+        item_data['Quantidade'] = quantidade
 
         st.markdown("---")
         st.subheader("Acessórios")
@@ -274,72 +294,45 @@ class componentsMT:
                         "base_calculo": acessorio["base_calculo"]
                     })
 
-    # Atualização dos dados do item
-# Adicionar botão para adicionar o item
-        # Botão para adicionar o item
-        # Adicionar botão para adicionar o item
+        # Atualiza os acessórios no item_data
+        item_data['acessorios'] = acessorios_selecionados
 
-        st.session_state['current_mt_item'] = {
-                    'Descrição': "",
-                    'Fator K': 1,
-                    'Produto':'MT',
-                    'IP': '00',
-                    'Tensão Primária': None,
-                    'Tensão Secundária': None,
-                    'Derivações': None,
-                    'Quantidade': 1,
-                    'classe_tensao': None,
-                    'Perdas': None,
-                    'Potência': None,
-                    'cod_proj_custo': None,
-                    'cod_proj_caixa': None,
-                    'preco': 0.0,
-                    'p_trafo': 0.0,
-                    'valor_ip_baixo': 0.0,
-                    'valor_ip_alto': 0.0,
-                    'p_caixa': 0.0,
-                    'acessorios': [],
-                    'Preço Unitário': 0.0,
-                    'Preço Total': 0.0
-                }
+        # Calcula os preços usando CalculoItemMT
+        if 'dados_impostos' not in st.session_state:
+            st.session_state['dados_impostos'] = {
+                'difal': 0,
+                'f_pobreza': 0,
+                'icms': 0
+            }
 
+        calculo = CalculoItemMT(
+            item_data=item_data, 
+            percentuais=percentuais,
+            dados_impostos=st.session_state['dados_impostos'],
+            acessorios=acessorios_selecionados
+        )
+        preco_unitario = calculo.calcular_preco_item()
+        preco_total = preco_unitario * quantidade
 
-        item = st.session_state['current_mt_item']
-        df = CustoMediaTensaoRepository.buscar_todos()
-        componentsMT.render_item_config(0,df, item)
+        item_data['Preço Unitário'] = preco_unitario
+        item_data['Preço Total'] = preco_total
 
+        # Exibe os preços calculados
+        st.markdown("---")
+        st.write(f"**Preço Unitário:** R$ {preco_unitario:,.2f}")
+        st.write(f"**Preço Total:** R$ {preco_total:,.2f}")
 
-        if st.button("Adicionar Item MT"):
+        if st.button("Adicionar Item MT", key=f"add_item_{item_index}"):
             if descricao_escolhida:
                 if 'itens_configurados_mt' not in st.session_state:
                     st.session_state['itens_configurados_mt'] = []
-                st.session_state['itens_configurados_mt'].append(item.copy())
-                st.success("Item MT adicionado com sucesso!")
                 
-                # Reseta o item atual
-                st.session_state['current_mt_item'] = {
-                    'Descrição': "",
-                    'Fator K': 1,
-                    'Produto':'MT',
-                    'IP': '00',
-                    'Tensão Primária': None,
-                    'Tensão Secundária': None,
-                    'Derivações': None,
-                    'Quantidade': 1,
-                    'classe_tensao': None,
-                    'Perdas': None,
-                    'Potência': None,
-                    'cod_proj_custo': None,
-                    'cod_proj_caixa': None,
-                    'preco': 0.0,
-                    'p_trafo': 0.0,
-                    'valor_ip_baixo': 0.0,
-                    'valor_ip_alto': 0.0,
-                    'p_caixa': 0.0,
-                    'acessorios': [],
-                    'Preço Unitário': 0.0,
-                    'Preço Total': 0.0
-                }
+                # Cria uma cópia do item_data para adicionar à lista
+                novo_item = item_data.copy()
+                st.session_state['itens_configurados_mt'].append(novo_item)
+                st.success("Item MT adicionado com sucesso!")
                 st.rerun()
             else:
                 st.error("Por favor, selecione uma descrição para o item.")
+
+        return item_data
