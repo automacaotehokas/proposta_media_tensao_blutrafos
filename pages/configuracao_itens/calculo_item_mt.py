@@ -91,7 +91,6 @@ class CalculoItemMT:
         
         preco_unitario += valor_acessorios_com_percentuais
 
-        st.write(st.session_state)
 
         return float(preco_unitario)
 

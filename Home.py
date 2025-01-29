@@ -11,6 +11,7 @@ from pages.configuracao_itens.view import pagina_configuracao
 from pages.resumo.view import pagina_resumo
 from pages.adm.view import admin_section
 from datetime import datetime
+from st_aggrid import AgGrid, GridOptionsBuilder
 
 def selecionar_tipo_proposta():
     """Função para selecionar se é nova revisão ou atualização"""
@@ -40,6 +41,146 @@ def selecionar_tipo_proposta():
                 st.rerun()
         return False
     return True
+
+
+ 
+def exibir_tabela_unificada():
+    """
+    Exibe uma tabela unificada com itens MT e BT, permitindo ordenação e exclusão.
+    """
+    if 'itens' not in st.session_state:
+        st.session_state.itens = []
+    if 'itens_configurados_mt' not in st.session_state.itens:
+        st.session_state.itens_configurados_mt = []
+    if 'itens_configurados_bt' not in st.session_state.itens:
+        st.session_state.itens_configurados_bt = []
+ 
+    # Criar DataFrames para MT e BT
+    df_mt = pd.DataFrame(st.session_state['itens']['itens_configurados_mt'])
+    df_bt = pd.DataFrame(st.session_state['itens']['itens_configurados_bt'])
+ 
+    # Verificar se há itens configurados
+    if df_mt.empty and df_bt.empty:
+        st.info("Nenhum item configurado ainda.")
+        return
+ 
+    # Adicionar coluna de tipo e índice original
+    if not df_mt.empty:
+        df_mt['tipo'] = 'MT'
+        df_mt['origem_index'] = range(len(df_mt))
+        df_mt = df_mt.rename(columns={
+            'Descrição': 'descricao',
+            'Quantidade': 'quantidade',
+            'Preço Unitário': 'valor_unit',
+            'Preço Total': 'valor_total'
+        })
+ 
+    if not df_bt.empty:
+        df_bt['tipo'] = 'BT'
+        df_bt['origem_index'] = range(len(df_bt))
+        df_bt = df_bt.rename(columns={
+            'Descrição': 'descricao',
+            'Quantidade': 'quantidade',
+            'Preço Unitário': 'valor_unit',
+            'Preço Total': 'valor_total'
+        })
+ 
+    # Concatenar os DataFrames
+    df_unified = pd.concat([df_mt, df_bt], ignore_index=True)
+ 
+    # Adicionar coluna para ordenação
+    df_unified['index_exibicao'] = range(1, len(df_unified) + 1)  # Começa do 1
+    # Criar o dataframe para exibição com AgGrid
+    gb = GridOptionsBuilder.from_dataframe(df_unified[['index_exibicao', 'tipo', 'descricao', 'quantidade', 'valor_unit', 'valor_total']])
+    # Configurar colunas
+    gb.configure_column('index_exibicao', 
+                       header='Ordem',
+                       editable=True,
+                       type=["numericColumn", "numberColumnFilter", "customNumericFormat"],
+                       valueFormatter="data.index_exibicao")
+    gb.configure_column('tipo', header='Tipo', editable=False)
+    gb.configure_column('descricao', header='Descrição', editable=False)
+    gb.configure_column('quantidade', header='Quantidade', editable=False)
+    gb.configure_column('valor_unit', 
+                       header='Valor Unitário',
+                       editable=False,
+                       valueFormatter="'R$ ' + data.valor_unit.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})")
+    gb.configure_column('valor_total',
+                       header='Valor Total',
+                       editable=False,
+                       valueFormatter="'R$ ' + data.valor_total.toLocaleString('pt-BR', {minimumFractionDigits: 2, maximumFractionDigits: 2})")
+    gb.configure_grid_options(
+        rowDragManaged=True,
+        animateRows=True,
+        enableRangeSelection=True,
+        enableCellChangeFlash=True
+    )
+    grid_response = AgGrid(
+        df_unified,
+        gridOptions=gb.build(),
+        allow_unsafe_jscode=True,
+        fit_columns_on_grid_load=True,
+        theme='streamlit'
+    )
+    # Se houve mudança na ordem
+    if grid_response['data'] is not None:
+        new_df = pd.DataFrame(grid_response['data'])
+        # Verifica se houve alteração nos índices
+        if not new_df['index_exibicao'].equals(df_unified['index_exibicao']):
+            # Ordena pelo novo índice
+            new_df = new_df.sort_values('index_exibicao')
+            # Atualizar os session states com a nova ordem
+            mt_items = []
+            bt_items = []
+            for _, row in new_df.iterrows():
+                if row['tipo'] == 'MT':
+                    mt_items.append(st.session_state.itens_configurados_mt[int(row['origem_index'])])
+                else:
+                    bt_items.append(st.session_state.itens_configurados_bt[int(row['origem_index'])])
+            # Atualiza as listas no session state
+            st.session_state.itens_configurados_mt = mt_items
+            st.session_state.itens_configurados_bt = bt_items
+            # Removido st.rerun() daqui pois já existe no componentsMT
+    # Exibir totais
+    st.markdown("---")
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        total_mt = df_mt['valor_total'].sum() if not df_mt.empty else 0
+        st.metric("Total MT", f"R$ {total_mt:,.2f}")
+    with col2:
+        total_bt = df_bt['valor_total'].sum() if not df_bt.empty else 0
+        st.metric("Total BT", f"R$ {total_bt:,.2f}")
+    with col3:
+        total_geral = total_mt + total_bt
+        st.metric("Total Geral", f"R$ {total_geral:,.2f}")
+    # Botões de excluir com confirmação
+    for idx, row in df_unified.iterrows():
+        col1, col2 = st.columns([4, 1])
+        with col1:
+            st.text(f"{row['tipo']} - {row['descricao']}")
+        with col2:
+            if st.button('🗑️', key=f'del_{idx}'):
+                if 'item_to_delete' not in st.session_state:
+                    st.session_state.item_to_delete = None
+                st.session_state.item_to_delete = (row['tipo'], int(row['origem_index']))
+                st.rerun()
+    # Confirmação de exclusão
+    if hasattr(st.session_state, 'item_to_delete') and st.session_state.item_to_delete:
+        tipo, idx = st.session_state.item_to_delete
+        st.warning(f"Confirma a exclusão do item {tipo}?")
+        col1, col2 = st.columns(2)
+        with col1:
+            if st.button("Sim"):
+                if tipo == 'MT' and idx < len(st.session_state.itens.itens_configurados_mt):
+                    st.session_state.itens.itens_configurados_mt.pop(idx)
+                elif tipo == 'BT' and idx < len(st.session_state.itens.itens_configurados_bt):
+                    st.session_state.itens.itens_configurados_bt.pop(idx)
+                st.session_state.item_to_delete = None
+                st.rerun()
+        with col2:
+            if st.button("Não"):
+                st.session_state.item_to_delete = None
+                st.rerun()
 
 def carregar_dados_revisao(revisao_id: str):
     """Carrega dados de uma revisão existente"""
@@ -249,7 +390,9 @@ def main():
         page()
         
         st.markdown("---")
-        st.write(st.session_state)
+
+        exibir_tabela_unificada()
+        
         ### Configuração das páginas
 PAGES = {
     "Inicial": pagina_inicial,

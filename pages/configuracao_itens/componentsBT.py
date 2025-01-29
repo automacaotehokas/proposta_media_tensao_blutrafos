@@ -3,8 +3,12 @@
 import streamlit as st
 from typing import Dict, List
 from repositories.custos_baixa_tensao import CustoBaixaTensaoRepository
+from .utils import verificar_campos_preenchidos
+
 
 class ComponenteBT:
+
+    
     @staticmethod
     def render_bt_components():
         """
@@ -45,59 +49,70 @@ class ComponenteBT:
                 'Quantidade': 1,
                 'fator_k': 1
             }
+    
+
 
         item = st.session_state['current_bt_item']
         df_bt = CustoBaixaTensaoRepository().buscar_todos()
-        
+
         # Renderiza cada componente
         ComponenteBT.render_item_description(0, item, df_bt)
         ComponenteBT.render_item_specifications(0, item)
         ComponenteBT.render_item_accessories(0, item)
-
         # Botão para adicionar o item
+        
+        item_obrigatorio = filter(item,'material')
         if st.button("Adicionar Item BT"):
-            if item['descricao']:
-                if 'itens_configurados_bt' not in st.session_state:
-                    st.session_state['itens_configurados_bt'] = []
-                st.session_state['itens_configurados_bt'].append(item.copy())
-                st.success("Item BT adicionado com sucesso!")
-                # Reseta o item atual
-                st.session_state['current_bt_item'] = {
-                    'id': None,
-                    'produto': "",
-                    'potencia': "",
-                    'potencia_numerica': None,
-                    'material': "",
-                    'tensao_primaria': None,
-                    'tensao_secundaria': None,
-                    'preco': None,
-                    'proj': None,
-                    'modelo_caixa': None,
-                    'descricao': "",
-                    'cod_caixa': None,
-                    'preco_caixa': None,
-                    'derivacoes': {
-                        'taps': 'nenhum',
-                        'tensoes_primarias': 'nenhum'
-                    },
-                    'taps': None,
-                    'taps_tensoes': None,
-                    'frequencia_50hz': False,
-                    'blindagem_eletrostatica': False,
-                    'ensaios': {
-                        'elevacao_temperatura': False,
-                        'nivel_ruido': False
-                    },
-                    'rele': "Nenhum",
-                    'preco_rele': 0,
-                    'ip': '00',
-                    'flange': 0,
-                    'Quantidade': 1,
-                    'fator_k': 1
-                }
-                st.rerun()
+            campos_vazios = verificar_campos_preenchidos(item,  {
+        'descricao',
+        'material',
+        'tensao_primaria',
+        'tensao_secundaria'
+    } )
+            if campos_vazios:
+                st.error(f"Por favor, preencha os seguintes campos: {', '.join(campos_vazios)}")
             else:
-                st.error("Por favor, selecione uma descrição para o item.")
+                    if 'itens_configurados_bt' not in st.session_state['itens']:
+                        st.session_state['itens']['itens_configurados_bt'] = []
+                    st.session_state['itens']['itens_configurados_bt'].append(item.copy())
+                    st.success("Item BT adicionado com sucesso!")
+                    # Reseta o item atual
+                    st.session_state['current_bt_item'] = {
+                        'id': None,
+                        'produto': "",
+                        'potencia': "",
+                        'potencia_numerica': None,
+                        'material': "",
+                        'tensao_primaria': None,
+                        'tensao_secundaria': None,
+                        'preco': None,
+                        'proj': None,
+                        'modelo_caixa': None,
+                        'descricao': "",
+                        'cod_caixa': None,
+                        'preco_caixa': None,
+                        'derivacoes': {
+                            'taps': 'nenhum',
+                            'tensoes_primarias': 'nenhum'
+                        },
+                        'taps': None,
+                        'taps_tensoes': None,
+                        'frequencia_50hz': False,
+                        'blindagem_eletrostatica': False,
+                        'ensaios': {
+                            'elevacao_temperatura': False,
+                            'nivel_ruido': False
+                        },
+                        'rele': "Nenhum",
+                        'preco_rele': 0,
+                        'ip': '00',
+                        'flange': 0,
+                        'Quantidade': 1,
+                        'fator_k': 1
+                    }
+                    st.rerun()
+
+
 
     @staticmethod
     def render_item_description(index: int, item: Dict, df) -> Dict:

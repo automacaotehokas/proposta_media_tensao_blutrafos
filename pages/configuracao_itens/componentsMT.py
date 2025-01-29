@@ -7,6 +7,9 @@ from pages.inicial.api import distancia_cidade_capital
 from .utils import calcular_valor_acessorio_com_percentuais
 from repositories.custos_media_tensao_repository import CustoMediaTensaoRepository
 
+
+
+
 class componentsMT:
     def render_tax_inputs(dados_impostos: Dict[str, Any]) -> Dict[str, Any]:
         """Renderiza os campos de entrada para impostos"""
@@ -128,8 +131,7 @@ class componentsMT:
 
     def render_item_config(item_index: int, df: pd.DataFrame, item_data: Dict[str, Any], 
                         percentuais: float) -> Dict[str, Any]:
-        """Renderiza a configuração de um único item"""
-        st.subheader(f"Item {item_index + 1}")
+        
 
         # Converte df em um Dataframe
         df = pd.DataFrame(df)
@@ -324,12 +326,13 @@ class componentsMT:
 
         if st.button("Adicionar Item MT", key=f"add_item_{item_index}"):
             if descricao_escolhida:
-                if 'itens_configurados_mt' not in st.session_state:
-                    st.session_state['itens_configurados_mt'] = []
                 
+                if 'itens_configurados_mt' not in st.session_state['itens']:
+                    st.session_state['itens']['itens_configurados_mt'] = []
+            
                 # Cria uma cópia do item_data para adicionar à lista
                 novo_item = item_data.copy()
-                st.session_state['itens_configurados_mt'].append(novo_item)
+                st.session_state['itens']['itens_configurados_mt'].append(novo_item)
                 st.success("Item MT adicionado com sucesso!")
                 st.rerun()
             else:

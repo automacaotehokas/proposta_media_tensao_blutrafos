@@ -16,6 +16,7 @@ from .calculo_item_bt import (
     calcular_percentuais
 )
 
+
 # Abordagem alternativa mais robusta
 def calcular_total(df):
     try:
@@ -38,6 +39,8 @@ def initialize_item() -> Dict:
     """
     Inicializa um novo item com valores padrão.
     """
+
+
     return {
         'ID': None,
         'Produto': "",
@@ -70,6 +73,7 @@ def initialize_item() -> Dict:
         'taps_tensoes': None,
         'Taps': None
     }
+
 
 
 def exibir_resumo_resultados(itens, tipo='MT'):
@@ -127,7 +131,7 @@ def pagina_configuracao_MT():
     # Renderização dos componentes MT
     with st.expander("Adicionar Novo Item MT", expanded=True):
         df = CustoMediaTensaoRepository().buscar_todos()
-        item_index = len(st.session_state['itens_configurados_mt'])
+        item_index = len(st.session_state['itens']['itens_configurados_mt'])
         item_data = initialize_item()
         percentuais = calcular_percentuais(st.session_state['impostos'])
         componentsMT.render_item_config(item_index, df, item_data, percentuais)
@@ -151,6 +155,13 @@ def pagina_configuracao():
     
     # Inicializa o session state se necessário
     initialize_session_state()
+    n_itens_mt = len(st.session_state['itens']['itens_configurados_mt'])
+    n_itens_bt = len(st.session_state['itens']['itens_configurados_bt'])
+    n_item_atual = n_itens_mt + n_itens_bt 
+    st.subheader(f'Adicionar item {n_item_atual + 1}' )
+    
+        
+
     
     # Cria as abas para MT e BT
     tab_mt, tab_bt = st.tabs(["Média Tensão", "Baixa Tensão"])
@@ -182,11 +193,16 @@ def calcular_percentuais(impostos: Dict[str, float]) -> float:
 
 def initialize_session_state():
     """Inicializa as variáveis necessárias no session_state"""
-    if 'itens_configurados_mt' not in st.session_state:
-        st.session_state['itens_configurados_mt'] = []
-    
-    if 'itens_configurados_bt' not in st.session_state:
-        st.session_state['itens_configurados_bt'] = []
+    if 'itens' not in st.session_state:
+        st.session_state['itens'] = {
+            'itens_configurados_mt': [],
+            'itens_configurados_bt': []
+        }
+    else:
+        if 'itens_configurados_mt' not in st.session_state['itens']:
+            st.session_state['itens']['itens_configurados_mt'] = []
+        if 'itens_configurados_bt' not in st.session_state['itens']:
+            st.session_state['itens']['itens_configurados_bt'] = []
     
     if 'impostos' not in st.session_state:
         st.session_state['impostos'] = {
@@ -262,9 +278,9 @@ def configuracao_itens_page():
 
 def update_items_list(quantidade_itens: int):
     """Atualiza a lista de itens baseado na quantidade desejada"""
-    while len(st.session_state['itens_configurados_mt']) < quantidade_itens:
-        st.session_state['itens_configurados_mt'].append({
-            'Item': len(st.session_state['itens_configurados_mt']) + 1,
+    while len(st.session_state['itens']['itens_configurados_mt']) < quantidade_itens:
+        st.session_state['itens']['itens_configurados_mt'].append({
+            'Item': len(st.session_state['itens']) + 1,
             'Quantidade': 1,
             'Descrição': "",
             'Potência': None,
@@ -281,8 +297,8 @@ def update_items_list(quantidade_itens: int):
             'adicional_caixa_classe': None
         })
     
-    while len(st.session_state['itens_configurados_mt']) > quantidade_itens:
-        st.session_state['itens_configurados_mt'].pop()
+    while len(st.session_state['itens']['itens_configurados_mt']) > quantidade_itens:
+        st.session_state['itens']['itens_configurados_mt'].pop()
 
 
     
