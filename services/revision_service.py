@@ -1,13 +1,12 @@
 import json
-from typing import Dict, Any, Optional, Tuple, List
-from decimal import Decimal
-from config.database import DatabaseConfig
-from io import BytesIO
-from pathlib import Path
+import os
 import logging
 import sys
 from datetime import datetime
+from io import BytesIO
 from pathlib import Path
+from typing import Dict, Any, Optional, Tuple, List
+from config.databaseMT import DatabaseConfig
 
 # Cria diretório de logs se não existir
 log_dir = Path("logs")

@@ -1,6 +1,6 @@
 # repositories/proposta_repository.py
 from typing import Optional
-from config.database import DatabaseConfig
+from proposta_media_tensao_blutrafos.config.databaseMT import DatabaseConfig
 from models.proposta import Proposta
 import uuid
 from datetime import date

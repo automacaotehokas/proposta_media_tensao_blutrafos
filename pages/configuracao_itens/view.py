@@ -1,21 +1,31 @@
 import streamlit as st
 import pandas as pd
-from .components import render_tax_inputs, render_item_config
+from .componentsMT import componentsMT
 from repositories.custos_media_tensao_repository import CustoMediaTensaoRepository
+from repositories.custos_baixa_tensao import CustoBaixaTensaoRepository
 from utils.constants import TAX_CONSTANTS
 from typing import Dict, Any, Optional , List
 from utils.constants import VOLTAGE_DEFAULTS
+import streamlit as st
+import pandas as pd
+from typing import List, Dict
+from .componentsBT import ComponenteBT
+from .calculo_item_bt import (
+    buscar_cod_caixa_proj,
+    buscar_preco_por_potencia,
+    calcular_percentuais
+)
 
 # Abordagem alternativa mais robusta
 def calcular_total(df):
     try:
         # Converte para float e soma, tratando valores problemáticos
-        valores = pd.to_numeric(df['Preço Total'], errors='coerce')
+        valores = pd.to_numeric(df['preco_total'], errors='coerce')
         return valores.fillna(0).sum()
     except Exception as e:
         print(f"Erro ao calcular total: {e}")
         # Retorna valores brutos para debug
-        print("Valores na coluna:", df['Preço Total'].tolist())
+        print("Valores na coluna:", df['preco_total'].tolist())
         return 0
 
 def formatar_valor_br(valor):
@@ -24,59 +34,146 @@ def formatar_valor_br(valor):
 
 
 
-def pagina_configuracao():
-    st.title('Configuração Itens')
+def initialize_item() -> Dict:
+    """
+    Inicializa um novo item com valores padrão.
+    """
+    return {
+        'ID': None,
+        'Produto': "",
+        'Descrição': "",
+        'Potência': None,
+        'Fator K': 1,
+        'IP': '00',
+        'Preço Unitário': 0.0,
+        'Preço Total': 0.0,
+        'Quantidade': 1,
+        'Tensão Primária': None,
+        'Tensão Secundária': None,
+        'Material': None,
+        'Conector': "Nenhum",
+        'Frequencia 50Hz': False,
+        'Blindagem Eletrostática': False,
+        'Rele': "Nenhum",
+        'Sensor PT - 100': 0,
+        'Ensaios': {
+            'Elev. Temperat.': False,
+            'Nível de Ruído': False,
+            'Flange': 0
+        },
+        'cod_caixa': None,
+        'cod_proj': None,
+        'Derivações': {
+            'taps': 'nenhum',
+            'tensoes_primarias': 'nenhum'
+        },
+        'taps_tensoes': None,
+        'Taps': None
+    }
+
+
+def exibir_resumo_resultados(itens, tipo='MT'):
+    """
+    Exibe o resumo dos itens calculados em formato de tabela.
+    """
     st.markdown("---")
+    st.subheader(f"Resumo dos Itens {tipo} Configurados")
     
-    # Inicialização do state
-    if 'itens_configurados' not in st.session_state:
-        st.session_state['itens_configurados'] = []
-    
-    if 'impostos' not in st.session_state:
-        st.session_state['impostos'] = {}
-    
-    # Carregamento dos dados
-    df = CustoMediaTensaoRepository.buscar_todos()
+    # Cria DataFrame para exibição
+    resumo_data = []
+    for idx, item in enumerate(itens, 1):
+        resumo_data.append({
+            'Item': idx,
+            'Quantidade': item['Quantidade'],
+            'Produto': item['Produto'],
+            'Potência': item.get('Potência ', ''),
+            'Fator K': item['Fator K'],
+            'Tensões': f"{item['Tensão Primária']} V / {item['Tensão Secundária']} V",
+            'IP': item['IP'],
+            'Preço Unitário': f"R$ {item['Preço Unitário']:,.2f}",
+            'Preço Total': f"R$ {item['Preço Total']:,.2f}",
+            'IPI': '0%'
+        })
+
+    df_resumo = pd.DataFrame(resumo_data)
+    st.table(df_resumo)
+
+    # Exibe o valor total
+    total = sum(item['Preço Total'] for item in itens)
+    st.subheader(f"Valor Total do Fornecimento {tipo}: R$ {total:,.2f}")
+
+def carregar_tensoes_padrao(item: Dict, df: pd.DataFrame, index: int):
+    """
+    Carrega as tensões padrão para um item se necessário.
+    """
+    if item['Produto'] == "ATT" and (item.get('Tensão Primária') != 380 or item.get('Tensão Secundária') != 220):
+        st.warning(f"As tensões padrão (380V e 220V) não serão carregadas para o Item {index + 1}.")
+    else:
+        if item['Descrição']:
+            descricao_selecionada = df[df['descricao'] == item['Descrição']].iloc[0]
+            item['Tensão Primária'] = descricao_selecionada['tensao_primaria']
+            item['Tensão Secundária'] = descricao_selecionada['tensao_secundaria']
+            st.success(f"Tensões carregadas para o Item {index + 1}!")
+
+            
+
+def pagina_configuracao_MT():
+    """Página de configuração para itens de Média Tensão"""
+    st.subheader("Configuração de Itens - Média Tensão")
     
     # Renderização dos inputs de impostos
-    st.session_state['impostos'] = render_tax_inputs(st.session_state['impostos'])
+    st.session_state['impostos'] = componentsMT.render_tax_inputs(st.session_state['impostos'])
     
-    # Configuração da quantidade de itens
-    quantidade_itens = st.number_input(
-        'Quantidade de Itens:', 
-        min_value=1, 
-        step=1, 
-        value=len(st.session_state['itens_configurados']) or 1
-    )
-    
-    # Atualização da lista de itens
-    while len(st.session_state['itens_configurados']) < quantidade_itens:
-        st.session_state['itens_configurados'].append({
-            'Item': len(st.session_state['itens_configurados']) + 1,
-            'Quantidade': 1,
-            'Descrição': "",
-            'Fator K': 1,
-            'IP': '00',
-            'Tensão Primária': "380",
-            'Tensão Secundária': "220",
-            'Preço Unitário': 0.0,
-            'Preço Total': 0.0
-        })
-    
-    while len(st.session_state['itens_configurados']) > quantidade_itens:
-        st.session_state['itens_configurados'].pop()
-    
-    # Renderização dos itens
-    for i in range(len(st.session_state['itens_configurados'])):
-        st.session_state['itens_configurados'][i] = render_item_config(
-            i, 
-            df, 
-            st.session_state['itens_configurados'][i],
-            calcular_percentuais(st.session_state['impostos'])
-        )
+    # Renderização dos componentes MT
+    with st.expander("Adicionar Novo Item MT", expanded=True):
+        df = CustoMediaTensaoRepository().buscar_todos()
+        item_index = len(st.session_state['itens_configurados_mt'])
+        item_data = initialize_item()
+        percentuais = calcular_percentuais(st.session_state['impostos'])
+        componentsMT.render_item_config(item_index, df, item_data, percentuais)
     
     # Renderização do resumo
-    render_summary(st.session_state['itens_configurados'])
+    if st.session_state['itens_configurados_mt']:
+        exibir_resumo_resultados(st.session_state['itens_configurados_mt'], 'MT')
+
+def pagina_configuracao_BT():
+    """Página de configuração para itens de Baixa Tensão"""
+    st.subheader("Configuração de Itens - Baixa Tensão")
+    
+    # Renderização dos componentes BT
+    with st.expander("Adicionar Novo Item BT", expanded=True):
+        ComponenteBT.render_bt_components()
+    
+    # Exibe o resumo dos resultados automaticamente se houver itens calculados
+    if st.session_state['itens_configurados_bt']:
+        exibir_resumo_resultados(st.session_state['itens_configurados_bt'], 'BT')
+
+def pagina_configuracao():
+    """Página principal de configuração de itens"""
+    st.title("Configuração de Itens")
+    
+    # Inicializa o session state se necessário
+    initialize_session_state()
+    
+    # Cria as abas para MT e BT
+    tab_mt, tab_bt = st.tabs(["Média Tensão", "Baixa Tensão"])
+    
+    # Conteúdo da aba MT
+    with tab_mt:
+        pagina_configuracao_MT()
+    
+    # Conteúdo da aba BT
+    with tab_bt:
+        pagina_configuracao_BT()
+        
+    # Botão para salvar configurações
+    if st.button("Salvar Configurações", type="primary"):
+        st.session_state['configuracao_salva'] = True
+        st.success("Configurações salvas com sucesso!")
+        
+    # Exibe aviso se as configurações não foram salvas
+    if not st.session_state.get('configuracao_salva', False):
+        st.warning("Não se esqueça de salvar suas configurações antes de prosseguir!")
 
 def calcular_percentuais(impostos: Dict[str, float]) -> float:
     """Calcula os percentuais totais baseados nos impostos"""
@@ -91,65 +188,17 @@ def calcular_percentuais(impostos: Dict[str, float]) -> float:
         TAX_CONSTANTS['PISCONFINS']
     )
 
-def render_summary(itens: List[Dict[str, Any]]):
+def render_summary(itens: List[Dict[str, Any]], tipo='MT'):
     """Renderiza o resumo dos itens configurados"""
-    st.subheader("Resumo dos Itens Selecionados")
-    
-    if not itens:
-        st.warning("Nenhum item configurado.")
-        return
-    
-    # Mantém um DataFrame original para cálculos
-    resumo_df = pd.DataFrame(itens)
-    
-    # Cria uma cópia para formatação e display
-    display_df = resumo_df.copy()
-    
-    # Formatação das colunas monetárias para display
-    if 'Preço Unitário' in display_df.columns:
-        display_df['Preço Unitário'] = display_df['Preço Unitário'].apply(formatar_valor_br)
-    
-    if 'Preço Total' in display_df.columns:
-        display_df['Preço Total'] = display_df['Preço Total'].apply(formatar_valor_br)
-    
-    # Verificação e formatação da potência
-    if 'Potência' in display_df.columns:
-        display_df['Potência'] = display_df['Potência'].apply(
-            lambda x: f"{x:,.0f} kVA" if pd.notnull(x) else ""
-        )
-    else:
-        display_df['Potência'] = ""
-    
-    # Verificação e concatenação das tensões
-    if 'Tensão Primária' in display_df.columns and 'Tensão Secundária' in display_df.columns:
-        display_df['Tensões'] = display_df['Tensão Primária'].astype(str) + "kV" + " / " + display_df['Tensão Secundária'].astype(str) + " V"
-    else:
-        display_df['Tensões'] = ""
-    
-    # Seleção e ordenação das colunas para exibição
-    colunas_resumo = [
-        'Item', 'Quantidade', 'Potência', 'Tensões', 
-        'Perdas', 'Fator K', 'IP', 'Preço Unitário', 'Preço Total'
-    ]
-    
-    # Filtragem das colunas existentes no DataFrame
-    colunas_existentes = [col for col in colunas_resumo if col in display_df.columns]
-    
-    # Exibição da tabela resumo
-    st.table(display_df[colunas_existentes])
-    
-    # Cálculo e exibição do total usando o DataFrame original
-    if 'Preço Total' in resumo_df.columns:
-        total_fornecimento = calcular_total(resumo_df)
-        st.subheader(f"Valor Total do Fornecimento: {formatar_valor_br(total_fornecimento)}")
-    
-    # Armazenamento do resumo no session_state para uso posterior
-    st.session_state['resumo_df'] = resumo_df
+    exibir_resumo_resultados(itens, tipo)
 
 def initialize_session_state():
     """Inicializa as variáveis necessárias no session_state"""
-    if 'itens_configurados' not in st.session_state:
-        st.session_state['itens_configurados'] = []
+    if 'itens_configurados_mt' not in st.session_state:
+        st.session_state['itens_configurados_mt'] = []
+    
+    if 'itens_configurados_bt' not in st.session_state:
+        st.session_state['itens_configurados_bt'] = []
     
     if 'impostos' not in st.session_state:
         st.session_state['impostos'] = {
@@ -163,6 +212,9 @@ def initialize_session_state():
             'local_entrega': st.session_state['dados_iniciais'].get('local_frete', ''),
             'tipo_frete': "CIF"
         }
+    
+    if 'configuracao' not in st.session_state:
+        st.session_state['configuracao'] = 'MT'
 
 def validate_initial_data() -> bool:
     """Valida se os dados iniciais necessários estão presentes"""
@@ -208,7 +260,7 @@ def configuracao_itens_page():
     # Seção de impostos e taxas
     with st.container():
         st.subheader("Impostos e Taxas")
-        st.session_state['impostos'] = render_tax_inputs(st.session_state['impostos'])
+        st.session_state['impostos'] = componentsMT.render_tax_inputs(st.session_state['impostos'])
     
     st.markdown("---")
     
@@ -221,7 +273,7 @@ def configuracao_itens_page():
             'Quantidade de Itens:', 
             min_value=1, 
             step=1, 
-            value=len(st.session_state['itens_configurados']) or 1
+            value=len(st.session_state['itens_configurados_mt']) or 1
         )
         
         # Atualização da lista de itens
@@ -231,23 +283,23 @@ def configuracao_itens_page():
         percentuais = calcular_percentuais(st.session_state['impostos'])
         
         # Renderização de cada item
-        for i in range(len(st.session_state['itens_configurados'])):
+        for i in range(len(st.session_state['itens_configurados_mt'])):
             with st.container():
-                st.session_state['itens_configurados'][i] = render_item_config(
-                    i, df, st.session_state['itens_configurados'][i], percentuais
+                st.session_state['itens_configurados_mt'][i] = componentsMT.render_item_config(
+                    i, df, st.session_state['itens_configurados_mt'][i], percentuais
                 )
                 st.markdown("---")
      
     
     # Seção de resumo
     with st.container():
-        render_summary(st.session_state['itens_configurados'])
+        exibir_resumo_resultados(st.session_state['itens_configurados_mt'], 'MT')
 
 def update_items_list(quantidade_itens: int):
     """Atualiza a lista de itens baseado na quantidade desejada"""
-    while len(st.session_state['itens_configurados']) < quantidade_itens:
-        st.session_state['itens_configurados'].append({
-            'Item': len(st.session_state['itens_configurados']) + 1,
+    while len(st.session_state['itens_configurados_mt']) < quantidade_itens:
+        st.session_state['itens_configurados_mt'].append({
+            'Item': len(st.session_state['itens_configurados_mt']) + 1,
             'Quantidade': 1,
             'Descrição': "",
             'Potência': None,
@@ -264,6 +316,5 @@ def update_items_list(quantidade_itens: int):
             'adicional_caixa_classe': None
         })
     
-    while len(st.session_state['itens_configurados']) > quantidade_itens:
-        st.session_state['itens_configurados'].pop()
-
+    while len(st.session_state['itens_configurados_mt']) > quantidade_itens:
+        st.session_state['itens_configurados_mt'].pop()

@@ -6,7 +6,8 @@ from .components import (
     render_dados_iniciais, render_variaveis, 
     render_itens_configurados, render_botoes_download
 )
-from config.database import DatabaseConfig
+
+from config.databaseMT import DatabaseConfig
 from services.sharepoint.sharepoint_service import SharePoint
 
 
@@ -87,7 +88,7 @@ def pagina_resumo():
                 
                 # Documento Word
                 buffer_word = WordDocumentService.gerar_documento(
-                    template_path=template_path,
+                    template_path=template_path,    
                     dados_iniciais=st.session_state['dados_iniciais'],
                     impostos=st.session_state['impostos'],
                     itens_configurados=st.session_state['itens_configurados']

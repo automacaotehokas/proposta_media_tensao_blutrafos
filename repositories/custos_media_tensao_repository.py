@@ -1,6 +1,6 @@
 from typing import List, Optional
 import pandas as pd
-from config.database import DatabaseConfig
+from config.databaseMT import DatabaseConfig
 from models.custo_media_tensao import CustoMediaTensao
 
 class CustoMediaTensaoRepository:
