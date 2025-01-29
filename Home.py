@@ -249,6 +249,7 @@ def main():
         page()
         
         st.markdown("---")
+        st.write(st.session_state)
         ### Configuração das páginas
 PAGES = {
     "Inicial": pagina_inicial,

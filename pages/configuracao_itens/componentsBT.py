@@ -42,7 +42,7 @@ class ComponenteBT:
                 'preco_rele': 0,
                 'ip': '00',
                 'flange': 0,
-                'quantidade': 1,
+                'Quantidade': 1,
                 'fator_k': 1
             }
 
@@ -92,7 +92,7 @@ class ComponenteBT:
                     'preco_rele': 0,
                     'ip': '00',
                     'flange': 0,
-                    'quantidade': 1,
+                    'Quantidade': 1,
                     'fator_k': 1
                 }
                 st.rerun()
@@ -184,11 +184,11 @@ class ComponenteBT:
             else:
                 item['flange'] = 0
 
-        item['quantidade'] = st.number_input(
+        item['Quantidade'] = st.number_input(
             f"Quantidade do Item {index + 1}:",
             min_value=1,
             step=1,
-            value=item['quantidade']
+            value=item['Quantidade']
         )
 
         return item

@@ -5,6 +5,7 @@ from .calculo_item_mt import CalculoItemMT
 from utils.constants import get_default_voltage_values, ACESSORIOS_FIXOS , ACESSORIOS_PERCENTUAIS
 from pages.inicial.api import distancia_cidade_capital
 from .utils import calcular_valor_acessorio_com_percentuais
+from repositories.custos_media_tensao_repository import CustoMediaTensaoRepository
 
 class componentsMT:
     def render_tax_inputs(dados_impostos: Dict[str, Any]) -> Dict[str, Any]:
@@ -274,37 +275,71 @@ class componentsMT:
                     })
 
     # Atualização dos dados do item
-        updated_item = {
-            **item_data,
-            'Descrição': descricao_escolhida,
-            'Fator K': fator_k,
-            'IP': ip,
-            'Tensão Primária': tensao_primaria,
-            'Tensão Secundária': tensao_secundaria,
-            'Derivações': derivacoes,
-            'Quantidade': quantidade,
-            'classe_tensao': detalhes_item['classe_tensao'],
-            'Perdas': detalhes_item['perdas'],
-            'Potência': detalhes_item.get('potencia', None),
-            'cod_proj_custo': detalhes_item.get('cod_proj_custo',None),
-            'cod_proj_caixa': detalhes_item.get('cod_proj_caixa',None),
-            'preco': float(detalhes_item['preco']) if not pd.isna(detalhes_item['preco']) else 0.0,
-            'p_trafo': float(detalhes_item['p_trafo']) if not pd.isna(detalhes_item['p_trafo']) else 0.0,
-            'valor_ip_baixo': float(detalhes_item['valor_ip_baixo']) if not pd.isna(detalhes_item['valor_ip_baixo']) else 0.0,
-            'valor_ip_alto': float(detalhes_item['valor_ip_alto']) if not pd.isna(detalhes_item['valor_ip_alto']) else 0.0,
-            'p_caixa': float(detalhes_item['p_caixa']) if not pd.isna(detalhes_item['p_caixa']) else 0.0,
-            'acessorios': acessorios_selecionados
-        }
+# Adicionar botão para adicionar o item
+        # Botão para adicionar o item
+        # Adicionar botão para adicionar o item
 
-        # Debug para verificar os valores
-        st.write("Debug - Detalhes do Item:", detalhes_item)
-        st.write("Debug - Updated Item:", updated_item)
-        
-        # Criar uma instância do calculador
-        calculador = CalculoItemMT(updated_item, percentuais, st.session_state['impostos'], acessorios_selecionados)
-        updated_item['Preço Unitário'] = calculador.calcular_preco_item()
-        updated_item['Preço Total'] = updated_item['Preço Unitário'] * quantidade
+        st.session_state['current_mt_item'] = {
+                    'Descrição': "",
+                    'Fator K': 1,
+                    'Produto':'MT',
+                    'IP': '00',
+                    'Tensão Primária': None,
+                    'Tensão Secundária': None,
+                    'Derivações': None,
+                    'Quantidade': 1,
+                    'classe_tensao': None,
+                    'Perdas': None,
+                    'Potência': None,
+                    'cod_proj_custo': None,
+                    'cod_proj_caixa': None,
+                    'preco': 0.0,
+                    'p_trafo': 0.0,
+                    'valor_ip_baixo': 0.0,
+                    'valor_ip_alto': 0.0,
+                    'p_caixa': 0.0,
+                    'acessorios': [],
+                    'Preço Unitário': 0.0,
+                    'Preço Total': 0.0
+                }
 
 
-        
-        return updated_item
+        item = st.session_state['current_mt_item']
+        df = CustoMediaTensaoRepository.buscar_todos()
+        componentsMT.render_item_config(0,df, item)
+
+
+        if st.button("Adicionar Item MT"):
+            if descricao_escolhida:
+                if 'itens_configurados_mt' not in st.session_state:
+                    st.session_state['itens_configurados_mt'] = []
+                st.session_state['itens_configurados_mt'].append(item.copy())
+                st.success("Item MT adicionado com sucesso!")
+                
+                # Reseta o item atual
+                st.session_state['current_mt_item'] = {
+                    'Descrição': "",
+                    'Fator K': 1,
+                    'Produto':'MT',
+                    'IP': '00',
+                    'Tensão Primária': None,
+                    'Tensão Secundária': None,
+                    'Derivações': None,
+                    'Quantidade': 1,
+                    'classe_tensao': None,
+                    'Perdas': None,
+                    'Potência': None,
+                    'cod_proj_custo': None,
+                    'cod_proj_caixa': None,
+                    'preco': 0.0,
+                    'p_trafo': 0.0,
+                    'valor_ip_baixo': 0.0,
+                    'valor_ip_alto': 0.0,
+                    'p_caixa': 0.0,
+                    'acessorios': [],
+                    'Preço Unitário': 0.0,
+                    'Preço Total': 0.0
+                }
+                st.rerun()
+            else:
+                st.error("Por favor, selecione uma descrição para o item.")

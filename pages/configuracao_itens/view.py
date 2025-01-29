@@ -133,8 +133,7 @@ def pagina_configuracao_MT():
         componentsMT.render_item_config(item_index, df, item_data, percentuais)
     
     # Renderização do resumo
-    if st.session_state['itens_configurados_mt']:
-        exibir_resumo_resultados(st.session_state['itens_configurados_mt'], 'MT')
+    
 
 def pagina_configuracao_BT():
     """Página de configuração para itens de Baixa Tensão"""
@@ -145,8 +144,6 @@ def pagina_configuracao_BT():
         ComponenteBT.render_bt_components()
     
     # Exibe o resumo dos resultados automaticamente se houver itens calculados
-    if st.session_state['itens_configurados_bt']:
-        exibir_resumo_resultados(st.session_state['itens_configurados_bt'], 'BT')
 
 def pagina_configuracao():
     """Página principal de configuração de itens"""
@@ -165,15 +162,8 @@ def pagina_configuracao():
     # Conteúdo da aba BT
     with tab_bt:
         pagina_configuracao_BT()
+    
         
-    # Botão para salvar configurações
-    if st.button("Salvar Configurações", type="primary"):
-        st.session_state['configuracao_salva'] = True
-        st.success("Configurações salvas com sucesso!")
-        
-    # Exibe aviso se as configurações não foram salvas
-    if not st.session_state.get('configuracao_salva', False):
-        st.warning("Não se esqueça de salvar suas configurações antes de prosseguir!")
 
 def calcular_percentuais(impostos: Dict[str, float]) -> float:
     """Calcula os percentuais totais baseados nos impostos"""
@@ -188,9 +178,7 @@ def calcular_percentuais(impostos: Dict[str, float]) -> float:
         TAX_CONSTANTS['PISCONFINS']
     )
 
-def render_summary(itens: List[Dict[str, Any]], tipo='MT'):
-    """Renderiza o resumo dos itens configurados"""
-    exibir_resumo_resultados(itens, tipo)
+
 
 def initialize_session_state():
     """Inicializa as variáveis necessárias no session_state"""
@@ -251,11 +239,7 @@ def configuracao_itens_page():
     initialize_session_state()
     
     # Carregamento dos dados do banco
-    try:
-        df = CustoMediaTensaoRepository.buscar_todos()
-    except Exception as e:
-        st.error(f"Erro ao carregar dados do banco: {str(e)}")
-        return
+
     
     # Seção de impostos e taxas
     with st.container():
@@ -269,31 +253,12 @@ def configuracao_itens_page():
         st.subheader("Configuração dos Itens")
         
         # Input para quantidade de itens
-        quantidade_itens = st.number_input(
-            'Quantidade de Itens:', 
-            min_value=1, 
-            step=1, 
-            value=len(st.session_state['itens_configurados_mt']) or 1
-        )
         
-        # Atualização da lista de itens
-        update_items_list(quantidade_itens)
         
         # Cálculo dos percentuais
         percentuais = calcular_percentuais(st.session_state['impostos'])
-        
-        # Renderização de cada item
-        for i in range(len(st.session_state['itens_configurados_mt'])):
-            with st.container():
-                st.session_state['itens_configurados_mt'][i] = componentsMT.render_item_config(
-                    i, df, st.session_state['itens_configurados_mt'][i], percentuais
-                )
-                st.markdown("---")
-     
     
-    # Seção de resumo
-    with st.container():
-        exibir_resumo_resultados(st.session_state['itens_configurados_mt'], 'MT')
+
 
 def update_items_list(quantidade_itens: int):
     """Atualiza a lista de itens baseado na quantidade desejada"""
@@ -318,3 +283,6 @@ def update_items_list(quantidade_itens: int):
     
     while len(st.session_state['itens_configurados_mt']) > quantidade_itens:
         st.session_state['itens_configurados_mt'].pop()
+
+
+    
