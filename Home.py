@@ -11,11 +11,15 @@ from pages.resumo.view import pagina_resumo
 from pages.adm.view import admin_section
 from datetime import datetime
 from st_aggrid import AgGrid, GridOptionsBuilder
+import dotenv
+
+dotenv.load_dotenv()
 
 def selecionar_tipo_proposta():
     """Função para selecionar se é nova revisão ou atualização"""
     params = st.query_params
-    revisao_id = params.get("id_revisao")
+    # revisao_id = params.get("id_revisao")
+    revisao_id = os.getenv("ID_REVISAO_TESTE")
     
     # Se não tem id_revisao, define automaticamente como nova revisão
     if not revisao_id:
@@ -208,8 +212,25 @@ def carregar_dados_revisao(revisao_id: str):
             
             if conteudo_json:
                 dados = json.loads(conteudo_json)
-                for key in ['configuracoes_itens', 'impostos', 
-                          'itens_configurados', 'dados_iniciais']:
+                
+                # Inicializar a estrutura de itens se não existir
+                if 'itens' not in st.session_state:
+                    st.session_state.itens = {
+                        'itens_configurados_mt': [],
+                        'itens_configurados_bt': []
+                    }
+                
+                # Carregar dados na nova estrutura
+                if 'itens_configurados_mt' in dados:
+                    st.session_state.itens['itens_configurados_mt'] = dados['itens_configurados_mt']
+                elif 'itens_configurados' in dados:  # Compatibilidade com dados antigos
+                    st.session_state.itens['itens_configurados_mt'] = dados['itens_configurados']
+                
+                if 'itens_configurados_bt' in dados:
+                    st.session_state.itens['itens_configurados_bt'] = dados['itens_configurados_bt']
+                
+                # Carregar outros dados
+                for key in ['configuracoes_itens', 'impostos', 'dados_iniciais']:
                     if key in dados:
                         st.session_state[key] = dados[key]
             else:
@@ -227,6 +248,12 @@ def carregar_dados_revisao(revisao_id: str):
                     'fone': '',
                     'local_frete': 'São Paulo/SP'
                 }
+                
+                # Inicializar itens vazios
+                st.session_state.itens = {
+                    'itens_configurados_mt': [],
+                    'itens_configurados_bt': []
+                }
             
             st.session_state['revisao_loaded'] = True
             st.session_state['revisao_atual'] = revisao_id
@@ -235,7 +262,8 @@ def carregar_dados_revisao(revisao_id: str):
         conn.close()
         
     except Exception as e:
-        st.error(f"Erro ao carregar dados da revisão: {str(e)}")
+        st.error(f"Erro ao carregar revisão: {str(e)}")
+        raise e
 
 def inicializar_dados():
     """Inicia os dados da proposta com base nos parâmetros da URL"""
@@ -249,10 +277,12 @@ def inicializar_dados():
         if st.session_state.get('app_initialized'):
             return
 
-        id_revisao = params.get('id_revisao')
+        # id_revisao = params.get('id_revisao')
+        id_revisao = os.getenv("ID_REVISAO_TESTE")
         st.session_state['id_revisao'] = id_revisao
 
-        id_proposta = params.get('id_proposta')       
+        # id_proposta = params.get('id_proposta')   
+        id_proposta = os.getenv("ID_PROPOSTA_TESTE")    
         st.session_state['id_proposta'] = id_proposta
 
         if id_revisao:
@@ -376,7 +406,7 @@ def configurar_dados_iniciais():
     
     if st.button("Continuar", type="primary"):
         # Verifica campos obrigatórios
-        campos_vazios = [k for k, v in dados.items() if not v and k not in ['id_proposta', 'dia', 'mes', 'ano']]
+        campos_vazios = [k for k, v in dados.items() if not v and k not in ['id_proposta', 'dia', 'mes', 'ano','comentario']]
         if campos_vazios:
             st.error("Por favor, preencha todos os campos obrigatórios:")
             for campo in campos_vazios:
