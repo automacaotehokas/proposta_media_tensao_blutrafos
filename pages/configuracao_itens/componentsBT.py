@@ -63,12 +63,13 @@ class ComponenteBT:
         
         item_obrigatorio = filter(item,'material')
         if st.button("Adicionar Item BT"):
-            campos_vazios = verificar_campos_preenchidos(item,  {
-        'descricao',
-        'material',
-        'tensao_primaria',
-        'tensao_secundaria'
-    } )
+            campos_vazios = verificar_campos_preenchidos(item, campos_obrigatorios=[
+                'descricao',
+                'material',
+                'tensao_primaria',
+                'tensao_secundaria'
+            ]
+            )
             if campos_vazios:
                 st.error(f"Por favor, preencha os seguintes campos: {', '.join(campos_vazios)}")
             else:

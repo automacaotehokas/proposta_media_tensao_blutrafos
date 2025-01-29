@@ -193,6 +193,10 @@ def calcular_percentuais(impostos: Dict[str, float]) -> float:
 
 def initialize_session_state():
     """Inicializa as variáveis necessárias no session_state"""
+    if 'itens' in st.session_state and isinstance(st.session_state['itens'], list):
+        # Se for uma lista, remove e recria como dicionário
+        del st.session_state['itens']
+    
     if 'itens' not in st.session_state:
         st.session_state['itens'] = {
             'itens_configurados_mt': [],
@@ -276,29 +280,24 @@ def configuracao_itens_page():
     
 
 
-def update_items_list(quantidade_itens: int):
-    """Atualiza a lista de itens baseado na quantidade desejada"""
-    while len(st.session_state['itens']['itens_configurados_mt']) < quantidade_itens:
-        st.session_state['itens']['itens_configurados_mt'].append({
-            'Item': len(st.session_state['itens']) + 1,
-            'Quantidade': 1,
-            'Descrição': "",
-            'Potência': None,
-            'Tensão Primária': None,
-            'Tensão Secundária': "380",
-            'Derivações': "13,8/13,2/12,6/12,0/11,4",
-            'Fator K': 1,
-            'IP': '00',
-            'Perdas': None,
-            'Preço Unitário': 0.0,
-            'Preço Total': 0.0,
-            'IPI': 0.0,
-            'classe_tensao': None,
-            'adicional_caixa_classe': None
-        })
-    
-    while len(st.session_state['itens']['itens_configurados_mt']) > quantidade_itens:
-        st.session_state['itens']['itens_configurados_mt'].pop()
-
-
+# def update_items_list(quantidade_itens: int):
+#     """Atualiza a lista de itens baseado na quantidade desejada"""
+#     while len(st.session_state['itens']['itens_configurados_mt']) < quantidade_itens:
+#         st.session_state['itens']['itens_configurados_mt'].append({
+#             'Item': len(st.session_state['itens']) + 1,
+#             'Quantidade': 1,
+#             'Descrição': "",
+#             'Potência': None,
+#             'Tensão Primária': None,
+#             'Tensão Secundária': "380",
+#             'Derivações': "13,8/13,2/12,6/12,0/11,4",
+#             'Fator K': 1,
+#             'IP': '00',
+#             'Perdas': None,
+#             'Preço Unitário': 0.0,
+#             'Preço Total': 0.0,
+#             'IPI': 0.0,
+#             'classe_tensao': None,
+#             'adicional_caixa_classe': None
+#         })
     
