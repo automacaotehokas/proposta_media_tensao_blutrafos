@@ -63,3 +63,319 @@
 2025-01-29 11:59:34,792 - googlemaps.client - INFO - API queries_quota: 60
 2025-01-29 12:01:39,774 - googlemaps.client - INFO - API queries_quota: 60
 2025-01-29 12:03:54,535 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-29 13:31:23,128 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-29 13:33:40,988 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-29 13:36:20,991 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-29 13:38:57,381 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-29 13:43:09,172 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-29 13:44:30,252 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-29 13:59:10,914 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-29 14:00:39,741 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-29 14:02:31,828 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-29 14:04:17,822 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-29 14:14:52,947 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-29 14:17:02,773 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-29 14:38:48,365 - services.revision_service - INFO - 
+        Iniciando inserção/atualização de revisão:
+        - ID Proposta: 66acbbe6-aebf-4654-b157-acb32d2ad757
+        - Valor: 0
+        - Número Revisão: 0
+        - Word Path: Proposta Blutrafos nº BT 80002-Rev00.docx
+        - PDF Path: Resumo_Proposta_BT_80002-Rev00_EXTRATO.pdf
+        - Escopo: 1,500 MVA
+        
+2025-01-29 14:38:48,366 - services.revision_service - INFO - Verificando se já existe uma revisão com este número...
+2025-01-29 14:38:48,768 - services.revision_service - INFO - Resultado da busca por revisão existente: None
+2025-01-29 14:38:48,769 - services.revision_service - INFO - Verificando se é a próxima revisão válida...
+2025-01-29 14:38:48,965 - services.revision_service - INFO - Última revisão: -1, Próxima revisão: 0
+2025-01-29 14:38:48,965 - services.revision_service - INFO - Preparando dados para nova revisão 0...
+2025-01-29 14:38:48,972 - services.revision_service - INFO - Inserindo nova revisão no banco...
+2025-01-29 14:38:49,174 - services.revision_service - INFO - Nova revisão criada com ID: 1669ef13-b8a5-482a-9c1e-e040e7067f01
+2025-01-29 14:38:49,174 - services.revision_service - INFO - Verificando necessidade de atualizar proposta (última revisão: -1)
+2025-01-29 14:38:50,817 - services.revision_service - INFO - Nenhuma revisão encontrada para proposta 66acbbe6-aebf-4654-b157-acb32d2ad757. Esta será a primeira.
+2025-01-29 14:38:50,823 - services.revision_service - INFO - Chamando atualização da proposta...
+2025-01-29 14:38:50,823 - services.revision_service - INFO - 
+    Iniciando atualização da proposta:
+    - ID: 66acbbe6-aebf-4654-b157-acb32d2ad757
+    - Escopo: 1,500 MVA
+    - Valor: 0
+    - Última Revisão: 0
+    - ID Revisão (se fornecido): 1669ef13-b8a5-482a-9c1e-e040e7067f01
+    
+2025-01-29 14:38:52,104 - services.revision_service - INFO - ID da revisão para atualização: 1669ef13-b8a5-482a-9c1e-e040e7067f01
+2025-01-29 14:38:52,565 - services.revision_service - INFO - 
+            Valores atuais da proposta antes da atualização:
+            - Escopo: 0 mVA
+            - Valor: 0.00
+            - Última Revisão: 0
+            
+2025-01-29 14:38:52,567 - services.revision_service - INFO - 
+        Executando query de atualização com parâmetros:
+        - Escopo: 1,500 MVA
+        - Valor: 0
+        - Última Revisão: 0
+        - ID Proposta: 66acbbe6-aebf-4654-b157-acb32d2ad757
+        
+2025-01-29 14:38:52,796 - services.revision_service - INFO - 
+            Proposta atualizada com sucesso:
+            - ID: 66acbbe6-aebf-4654-b157-acb32d2ad757
+            - Novo Escopo: 1,500 MVA
+            - Novo Valor: 0.00
+            - Nova Última Revisão: 0
+            
+2025-01-29 14:38:53,001 - services.revision_service - INFO - Commit realizado com sucesso
+2025-01-29 14:38:53,415 - services.revision_service - INFO - 
+            Valores finais da proposta após atualização:
+            - Escopo: 1,500 MVA
+            - Valor: 0.00
+            - Última Revisão: 0
+            
+2025-01-29 14:38:53,422 - services.revision_service - INFO - Conexão fechada com sucesso
+2025-01-29 14:43:37,641 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-29 14:48:52,915 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-29 14:50:59,655 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-29 15:20:27,693 - services.revision_service - INFO - 
+        Iniciando atualização de revisão:
+        - ID Revisão: 1669ef13-b8a5-482a-9c1e-e040e7067f01
+        - Valor: 0
+        - Número Revisão: 0
+        - Word Path: Proposta Blutrafos nº BT 80002-Rev00.docx
+        - PDF Path: Proposta Blutrafos nº BT 80002-Rev00.docx
+        - Escopo: 0,000 MVA
+        
+2025-01-29 15:20:27,696 - services.revision_service - INFO - Preparando dados para atualização da revisão...
+2025-01-29 15:20:27,696 - services.revision_service - INFO - Dados JSON preparados com sucesso
+2025-01-29 15:20:27,697 - services.revision_service - INFO - Executando query de UPDATE na tabela revisoes...
+2025-01-29 15:20:28,114 - services.revision_service - INFO - Resultado do UPDATE: ('1669ef13-b8a5-482a-9c1e-e040e7067f01', '66acbbe6-aebf-4654-b157-acb32d2ad757')
+2025-01-29 15:20:28,114 - services.revision_service - INFO - Revisão atualizada com sucesso. ID: 1669ef13-b8a5-482a-9c1e-e040e7067f01, ID Proposta: 66acbbe6-aebf-4654-b157-acb32d2ad757
+2025-01-29 15:20:28,114 - services.revision_service - INFO - Verificando se revisão 0 é a mais recente...
+2025-01-29 15:20:29,783 - services.revision_service - INFO - 
+                Verificando se revisão 0 é a maior:
+                - Maior revisão encontrada: 0
+                - Nova revisão: 0
+                - É a maior? True
+            
+2025-01-29 15:20:29,783 - services.revision_service - INFO - Revisão 0 é a mais recente. Atualizando proposta...
+2025-01-29 15:20:29,783 - services.revision_service - INFO - 
+    Iniciando atualização da proposta:
+    - ID: 66acbbe6-aebf-4654-b157-acb32d2ad757
+    - Escopo: 0,000 MVA
+    - Valor: 0
+    - Última Revisão: 0
+    - ID Revisão (se fornecido): None
+    
+2025-01-29 15:20:31,002 - services.revision_service - INFO - Buscando ID da revisão mais recente para proposta 66acbbe6-aebf-4654-b157-acb32d2ad757 e revisão 0
+2025-01-29 15:20:31,414 - services.revision_service - INFO - ID da revisão para atualização: 1669ef13-b8a5-482a-9c1e-e040e7067f01
+2025-01-29 15:20:31,626 - services.revision_service - INFO - 
+            Valores atuais da proposta antes da atualização:
+            - Escopo: 1,500 MVA
+            - Valor: 0.00
+            - Última Revisão: 0
+            
+2025-01-29 15:20:31,626 - services.revision_service - INFO - 
+        Executando query de atualização com parâmetros:
+        - Escopo: 0,000 MVA
+        - Valor: 0
+        - Última Revisão: 0
+        - ID Proposta: 66acbbe6-aebf-4654-b157-acb32d2ad757
+        
+2025-01-29 15:20:31,841 - services.revision_service - INFO - 
+            Proposta atualizada com sucesso:
+            - ID: 66acbbe6-aebf-4654-b157-acb32d2ad757
+            - Novo Escopo: 0,000 MVA
+            - Novo Valor: 0.00
+            - Nova Última Revisão: 0
+            
+2025-01-29 15:20:32,042 - services.revision_service - INFO - Commit realizado com sucesso
+2025-01-29 15:20:32,451 - services.revision_service - INFO - 
+            Valores finais da proposta após atualização:
+            - Escopo: 0,000 MVA
+            - Valor: 0.00
+            - Última Revisão: 0
+            
+2025-01-29 15:20:32,453 - services.revision_service - INFO - Conexão fechada com sucesso
+2025-01-29 15:22:32,424 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-29 15:22:36,841 - services.revision_service - INFO - 
+        Iniciando atualização de revisão:
+        - ID Revisão: 1669ef13-b8a5-482a-9c1e-e040e7067f01
+        - Valor: 0
+        - Número Revisão: 0
+        - Word Path: Proposta Blutrafos nº BT 80002-Rev00.docx
+        - PDF Path: Proposta Blutrafos nº BT 80002-Rev00.docx
+        - Escopo: 0,000 MVA
+        
+2025-01-29 15:22:36,842 - services.revision_service - INFO - Preparando dados para atualização da revisão...
+2025-01-29 15:22:36,842 - services.revision_service - INFO - Dados JSON preparados com sucesso
+2025-01-29 15:22:36,842 - services.revision_service - INFO - Executando query de UPDATE na tabela revisoes...
+2025-01-29 15:22:37,250 - services.revision_service - INFO - Resultado do UPDATE: ('1669ef13-b8a5-482a-9c1e-e040e7067f01', '66acbbe6-aebf-4654-b157-acb32d2ad757')
+2025-01-29 15:22:37,251 - services.revision_service - INFO - Revisão atualizada com sucesso. ID: 1669ef13-b8a5-482a-9c1e-e040e7067f01, ID Proposta: 66acbbe6-aebf-4654-b157-acb32d2ad757
+2025-01-29 15:22:37,251 - services.revision_service - INFO - Verificando se revisão 0 é a mais recente...
+2025-01-29 15:22:38,996 - services.revision_service - INFO - 
+                Verificando se revisão 0 é a maior:
+                - Maior revisão encontrada: 0
+                - Nova revisão: 0
+                - É a maior? True
+            
+2025-01-29 15:22:39,000 - services.revision_service - INFO - Revisão 0 é a mais recente. Atualizando proposta...
+2025-01-29 15:22:39,000 - services.revision_service - INFO - 
+    Iniciando atualização da proposta:
+    - ID: 66acbbe6-aebf-4654-b157-acb32d2ad757
+    - Escopo: 0,000 MVA
+    - Valor: 0
+    - Última Revisão: 0
+    - ID Revisão (se fornecido): None
+    
+2025-01-29 15:22:40,283 - services.revision_service - INFO - Buscando ID da revisão mais recente para proposta 66acbbe6-aebf-4654-b157-acb32d2ad757 e revisão 0
+2025-01-29 15:22:40,705 - services.revision_service - INFO - ID da revisão para atualização: 1669ef13-b8a5-482a-9c1e-e040e7067f01
+2025-01-29 15:22:40,904 - services.revision_service - INFO - 
+            Valores atuais da proposta antes da atualização:
+            - Escopo: 0,000 MVA
+            - Valor: 0.00
+            - Última Revisão: 0
+            
+2025-01-29 15:22:40,905 - services.revision_service - INFO - 
+        Executando query de atualização com parâmetros:
+        - Escopo: 0,000 MVA
+        - Valor: 0
+        - Última Revisão: 0
+        - ID Proposta: 66acbbe6-aebf-4654-b157-acb32d2ad757
+        
+2025-01-29 15:22:41,140 - services.revision_service - INFO - 
+            Proposta atualizada com sucesso:
+            - ID: 66acbbe6-aebf-4654-b157-acb32d2ad757
+            - Novo Escopo: 0,000 MVA
+            - Novo Valor: 0.00
+            - Nova Última Revisão: 0
+            
+2025-01-29 15:22:41,345 - services.revision_service - INFO - Commit realizado com sucesso
+2025-01-29 15:22:41,747 - services.revision_service - INFO - 
+            Valores finais da proposta após atualização:
+            - Escopo: 0,000 MVA
+            - Valor: 0.00
+            - Última Revisão: 0
+            
+2025-01-29 15:22:41,748 - services.revision_service - INFO - Conexão fechada com sucesso
+2025-01-29 15:23:39,980 - services.revision_service - INFO - 
+        Iniciando atualização de revisão:
+        - ID Revisão: 1669ef13-b8a5-482a-9c1e-e040e7067f01
+        - Valor: 0
+        - Número Revisão: 0
+        - Word Path: Proposta Blutrafos nº BT 80002-Rev00.docx
+        - PDF Path: Proposta Blutrafos nº BT 80002-Rev00.docx
+        - Escopo: 1,500 MVA
+        
+2025-01-29 15:23:39,981 - services.revision_service - INFO - Preparando dados para atualização da revisão...
+2025-01-29 15:23:39,981 - services.revision_service - ERROR - Erro ao atualizar revisão 1669ef13-b8a5-482a-9c1e-e040e7067f01: name 'Decimal' is not defined
+2025-01-29 15:23:39,982 - services.revision_service - ERROR - Stacktrace completo:
+Traceback (most recent call last):
+  File "C:\Users\Erick\Desktop\Arquivos Base Media Tensao\deploy\proposta_media_tensao_blutrafos\services\revision_service.py", line 249, in _atualizar_revisao
+    json_dados = json.dumps(dados, default=lambda x: float(x) if isinstance(x, Decimal) else x)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Erick\AppData\Local\Programs\Python\Python312\Lib\json\__init__.py", line 238, in dumps
+    **kw).encode(obj)
+          ^^^^^^^^^^^
+  File "C:\Users\Erick\AppData\Local\Programs\Python\Python312\Lib\json\encoder.py", line 200, in encode
+    chunks = self.iterencode(o, _one_shot=True)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Erick\AppData\Local\Programs\Python\Python312\Lib\json\encoder.py", line 258, in iterencode
+    return _iterencode(o, 0)
+           ^^^^^^^^^^^^^^^^^
+  File "C:\Users\Erick\Desktop\Arquivos Base Media Tensao\deploy\proposta_media_tensao_blutrafos\services\revision_service.py", line 249, in <lambda>
+    json_dados = json.dumps(dados, default=lambda x: float(x) if isinstance(x, Decimal) else x)
+                                                                               ^^^^^^^
+NameError: name 'Decimal' is not defined
+2025-01-29 15:26:44,201 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-29 15:26:49,607 - services.revision_service - INFO - 
+        Iniciando atualização de revisão:
+        - ID Revisão: 1669ef13-b8a5-482a-9c1e-e040e7067f01
+        - Valor: 0
+        - Número Revisão: 0
+        - Word Path: Proposta Blutrafos nº BT 80002-Rev00.docx
+        - PDF Path: Proposta Blutrafos nº BT 80002-Rev00.docx
+        - Escopo: 1,500 MVA
+        
+2025-01-29 15:26:49,608 - services.revision_service - INFO - Preparando dados para atualização da revisão...
+2025-01-29 15:26:49,610 - services.revision_service - ERROR - Erro ao atualizar revisão 1669ef13-b8a5-482a-9c1e-e040e7067f01: name 'Decimal' is not defined
+2025-01-29 15:26:49,610 - services.revision_service - ERROR - Stacktrace completo:
+Traceback (most recent call last):
+  File "C:\Users\Erick\Desktop\Arquivos Base Media Tensao\deploy\proposta_media_tensao_blutrafos\services\revision_service.py", line 249, in _atualizar_revisao
+    json_dados = json.dumps(dados, default=lambda x: float(x) if isinstance(x, Decimal) else x)
+                 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Erick\AppData\Local\Programs\Python\Python312\Lib\json\__init__.py", line 238, in dumps
+    **kw).encode(obj)
+          ^^^^^^^^^^^
+  File "C:\Users\Erick\AppData\Local\Programs\Python\Python312\Lib\json\encoder.py", line 200, in encode
+    chunks = self.iterencode(o, _one_shot=True)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Erick\AppData\Local\Programs\Python\Python312\Lib\json\encoder.py", line 258, in iterencode
+    return _iterencode(o, 0)
+           ^^^^^^^^^^^^^^^^^
+  File "C:\Users\Erick\Desktop\Arquivos Base Media Tensao\deploy\proposta_media_tensao_blutrafos\services\revision_service.py", line 249, in <lambda>
+    json_dados = json.dumps(dados, default=lambda x: float(x) if isinstance(x, Decimal) else x)
+                                                                               ^^^^^^^
+NameError: name 'Decimal' is not defined
+2025-01-29 15:27:51,366 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-29 15:27:55,985 - services.revision_service - INFO - 
+        Iniciando atualização de revisão:
+        - ID Revisão: 1669ef13-b8a5-482a-9c1e-e040e7067f01
+        - Valor: 0
+        - Número Revisão: 0
+        - Word Path: Proposta Blutrafos nº BT 80002-Rev00.docx
+        - PDF Path: Proposta Blutrafos nº BT 80002-Rev00.docx
+        - Escopo: 1,500 MVA
+        
+2025-01-29 15:27:55,993 - services.revision_service - INFO - Preparando dados para atualização da revisão...
+2025-01-29 15:27:55,993 - services.revision_service - INFO - Dados JSON preparados com sucesso
+2025-01-29 15:27:55,993 - services.revision_service - INFO - Executando query de UPDATE na tabela revisoes...
+2025-01-29 15:27:56,422 - services.revision_service - INFO - Resultado do UPDATE: ('1669ef13-b8a5-482a-9c1e-e040e7067f01', '66acbbe6-aebf-4654-b157-acb32d2ad757')
+2025-01-29 15:27:56,425 - services.revision_service - INFO - Revisão atualizada com sucesso. ID: 1669ef13-b8a5-482a-9c1e-e040e7067f01, ID Proposta: 66acbbe6-aebf-4654-b157-acb32d2ad757
+2025-01-29 15:27:56,426 - services.revision_service - INFO - Verificando se revisão 0 é a mais recente...
+2025-01-29 15:27:58,116 - services.revision_service - INFO - 
+                Verificando se revisão 0 é a maior:
+                - Maior revisão encontrada: 0
+                - Nova revisão: 0
+                - É a maior? True
+            
+2025-01-29 15:27:58,116 - services.revision_service - INFO - Revisão 0 é a mais recente. Atualizando proposta...
+2025-01-29 15:27:58,116 - services.revision_service - INFO - 
+    Iniciando atualização da proposta:
+    - ID: 66acbbe6-aebf-4654-b157-acb32d2ad757
+    - Escopo: 1,500 MVA
+    - Valor: 0
+    - Última Revisão: 0
+    - ID Revisão (se fornecido): None
+    
+2025-01-29 15:27:59,322 - services.revision_service - INFO - Buscando ID da revisão mais recente para proposta 66acbbe6-aebf-4654-b157-acb32d2ad757 e revisão 0
+2025-01-29 15:27:59,726 - services.revision_service - INFO - ID da revisão para atualização: 1669ef13-b8a5-482a-9c1e-e040e7067f01
+2025-01-29 15:27:59,927 - services.revision_service - INFO - 
+            Valores atuais da proposta antes da atualização:
+            - Escopo: 0,000 MVA
+            - Valor: 0.00
+            - Última Revisão: 0
+            
+2025-01-29 15:27:59,930 - services.revision_service - INFO - 
+        Executando query de atualização com parâmetros:
+        - Escopo: 1,500 MVA
+        - Valor: 0
+        - Última Revisão: 0
+        - ID Proposta: 66acbbe6-aebf-4654-b157-acb32d2ad757
+        
+2025-01-29 15:28:00,131 - services.revision_service - INFO - 
+            Proposta atualizada com sucesso:
+            - ID: 66acbbe6-aebf-4654-b157-acb32d2ad757
+            - Novo Escopo: 1,500 MVA
+            - Novo Valor: 0.00
+            - Nova Última Revisão: 0
+            
+2025-01-29 15:28:00,334 - services.revision_service - INFO - Commit realizado com sucesso
+2025-01-29 15:28:00,744 - services.revision_service - INFO - 
+            Valores finais da proposta após atualização:
+            - Escopo: 1,500 MVA
+            - Valor: 0.00
+            - Última Revisão: 0
+            
+2025-01-29 15:28:00,745 - services.revision_service - INFO - Conexão fechada com sucesso
+2025-01-29 15:33:22,983 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-29 15:36:07,839 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-29 15:51:32,962 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-29 16:29:00,101 - googlemaps.client - INFO - API queries_quota: 60

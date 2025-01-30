@@ -3,11 +3,11 @@
 from typing import Dict, Any
 import streamlit as st
 import pandas as pd
+from decimal import Decimal
+from utils.constants import TAX_CONSTANTS
 
 def buscar_cod_caixa_proj(df: pd.DataFrame, id: int) -> Dict[str, Any]:
-    """
-    Busca o código de projeto e o código de caixa no DataFrame.
-    """
+    """Busca o código de projeto e o código de caixa no DataFrame."""
     item_info = df[df['id'] == id]
     if item_info.empty:
         return None
@@ -18,9 +18,7 @@ def buscar_cod_caixa_proj(df: pd.DataFrame, id: int) -> Dict[str, Any]:
     }
 
 def ajustar_preco_por_derivacoes(preco_encontrado: float, item: Dict) -> float:
-    """
-    Ajusta o preço do item com base nas derivações selecionadas.
-    """
+    """Ajusta o preço do item com base nas derivações selecionadas."""
     derivacoes = item['Derivações']
     multiplicador = 1.0
 
@@ -36,12 +34,38 @@ def ajustar_preco_por_derivacoes(preco_encontrado: float, item: Dict) -> float:
 
     return preco_encontrado * multiplicador
 
+def calcular_preco_com_impostos(preco_base: float, dados_impostos: Dict[str, Any], percentuais: float) -> Dict[str, float]:
+    """Calcula o preço final considerando impostos e percentuais."""
+    try:
+        # Converter para Decimal para maior precisão
+        preco_base_dec = Decimal(str(preco_base))
+        percentuais_dec = Decimal(str(percentuais))
+        p_trafo = Decimal(str(dados_impostos.get('p_trafo', '0')))
+
+        # Cálculo similar ao MT
+        preco_base1 = preco_base_dec / (Decimal('1') - p_trafo - percentuais_dec)
+        
+        # Salvar preço do transformador no session state
+        st.session_state['preco_trafo'] = float(preco_base1)
+
+        # Calcular preços com impostos
+        preco_final = preco_base1
+
+        return {
+            'preco_base': float(preco_base_dec),
+            'preco_com_impostos': float(preco_final)
+        }
+    except Exception as e:
+        st.error(f"Erro no cálculo de impostos: {str(e)}")
+        return {
+            'preco_base': preco_base,
+            'preco_com_impostos': preco_base
+        }
+
 def buscar_preco_por_potencia(df: pd.DataFrame, potencia: float, produto: str, 
                              ip: str, tensao_primaria: float, tensao_secundaria: float, 
                              material: str, item: Dict) -> float:
-    """
-    Calcula o preço base do item considerando todas as especificações e adicionais.
-    """
+    """Calcula o preço base do item considerando todas as especificações e adicionais."""
     tensao_primaria_padrao = 380
     tensao_secundaria_padrao = 220
     potencia_ajustada = potencia
@@ -104,7 +128,7 @@ def buscar_preco_por_potencia(df: pd.DataFrame, potencia: float, produto: str,
         elif item['Flange'] == 2:
             preco_encontrado *= 2.1
     
-    return ajustar_preco_por_derivacoes(preco_encontrado, item)
+    return preco_encontrado
 
 def calcular_percentuais() -> float:
     """

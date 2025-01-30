@@ -285,6 +285,9 @@ def inicializar_dados():
         id_proposta = os.getenv("ID_PROPOSTA_TESTE")    
         st.session_state['id_proposta'] = id_proposta
 
+        token = os.getenv("TOKEN_TESTE")
+        st.session_state['token'] = token
+
         if id_revisao:
             # Carrega dados da revisão existente
             carregar_dados_revisao(id_revisao)

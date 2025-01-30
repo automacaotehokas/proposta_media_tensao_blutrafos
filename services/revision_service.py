@@ -3,20 +3,13 @@ import os
 import logging
 import sys
 from datetime import datetime
-from io import BytesIO
-from pathlib import Path
-from typing import Dict, Any, Optional, Tuple, List
-from config.databaseMT import DatabaseConfig
-import json
-import os
-import logging
-import sys
-from datetime import datetime
 from decimal import Decimal
 from io import BytesIO
 from pathlib import Path
 from typing import Dict, Any, Optional, Tuple, List
 from config.databaseMT import DatabaseConfig
+import requests
+from requests_toolbelt.multipart.encoder import MultipartEncoder
 
 
 # Cria diretório de logs se não existir
@@ -232,217 +225,151 @@ class RevisionService:
             return "0,000 MVA"
 
     @staticmethod
-    def _atualizar_revisao(
-        cur,
-        dados: Dict[str, Any],
-        valor: float,
-        numero_revisao: int,
-        word_path: str,
-        pdf_path: str,
-        escopo: str,
-        revisao_id: str
-    ) -> Optional[str]:
-        """
-        Update an existing revision in the database.
-        """
-        logger.info(f"""
-        Iniciando atualização de revisão:
-        - ID Revisão: {revisao_id}
-        - Valor: {valor}
-        - Número Revisão: {numero_revisao}
-        - Word Path: {word_path}
-        - PDF Path: {pdf_path}
-        - Escopo: {escopo}
-        """)
-
-        try:
-            logger.info("Preparando dados para atualização da revisão...")
-            json_dados = json.dumps(dados, default=lambda x: float(x) if isinstance(x, Decimal) else x)
-            logger.info("Dados JSON preparados com sucesso")
-
-            logger.info("Executando query de UPDATE na tabela revisoes...")
-            cur.execute("""
-                UPDATE revisoes 
-                SET conteudo = %s::jsonb, 
-                    valor = %s,
-                    revisao = %s,
-                    dt_revisao = NOW(),
-                    comentario = 'Revisão Atualizada',
-                    arquivo = %s,
-                    arquivo_pdf = %s,
-                    escopo = %s
-                WHERE id_revisao = %s
-                RETURNING id_revisao, id_proposta_id;
-            """, (json_dados, valor, numero_revisao, word_path, pdf_path, escopo, revisao_id))
-            
-            result = cur.fetchone()
-            logger.info(f"Resultado do UPDATE: {result}")
-
-            if result:
-                revisao_id, id_proposta = str(result[0]), str(result[1])
-                logger.info(f"Revisão atualizada com sucesso. ID: {revisao_id}, ID Proposta: {id_proposta}")
-                
-                logger.info(f"Verificando se revisão {numero_revisao} é a mais recente...")
-                if is_ultima_revisao(id_proposta, numero_revisao):
-                    logger.info(f"Revisão {numero_revisao} é a mais recente. Atualizando proposta...")
-                    atualizar_proposta(
-                        id_proposta=id_proposta,
-                        escopo=escopo,
-                        valor=valor,
-                        ultima_revisao=numero_revisao
-                    )
-                else:
-                    logger.info(f"Revisão {revisao_id} não é a mais recente. Proposta não será atualizada.")
-
-                return revisao_id
-            
-            logger.warning("Nenhuma revisão foi atualizada")
-            return None
-
-        except Exception as e:
-            logger.error(f"Erro ao atualizar revisão {revisao_id}: {e}")
-            logger.exception("Stacktrace completo:")
-            raise Exception(f"Erro ao atualizar revisão: {str(e)}")
-
-    @staticmethod
     def _inserir_revisao(
-        cur,
         dados: Dict[str, Any],
         id_proposta: str,
         valor: float,
         numero_revisao: int,
-        word_path: str,
-        pdf_path: str,
+        word_path: BytesIO,  
+        pdf_path: BytesIO,   
         escopo: str
     ) -> Optional[str]:
         """
-        Insere ou atualiza uma revisão no banco de dados.
+        Insere uma nova revisão através da API.
         """
         logger.info(f"""
-        Iniciando inserção/atualização de revisão:
+        Iniciando inserção de revisão via API:
         - ID Proposta: {id_proposta}
         - Valor: {valor}
         - Número Revisão: {numero_revisao}
-        - Word Path: {word_path}
-        - PDF Path: {pdf_path}
         - Escopo: {escopo}
         """)
 
         try:
-            logger.info("Verificando se já existe uma revisão com este número...")
-            cur.execute("""
-            SELECT id_revisao::text
-            FROM revisoes
-            WHERE id_proposta_id = %s::uuid AND revisao = %s;
-            """, (id_proposta, numero_revisao))
-
-            existing_revision = cur.fetchone()
-            logger.info(f"Resultado da busca por revisão existente: {existing_revision}")
-
-            if existing_revision:
-                logger.info("Encontrada revisão existente. Buscando última versão...")
-                cur.execute("""
-                SELECT id_revisao::text 
-                FROM revisoes 
-                WHERE id_proposta_id = %s::uuid AND revisao = %s
-                ORDER BY dt_revisao DESC
-                LIMIT 1
-                """, (id_proposta, numero_revisao))
-                
-                ultima_revisao = cur.fetchone()
-                revisao_id = str(ultima_revisao[0]) if ultima_revisao else str(existing_revision[0])
-                
-                logger.info(f"Encontrada revisão {revisao_id} com número {numero_revisao}, chamando atualização...")
-                return RevisionService._atualizar_revisao(
-                    cur=cur,
-                    dados=dados,
-                    valor=valor,
-                    numero_revisao=numero_revisao,
-                    word_path=word_path,
-                    pdf_path=pdf_path,
-                    escopo=escopo,
-                    revisao_id=revisao_id
-                )
-
-            logger.info("Verificando se é a próxima revisão válida...")
-            cur.execute("""
-            SELECT MAX(revisao)
-            FROM revisoes
-            WHERE id_proposta_id = %s::uuid;
-            """, (id_proposta,))
-            
-            result = cur.fetchone()
-            ultima_revisao = result[0] if result and result[0] is not None else -1
-            proxima_revisao = ultima_revisao + 1
-            
-            logger.info(f"Última revisão: {ultima_revisao}, Próxima revisão: {proxima_revisao}")
-
-            if numero_revisao != proxima_revisao:
-                logger.error(f"Tentativa inválida: revisão {numero_revisao} ≠ próxima revisão {proxima_revisao}")
-                raise Exception(f"Não é possível criar a revisão {numero_revisao}. A próxima revisão deve ser {proxima_revisao}")
-
-            logger.info(f"Preparando dados para nova revisão {numero_revisao}...")
-            dados_para_salvar = {
-                'itens_configurados_mt': st.session['itens']['itens_configurados_mt'],
-                'itens_configurados_bt': dados.itens.get('itens_configurados_bt', []),
-                'impostos': dados.get('impostos', {}),
-                'dados_iniciais': dados.get('dados_iniciais', {}),
-                'configuracoes_itens': dados.get('configuracoes_itens', {})
+            # Preparar os dados do formulário
+            form_data = {
+                'id_proposta': id_proposta,
+                'revisao': str(numero_revisao),
+                'valor': str(valor),
+                'escopo': escopo,
+                'tipo': dados.get('tipo', ''),
+                'conteudo': json.dumps(dados, default=lambda x: float(x) if isinstance(x, Decimal) else x)
             }
 
-            comentario = ('Revisão Inicial' if numero_revisao == 0 
-                        else dados.get('dados_iniciais', {}).get('comentario', ''))
-            
-            logger.info("Inserindo nova revisão no banco...")
-            cur.execute("""
-                INSERT INTO revisoes (
-                    id_revisao, id_proposta_id, valor, conteudo, revisao,
-                    dt_revisao, comentario, arquivo, arquivo_pdf, escopo
-                )
-                VALUES (
-                    gen_random_uuid(), %s::uuid, %s, %s, %s,
-                    NOW(), %s, %s, %s, %s
-                )
-                RETURNING id_revisao;
-            """, (
-                id_proposta,
-                valor,
-                json.dumps(dados_para_salvar, default=lambda x: float(x) if isinstance(x, Decimal) else x),
-                numero_revisao,
-                comentario,
-                word_path,
-                pdf_path,
-                escopo
-            ))
-            
-            result = cur.fetchone()
-            revisao_id = str(result[0]) if result else None
-            logger.info(f"Nova revisão criada com ID: {revisao_id}")
+            # Log dos dados antes de enviar
+            logger.info(f"Dados do formulário: {form_data}")
 
-            if not revisao_id:
-                logger.error(f"Falha ao inserir revisão {numero_revisao}")
-                return None
+            # Adicionar arquivo do buffer
+            form_data['arquivo'] = ('proposta.docx', word_path, 'application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+
+            # Criar MultipartEncoder para enviar arquivos
+            multipart_data = MultipartEncoder(fields=form_data)
             
-            logger.info(f"Verificando necessidade de atualizar proposta (última revisão: {ultima_revisao})")
-            # Dentro da função _inserir_revisao, onde faz a chamada para atualizar_proposta
-            if revisao_id and (is_ultima_revisao(id_proposta, numero_revisao) or ultima_revisao in {0,'00'}):
-                logger.info("Chamando atualização da proposta...")
-                atualizar_proposta(
-                    id_proposta=id_proposta,
-                    escopo=escopo,
-                    valor=valor,
-                    ultima_revisao=numero_revisao,
-                    id_revisao=revisao_id  # Passa o ID da revisão que acabamos de criar
-                )
-            else:
-                logger.info(f"Revisão {numero_revisao} não é a mais recente. Proposta não será atualizada.")
-
-            return revisao_id
-
+            # Configurar headers
+            headers = {
+                'Content-Type': multipart_data.content_type,
+                'Accept': 'application/json',
+                'Authorization': f'Bearer {dados.get("token")}'  # Mudando de Token para Bearer
+            }
+            
+            logger.info(f"Headers da requisição: {headers}")
+            
+            # Fazer a requisição POST
+            response = requests.post(
+                'http://localhost:8000/api/streamlit/inserir_revisao/',
+                data=multipart_data,
+                headers=headers
+            )
+            
+            logger.info(f"Status code da resposta: {response.status_code}")
+            logger.info(f"Headers da resposta: {response.headers}")
+            logger.info(f"Conteúdo da resposta: {response.text}")
+            
+            # Verificar se a requisição foi bem sucedida
+            response.raise_for_status()
+            
+            result = response.json()
+            
+            if not result.get('success'):
+                raise Exception(result.get('error', 'Erro desconhecido ao criar revisão'))
+            
+            logger.info(f"Revisão criada com sucesso via API: {result}")
+            return result.get('revisao', {}).get('id')
+            
+        except requests.exceptions.RequestException as e:
+            logger.error(f"Erro ao criar revisão via API: {str(e)}")
+            raise Exception(f"Erro ao criar revisão via API: {str(e)}")
         except Exception as e:
-            logger.error(f"Erro ao inserir revisão: {e}")
-            logger.exception("Stacktrace completo:")
-            raise Exception(f"Erro ao inserir revisão: {str(e)}")
+            logger.error(f"Erro inesperado ao criar revisão: {str(e)}")
+            raise Exception(f"Erro inesperado ao criar revisão: {str(e)}")
+
+    @staticmethod
+    def _atualizar_revisao(
+        dados: Dict[str, Any],
+        valor: float,
+        numero_revisao: int,
+        word_path: BytesIO,  
+        pdf_path: BytesIO,   
+        escopo: str,
+        revisao_id: str
+    ) -> str:
+        """
+        Atualiza uma revisão existente através da API.
+        """
+        logger.info(f"""
+        Iniciando atualização de revisão via API:
+        - ID Revisão: {revisao_id}
+        - Valor: {valor}
+        - Número Revisão: {numero_revisao}
+        - Escopo: {escopo}
+        """)
+
+        try:
+            # Preparar os dados do formulário
+            form_data = {
+                'revisao_id': revisao_id,
+                'valor': str(valor),
+                'escopo': escopo,
+                'tipo': dados.get('tipo', ''),
+                'conteudo': json.dumps(dados, default=lambda x: float(x) if isinstance(x, Decimal) else x)
+            }
+
+            # Adicionar arquivo do buffer
+            form_data['arquivo'] = ('proposta.docx', word_path, 'application/vnd.openxmlformats-officedocument.wordprocessingml.document')
+
+            # Criar MultipartEncoder para enviar arquivos
+            multipart_data = MultipartEncoder(fields=form_data)
+            
+            # Configurar headers
+            headers = {
+                'Content-Type': multipart_data.content_type,
+                'Authorization': f'Bearer {dados.get("token")}'  # Mudando de Token para Bearer
+            }
+            
+            # Fazer a requisição POST
+            response = requests.post(
+                'http://localhost:8000/api/streamlit/atualizar_revisao/',
+                data=multipart_data,
+                headers=headers
+            )
+            
+            # Verificar se a requisição foi bem sucedida
+            response.raise_for_status()
+            
+            result = response.json()
+            
+            if not result.get('success'):
+                raise Exception(result.get('error', 'Erro desconhecido ao atualizar revisão'))
+            
+            logger.info(f"Revisão atualizada com sucesso via API: {result}")
+            return revisao_id
+            
+        except requests.exceptions.RequestException as e:
+            logger.error(f"Erro ao atualizar revisão via API: {str(e)}")
+            raise Exception(f"Erro ao atualizar revisão via API: {str(e)}")
+        except Exception as e:
+            logger.error(f"Erro inesperado ao atualizar revisão: {str(e)}")
+            raise Exception(f"Erro inesperado ao atualizar revisão: {str(e)}")
 
     @staticmethod
     def _salvar_arquivos(bt: str, rev: int, files: Dict[str, BytesIO]) -> Tuple[str, str]:
