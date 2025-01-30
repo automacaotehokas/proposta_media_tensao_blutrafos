@@ -14,8 +14,6 @@ def calcular_valor_acessorio_com_percentuais(valor_acessorio: float, percentuais
 
 def verificar_campos_preenchidos(dicionario,campos_obrigatorios):
     campos_vazios = []
-
-    
     def verificar_valor(valor, caminho=""):
         if isinstance(valor, dict):
             for chave, val in valor.items():

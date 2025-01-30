@@ -18,12 +18,12 @@ class ComponenteBT:
         if 'current_bt_item' not in st.session_state:
             st.session_state['current_bt_item'] = {
                 'id': None,
-                'produto': "",
-                'potencia': "",
+                'Produto': "",
+                'Potência': "",
                 'potencia_numerica': None,
                 'material': "",
-                'tensao_primaria': None,
-                'tensao_secundaria': None,
+                'Tensão Primária': None,
+                'Tensão Secundária': None,
                 'preco': None,
                 'proj': None,
                 'modelo_caixa': None,
@@ -44,10 +44,12 @@ class ComponenteBT:
                 },
                 'rele': "Nenhum",
                 'preco_rele': 0,
-                'ip': '00',
+                'IP': '00',
                 'flange': 0,
                 'Quantidade': 1,
-                'fator_k': 1
+                'Fator K': 1,
+                'Preço Unitário': 0.0,
+                'Preço Total': 0.0
             }
     
 
@@ -61,57 +63,62 @@ class ComponenteBT:
         ComponenteBT.render_item_accessories(0, item)
         # Botão para adicionar o item
         
-        item_obrigatorio = filter(item,'material')
+
         if st.button("Adicionar Item BT"):
             campos_vazios = verificar_campos_preenchidos(item, campos_obrigatorios=[
                 'descricao',
                 'material',
                 'tensao_primaria',
-                'tensao_secundaria'
-            ]
-            )
+                'tensao_secundaria',
+            ])
+            
             if campos_vazios:
                 st.error(f"Por favor, preencha os seguintes campos: {', '.join(campos_vazios)}")
-            else:
-                    if 'itens_configurados_bt' not in st.session_state['itens']:
-                        st.session_state['itens']['itens_configurados_bt'] = []
-                    st.session_state['itens']['itens_configurados_bt'].append(item.copy())
-                    st.success("Item BT adicionado com sucesso!")
-                    # Reseta o item atual
-                    st.session_state['current_bt_item'] = {
-                        'id': None,
-                        'produto': "",
-                        'potencia': "",
-                        'potencia_numerica': None,
-                        'material': "",
-                        'tensao_primaria': None,
-                        'tensao_secundaria': None,
-                        'preco': None,
-                        'proj': None,
-                        'modelo_caixa': None,
-                        'descricao': "",
-                        'cod_caixa': None,
-                        'preco_caixa': None,
-                        'derivacoes': {
-                            'taps': 'nenhum',
-                            'tensoes_primarias': 'nenhum'
-                        },
-                        'taps': None,
-                        'taps_tensoes': None,
-                        'frequencia_50hz': False,
-                        'blindagem_eletrostatica': False,
-                        'ensaios': {
-                            'elevacao_temperatura': False,
-                            'nivel_ruido': False
-                        },
-                        'rele': "Nenhum",
-                        'preco_rele': 0,
-                        'ip': '00',
-                        'flange': 0,
-                        'Quantidade': 1,
-                        'fator_k': 1
-                    }
-                    st.rerun()
+            else:  # Se não houver campos vazios, prossegue com a adição
+                # Garante que a lista existe
+                if 'itens_configurados_bt' not in st.session_state['itens']:
+                    st.session_state['itens']['itens_configurados_bt'] = []
+                # Adiciona o item
+                st.session_state['itens']['itens_configurados_bt'].append(item.copy())
+                st.success("Item BT adicionado com sucesso!")
+                
+                # Reseta o item atual
+                st.session_state['current_bt_item'] = {
+                    'id': None,
+                    'Produto': "",
+                    'Potência': "",
+                    'potencia_numerica': None,
+                    'material': "",
+                    'Tensão Primária': None,
+                    'Tensão Secundária': None,
+                    'preco': None,
+                    'proj': None,
+                    'modelo_caixa': None,
+                    'descricao': "",
+                    'cod_caixa': None,
+                    'preco_caixa': None,
+                    'derivacoes': {
+                        'taps': 'nenhum',
+                        'tensoes_primarias': 'nenhum'
+                    },
+                    'taps': None,
+                    'taps_tensoes': None,
+                    'frequencia_50hz': False,
+                    'blindagem_eletrostatica': False,
+                    'ensaios': {
+                        'elevacao_temperatura': False,
+                        'nivel_ruido': False
+                    },
+                    'rele': "Nenhum",
+                    'preco_rele': 0,
+                    'IP': '00',
+                    'flange': 0,
+                    'Quantidade': 1,
+                    'Fator K': 1,
+                    'Preço Unitário': 0,
+                    'Preço Total': 0
+                }
+                st.rerun()
 
 
 
@@ -129,9 +136,9 @@ class ComponenteBT:
 
         if item['descricao']:
             item['id'] = int(df.loc[df['descricao'] == item['descricao'], 'id'].values[0])
-            item['produto'] = df.loc[df['descricao'] == item['descricao'], 'produto'].values[0]
+            item['Produto'] = df.loc[df['descricao'] == item['descricao'], 'produto'].values[0]
             item['potencia_numerica'] = df.loc[df['descricao'] == item['descricao'], 'potencia_numerica'].values[0]
-            item['potencia'] = df.loc[df['descricao'] == item['descricao'], 'potencia'].values[0]
+            item['Potência'] = df.loc[df['descricao'] == item['descricao'], 'potencia'].values[0]
             item['preco'] = df.loc[df['descricao'] == item['descricao'], 'preco'].values[0]
             item['proj'] = df.loc[df['descricao'] == item['descricao'], 'proj'].values[0]
             item['modelo_caixa'] = df.loc[df['descricao'] == item['descricao'], 'modelo_caixa'].values[0]
@@ -141,12 +148,12 @@ class ComponenteBT:
             tensao_primaria_db = df.loc[df['descricao'] == item['descricao'], 'tensao_primaria'].values[0]
             tensao_secundaria_db = df.loc[df['descricao'] == item['descricao'], 'tensao_secundaria'].values[0]
 
-            item['tensao_primaria'] = st.number_input(
+            item['Tensão Primária'] = st.number_input(
                 f"Tensão Primária do Item {index + 1}:",
                 value=float(tensao_primaria_db),
                 min_value=0.0
             )
-            item['tensao_secundaria'] = st.number_input(
+            item['Tensão Secundária'] = st.number_input(
                 f"Tensão Secundária do Item {index + 1}:",
                 value=float(tensao_secundaria_db),
                 min_value=0.0
@@ -167,16 +174,16 @@ class ComponenteBT:
         Renderiza os componentes de especificações do item.
         """
         fator_k_opcoes = [1, 4, 6, 8, 13]
-        item['fator_k'] = st.selectbox(
+        item['Fator K'] = st.selectbox(
             f"Fator K do Item {index + 1}:",
             fator_k_opcoes,
-            index=fator_k_opcoes.index(item['fator_k']) if 'fator_k' in item and item['fator_k'] in fator_k_opcoes else 0
+            index=fator_k_opcoes.index(item['Fator K']) if 'Fator K' in item and item['Fator K'] in fator_k_opcoes else 0
         )
         
         ip_opcoes = ['00', '21', '23', '54']
         
         if "IP-54" in item['descricao']:
-            item['ip'] = '54'
+            item['IP'] = '54'
             flange_opcoes = [0, 1, 2]
             item['flange'] = st.selectbox(
                 f"Flange {index + 1}:",
@@ -184,13 +191,13 @@ class ComponenteBT:
                 index=flange_opcoes.index(item['flange']) if item['flange'] in flange_opcoes else 0
             )
         else:
-            item['ip'] = st.selectbox(
+            item['IP'] = st.selectbox(
                 f"IP do Item {index + 1}:",
                 ip_opcoes,
-                index=ip_opcoes.index(item['ip']) if item['ip'] in ip_opcoes else 0
+                index=ip_opcoes.index(item['IP']) if item['IP'] in ip_opcoes else 0
             )
             
-            if item['ip'] != '00':
+            if item['IP'] != '00':
                 flange_opcoes = [0, 1, 2]
                 item['flange'] = st.selectbox(
                     f"Flange {index + 1}:",

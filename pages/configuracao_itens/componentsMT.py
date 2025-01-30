@@ -6,6 +6,7 @@ from utils.constants import get_default_voltage_values, ACESSORIOS_FIXOS , ACESS
 from pages.inicial.api import distancia_cidade_capital
 from .utils import calcular_valor_acessorio_com_percentuais
 from repositories.custos_media_tensao_repository import CustoMediaTensaoRepository
+from .utils import verificar_campos_preenchidos
 
 
 
@@ -324,18 +325,78 @@ class componentsMT:
         st.write(f"**Preço Unitário:** R$ {preco_unitario:,.2f}")
         st.write(f"**Preço Total:** R$ {preco_total:,.2f}")
 
-        if st.button("Adicionar Item MT", key=f"add_item_{item_index}"):
-            if descricao_escolhida:
-                
-                if 'itens_configurados_mt' not in st.session_state['itens']:
-                    st.session_state['itens']['itens_configurados_mt'] = []
-            
-                # Cria uma cópia do item_data para adicionar à lista
-                novo_item = item_data.copy()
-                st.session_state['itens']['itens_configurados_mt'].append(novo_item)
-                st.success("Item MT adicionado com sucesso!")
-                st.rerun()
+
+        item = st.session_state['current_mt_item'] = {
+                    'Descrição': "",
+                    'Fator K': 1,
+                    'IP': '00',
+                    'Tensão Primária': None,
+                    'Tensão Secundária': None,
+                    'Derivações': None,
+                    'Quantidade': 1,
+                    'classe_tensao': None,
+                    'Perdas': None,
+                    'Potência': None,
+                    'cod_proj_custo': None,
+                    'cod_proj_caixa': None,
+                    'preco': 0.0,
+                    'p_trafo': 0.0,
+                    'valor_ip_baixo': 0.0,
+                    'valor_ip_alto': 0.0,
+                    'p_caixa': 0.0,
+                    'acessorios': [],
+                    'valor_unit': 0.0,
+                    'valor_total': 0.0
+                }
+        
+
+        # Remova esta parte que está recriando o item
+# item = st.session_state['current_mt_item'] = { ... }
+
+# Substitua o código do botão por:
+        if st.button("Adicionar Item MT"):
+            campos_vazios = verificar_campos_preenchidos(item, campos_obrigatorios=[
+                'descricao',  # Note as maiúsculas, conforme usado no item_data
+                'tensao_primaria',
+                'tensao_secundaria',
+                'derivacoes'
+            ])
+            if campos_vazios:
+                st.error(f"Por favor, preencha os seguintes campos: {', '.join(campos_vazios)}")
             else:
-                st.error("Por favor, selecione uma descrição para o item.")
+                if 'itens' not in st.session_state:
+                    st.session_state['itens'] = {
+                        'itens_configurados_mt': [],
+                        'itens_configurados_bt': []
+                    }
+                
+                # Adiciona o item_data que já contém todos os valores calculados
+                st.session_state['itens']['itens_configurados_mt'].append(item_data.copy())
+                st.success("Item MT adicionado com sucesso!")
+                
+                # Reseta o item atual
+                st.session_state['current_mt_item'] = {
+                    'Descrição': "",
+                    'Fator K': 1,
+                    'IP': '00',
+                    'Tensão Primária': None,
+                    'Tensão Secundária': None,
+                    'Derivações': None,
+                    'Quantidade': 1,
+                    'classe_tensao': None,
+                    'Perdas': None,
+                    'Potência': None,
+                    'cod_proj_custo': None,
+                    'cod_proj_caixa': None,
+                    'preco': 0.0,
+                    'p_trafo': 0.0,
+                    'valor_ip_baixo': 0.0,
+                    'valor_ip_alto': 0.0,
+                    'p_caixa': 0.0,
+                    'acessorios': [],
+                    'Preço Unitário': 0.0,
+                    'Preço Total': 0.0
+                }
+                st.rerun()
 
         return item_data

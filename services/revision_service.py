@@ -7,6 +7,7 @@ from io import BytesIO
 from pathlib import Path
 from typing import Dict, Any, Optional, Tuple, List
 from config.databaseMT import DatabaseConfig
+from decimal import Decimal
 
 # Cria diretório de logs se não existir
 log_dir = Path("logs")
@@ -372,7 +373,8 @@ class RevisionService:
 
             logger.info(f"Preparando dados para nova revisão {numero_revisao}...")
             dados_para_salvar = {
-                'itens_configurados': dados.get('itens_configurados', []),
+                'itens_configurados_mt': dados.get('itens_configurados_mt', []),
+                'itens_configurados_bt': dados.get('itens_configurados_bt', []),
                 'impostos': dados.get('impostos', {}),
                 'dados_iniciais': dados.get('dados_iniciais', {}),
                 'configuracoes_itens': dados.get('configuracoes_itens', {})

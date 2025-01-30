@@ -50,7 +50,7 @@ def processar_arquivo_excel(uploaded_file):
         st.write("Colunas encontradas:", df.columns.tolist())
 
         expected_columns = [
-            'p_caixa', 'p_trafo', 'potencia', 'preco', 'perdas', 
+            'p_caixa', 'p_trafo', 'Potência', 'preco', 'perdas', 
             'classe_tensao', 'valor_ip_baixo', 'valor_ip_alto', 
             'cod_proj_custo', 'descricao', 'potencia_formatada', 
             'cod_proj_caixa'
