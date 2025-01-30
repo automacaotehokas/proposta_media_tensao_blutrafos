@@ -1,12 +1,12 @@
 import streamlit as st
-from services.document.word_service import WordDocumentService
-from services.document.pdf_service import PDFDocumentService
+import logging
 from services.revision_service import RevisionService
 from .components import (
     render_dados_iniciais, render_variaveis, 
     render_itens_configurados, render_botoes_download
 )
 
+from services.document.master.manager import DocumentManager
 from config.databaseMT import DatabaseConfig
 from services.sharepoint.sharepoint_service import SharePoint
 
@@ -34,14 +34,13 @@ def is_ultima_revisao(id_proposta: str, id_revisao: str) -> bool:
 def verificar_dados_completos():
     """Verifica se todos os dados necessários estão preenchidos"""
     dados_iniciais = st.session_state.get('dados_iniciais', {})
-    itens_configurados = st.session_state.get('itens_configurados', [])
 
     campos_obrigatorios = [
         'cliente', 'nomeCliente', 'fone', 'email', 'bt', 
         'dia', 'mes', 'ano', 'rev', 'local_frete'
     ]
 
-    return all(dados_iniciais.get(campo) for campo in campos_obrigatorios) and itens_configurados
+    return all(dados_iniciais.get(campo) for campo in campos_obrigatorios)
 
 def pagina_resumo():
     """Renderiza a página de resumo"""
@@ -57,7 +56,7 @@ def pagina_resumo():
     st.markdown("---")
     
     render_variaveis(st.session_state['impostos'], 
-                    st.session_state['itens_configurados'])
+                    st.session_state['itens']['itens_configurados_mt'])
     st.markdown("---")
 
     # Adicionar campo de comentários
@@ -68,8 +67,6 @@ def pagina_resumo():
             value=st.session_state['dados_iniciais'].get('comentario', ''),
             key='comentario_revisao'
         )
-    
-
 
     # Botão de confirmação
     dados_completos = verificar_dados_completos()
@@ -82,113 +79,112 @@ def pagina_resumo():
                     )
         try:
             if dados_completos:
-                # Gerar documentos
-                sharepoint = SharePoint()
-                template_path = WordDocumentService.get_template_file(sharepoint)
+                # Inicializa o gerenciador de documentos
+                doc_manager = DocumentManager()
                 
-                # Documento Word
-                buffer_word = WordDocumentService.gerar_documento(
-                    template_path=template_path,    
-                    dados_iniciais=st.session_state['dados_iniciais'],
-                    impostos=st.session_state['impostos'],
-                    itens_configurados=st.session_state['itens_configurados']
-                )
-
-                buffer_pdf = PDFDocumentService.gerar_pdf(
-                    dados_iniciais=st.session_state['dados_iniciais'],
-                    impostos=st.session_state['impostos'],
-                    itens_configurados=st.session_state['itens_configurados']
-                )
-
-                if buffer_word and buffer_pdf:
-                    # Prepara os nomes dos arquivos
-                    bt = st.session_state['dados_iniciais']['bt']
-                    rev = st.session_state['dados_iniciais']['rev']
-                    output_filename_word = f"Proposta Blutrafos nº BT {bt}-Rev{rev}.docx"
-                    pdf_filename = f"Resumo_Proposta_BT_{bt}-Rev{rev}_EXTRATO.pdf"
-
-                    escopo = RevisionService.buscar_escopo_transformador(
-                        st.session_state.get('itens_configurados', [])
+                try:
+                    # Gerar documento Word
+                    dados_iniciais = st.session_state['dados_iniciais']
+                    itens = st.session_state['itens']
+                    impostos = st.session_state['impostos']
+                    output_path = doc_manager.gerar_documentos(
+                        itens=st.session_state['itens'],
+                        observacao=st.session_state['dados_iniciais'].get('comentario', ''),
+                        replacements = {
+                            '{{CLIENTE}}': str(dados_iniciais.get('cliente', '')),
+                            '{{NOMECLIENTE}}': str(dados_iniciais.get('nomeCliente', '')),
+                            '{{FONE}}': str(dados_iniciais.get('fone', '')),
+                            '{{EMAIL}}': str(dados_iniciais.get('email', '')),
+                            '{{BT}}': str(dados_iniciais.get('bt', '')),
+                            '{{OBRA}}': str(dados_iniciais.get('obra', ' ')),
+                            '{{DIA}}': str(dados_iniciais.get('dia', '')),
+                            '{{MES}}': str(dados_iniciais.get('mes', '')),
+                            '{{ANO}}': str(dados_iniciais.get('ano', '')),
+                            '{{REV}}': str(dados_iniciais.get('rev', '')),
+                            '{{LOCAL}}': str(dados_iniciais.get('local_frete', '')),
+                            '{{LOCALFRETE}}': str(impostos.get('local_frete_itens', '')),
+                            '{{ICMS}}': f"{impostos.get('icms', 0):.1f}%",
+                            '{{IP}}': ', '.join(set(str(item['IP']) for item in itens.get('itens_configurados_bt', []) 
+                                            if item['IP'] != '00')),
+                            '{obra}': '' if not dados_iniciais.get('obra', '').strip() else 'Obra:'
+                        }
+                        
                     )
+                    # # Gerar PDF
+                    # pdf_path = doc_manager.gerar_pdf(output_path)
 
+                    if output_path :
+                        # Prepara os nomes dos arquivos
+                        bt = st.session_state['dados_iniciais']['bt']
+                        rev = st.session_state['dados_iniciais']['rev']
+                        output_filename_word = f"Proposta Blutrafos nº BT {bt}-Rev{rev}.docx"
+                        pdf_filename = f"Resumo_Proposta_BT_{bt}-Rev{rev}_EXTRATO.pdf"
 
-                    conn = DatabaseConfig.get_connection()
-                    cur = conn.cursor()
+                        # Lê os arquivos em memória
+                        with open(output_path, 'rb') as word_file:
+                            buffer_word = word_file.read()
+                        # with open(pdf_path, 'rb') as pdf_file:
+                        #     buffer_pdf = pdf_file.read()
 
-                    # Salvar a revisão
-                    try:
-                        if st.session_state['tipo_proposta'] == "Atualizar revisão":
+                        conn = DatabaseConfig.get_connection()
+                        cur = conn.cursor()
+                        pdf_path = "bola azul"
+                        # Salvar a revisão
+                        try:
                             valor_total = sum(float(item['Preço Total']) for item in st.session_state.get('itens_configurados', []))
-                            RevisionService._atualizar_revisao(
-                                cur=cur,
-                                dados={
-                                    'configuracoes_itens': st.session_state.get('configuracoes_itens', {}),
-                                    'impostos': st.session_state.get('impostos', {}),
-                                    'itens_configurados': st.session_state.get('itens_configurados', []),
-                                    'dados_iniciais': st.session_state.get('dados_iniciais', {})
-                                },
-                                valor=valor_total,
-                                numero_revisao=int(st.session_state['dados_iniciais']['rev']),
-                                word_path=output_filename_word,
-                                pdf_path=output_filename_word,
-                                escopo=escopo,
-                                revisao_id=st.session_state['id_revisao']
-                            )
+                            
+                            if st.session_state['tipo_proposta'] == "Atualizar revisão":
+                                RevisionService._atualizar_revisao(
+                                    cur=cur,
+                                    dados={
+                                        'configuracoes_itens': st.session_state.get('configuracoes_itens', {}),
+                                        'impostos': st.session_state.get('impostos', {}),
+                                        'itens_configurados': st.session_state.get('itens_configurados', []),
+                                        'dados_iniciais': st.session_state.get('dados_iniciais', {})
+                                    },
+                                    valor=valor_total,
+                                    numero_revisao=int(st.session_state['dados_iniciais']['rev']),
+                                    word_path=output_filename_word,
+                                    pdf_path=pdf_filename,
+                                    escopo=escopo,
+                                    revisao_id=st.session_state['id_revisao']
+                                )
+                            else:
+                                RevisionService._inserir_revisao(
+                                    cur=cur,
+                                    dados={
+                                        'configuracoes_itens': st.session_state.get('configuracoes_itens', {}),
+                                        'impostos': st.session_state.get('impostos', {}),
+                                        'itens_configurados': st.session_state.get('itens_configurados', []),
+                                        'dados_iniciais': st.session_state.get('dados_iniciais', {})
+                                    },
+                                    id_proposta=st.session_state['id_proposta'],
+                                    valor=valor_total,
+                                    numero_revisao=int(st.session_state['dados_iniciais']['rev']),
+                                    word_path=output_filename_word,
+                                    pdf_path=pdf_filename,
+                                    escopo=escopo
+                                )
 
                             conn.commit()
-                            
-                            # Adicionar atualização do session_state aqui também
+
+                            # Atualiza o session_state com os buffers e nomes dos arquivos
                             st.session_state.update({
                                 'buffer_word': buffer_word,
                                 'output_filename_word': output_filename_word,
-                                'buffer_pdf': buffer_pdf,
-                                'pdf_filename': pdf_filename,
-                                'downloads_gerados': True
-                            })
-                            
-                            st.success("Revisão atualizada com sucesso!")
-                        else:
-                            valor_total = sum(float(item['Preço Total']) for item in st.session_state.get('itens_configurados', []))
-                            
-                            # Usa o número da revisão que já foi definido no session_state
-                            result = RevisionService._inserir_revisao(
-                                cur=cur,
-                                dados={
-                                    'configuracoes_itens': st.session_state.get('configuracoes_itens', {}),
-                                    'impostos': st.session_state.get('impostos', {}),
-                                    'itens_configurados': st.session_state.get('itens_configurados', []),
-                                    'dados_iniciais': st.session_state.get('dados_iniciais', {})
-                                },
-                                id_proposta=st.session_state['id_proposta'],
-                                valor=valor_total,
-                                numero_revisao=int(st.session_state['dados_iniciais']['rev']),  # Usa o número que já foi definido
-                                word_path=output_filename_word,
-                                pdf_path=pdf_filename,
-                                escopo=escopo
-                            )
-
-                            conn.commit()
-                            
-                            if result:
-                                st.success("Revisão salva com sucesso no banco de dados.")
-                            
-                            # Armazenar os buffers e nomes dos arquivos no session_state
-                            st.session_state.update({
-                                'buffer_word': buffer_word,
-                                'output_filename_word': output_filename_word,
-                                'buffer_pdf': buffer_pdf,
+                                'buffer_pdf': "bola azul",
                                 'pdf_filename': pdf_filename,
                                 'downloads_gerados': True
                             })
 
+                            st.success("Documentos gerados com sucesso.")
 
-                    except Exception as e:
-                        st.error(f"Erro ao salvar revisão: {str(e)}")
-                        st.stop()
+                        except Exception as e:
+                            st.error(f"Erro ao salvar revisão: {str(e)}")
+                            st.stop()
 
-                    st.success("Documentos gerados com sucesso.")
-                else:
-                    st.error("Erro ao gerar os documentos.")
+                except Exception as e:
+                    st.error(f"Erro ao gerar documentos: {str(e)}")
             else:
                 st.error("Por favor, preencha todos os campos obrigatórios antes de gerar os documentos.")
 
@@ -234,5 +230,3 @@ if __name__ == "__main__":
                 'frete', 'local_frete_itens', 'difal', 'f_pobreza', 'comissao']:
         if key not in dadosimpostos:
             dadosimpostos[key] = 0.0 if 'f' in key or 'c' in key else ''
-
-

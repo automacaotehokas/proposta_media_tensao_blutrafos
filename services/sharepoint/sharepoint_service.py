@@ -4,6 +4,7 @@ import tempfile
 from shareplum import Site, Office365
 from shareplum.site import Version
 from dotenv import load_dotenv
+import logging
 
 class SharePoint:
     def __init__(self):
@@ -28,6 +29,22 @@ class SharePoint:
             authcookie=self.authcookie
         )
         return self.site
+    
+    def listar_arquivos(self):
+        """
+        Lista todos os arquivos na pasta do SharePoint
+        """
+        try:
+            self._folder = self.connect_folder()
+            arquivos = self._folder.files
+            logging.info(f"Pasta atual: {self.FOLDER_NAME}")
+            logging.info("Arquivos disponíveis:")
+            for arquivo in arquivos:
+                logging.info(f"- {arquivo['Name']}")
+            return arquivos
+        except Exception as e:
+            logging.error(f"Erro ao listar arquivos: {str(e)}")
+            return []
 
     def connect_folder(self):
         """Conecta à pasta específica no SharePoint"""
