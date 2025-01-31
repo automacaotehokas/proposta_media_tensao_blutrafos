@@ -1,0 +1,809 @@
+2025-01-31 09:03:15,430 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 24
+2025-01-31 09:03:15,431 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 09:03:15,457 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 24
+2025-01-31 09:03:15,460 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 24
+2025-01-31 09:03:15,462 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 24
+2025-01-31 09:03:16,018 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 24
+2025-01-31 09:03:16,022 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 24
+2025-01-31 09:03:20,993 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 24
+2025-01-31 09:03:20,995 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 24
+2025-01-31 09:03:26,715 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 24
+2025-01-31 09:03:26,716 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 24
+2025-01-31 09:03:31,872 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 24
+2025-01-31 09:03:31,875 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 24
+2025-01-31 09:03:33,908 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 24
+2025-01-31 09:03:33,910 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 24
+2025-01-31 09:03:42,126 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 24
+2025-01-31 09:03:42,129 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 24
+2025-01-31 09:03:48,515 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 24
+2025-01-31 09:03:48,516 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 24
+2025-01-31 09:03:53,958 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 24
+2025-01-31 09:03:53,960 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 24
+2025-01-31 09:03:57,802 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 24
+2025-01-31 09:03:57,803 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 24
+2025-01-31 09:04:06,095 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 24
+2025-01-31 09:04:06,096 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 24
+2025-01-31 09:04:07,327 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 24
+2025-01-31 09:04:07,328 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 24
+2025-01-31 09:04:10,430 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 24
+2025-01-31 09:04:10,432 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 24
+2025-01-31 09:04:12,692 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 24
+2025-01-31 09:04:12,694 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 24
+2025-01-31 09:04:12,701 - root - INFO - Tipo de produto identificado: MT
+2025-01-31 09:04:12,704 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 24
+2025-01-31 09:04:14,800 - root - INFO - Tentando acessar pasta: Documentos Compartilhados/04 - Propostas Automatizadas Média Tensão
+2025-01-31 09:04:14,971 - root - INFO - Conectado com sucesso à pasta: Documentos Compartilhados/04 - Propostas Automatizadas Média Tensão
+2025-01-31 09:04:15,049 - root - INFO - Listando arquivos da pasta 04 - Propostas Automatizadas Média Tensão:
+2025-01-31 09:04:15,049 - root - INFO - - Template_Proposta_Comercial.docx
+2025-01-31 09:04:15,049 - root - INFO - Detectados produtos MT e BT - usando template unificado
+2025-01-31 09:04:15,049 - root - INFO - Procurando template: None
+2025-01-31 09:04:15,050 - root - INFO - Tentando baixar arquivo: None
+2025-01-31 09:04:15,050 - root - INFO - Da pasta: 04 - Propostas Automatizadas Média Tensão
+2025-01-31 09:04:16,558 - root - INFO - Tentando acessar pasta: Documentos Compartilhados/04 - Propostas Automatizadas Média Tensão
+2025-01-31 09:04:16,725 - root - INFO - Conectado com sucesso à pasta: Documentos Compartilhados/04 - Propostas Automatizadas Média Tensão
+2025-01-31 09:04:16,860 - root - ERROR - Erro ao baixar arquivo None: Shareplum HTTP Get Failed : 404 Client Error: Not Found for url: https://solucoestehokas.sharepoint.com/sites/PortalGestaoComercialBlutrafos/_api/web/GetFileByServerRelativeUrl('/sites/PortalGestaoComercialBlutrafos/Documentos%20Compartilhados/04%20-%20Propostas%20Automatizadas%20M%C3%A9dia%20Tens%C3%A3o/None')/$value
+2025-01-31 09:04:16,860 - root - ERROR - Arquivo None não encontrado. Arquivos disponíveis na pasta:
+2025-01-31 09:04:16,860 - root - INFO - - Template_Proposta_Comercial.docx
+2025-01-31 09:04:16,861 - root - ERROR - Erro ao obter template: Template None não encontrado na pasta 04 - Propostas Automatizadas Média Tensão
+2025-01-31 09:04:16,861 - root - ERROR - Erro ao gerar documentos: Template None não encontrado na pasta 04 - Propostas Automatizadas Média Tensão
+2025-01-31 09:07:16,337 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 24
+2025-01-31 09:07:16,337 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 09:07:16,358 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 24
+2025-01-31 09:07:16,361 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 24
+2025-01-31 09:07:16,362 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 24
+2025-01-31 09:07:16,370 - root - INFO - Tipo de produto identificado: MT
+2025-01-31 09:07:16,372 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 24
+2025-01-31 09:07:18,126 - root - INFO - Tentando acessar pasta: Documentos Compartilhados/04 - Propostas Automatizadas Média Tensão
+2025-01-31 09:07:18,269 - root - INFO - Conectado com sucesso à pasta: Documentos Compartilhados/04 - Propostas Automatizadas Média Tensão
+2025-01-31 09:07:18,339 - root - INFO - Listando arquivos da pasta 04 - Propostas Automatizadas Média Tensão:
+2025-01-31 09:07:18,339 - root - INFO - - Template_Proposta_Comercial.docx
+2025-01-31 09:07:18,339 - root - INFO - Detectados produtos MT e BT - usando template unificado
+2025-01-31 09:07:18,340 - root - INFO - Procurando template: None
+2025-01-31 09:07:18,340 - root - INFO - Tentando baixar arquivo: None
+2025-01-31 09:07:18,340 - root - INFO - Da pasta: 04 - Propostas Automatizadas Média Tensão
+2025-01-31 09:07:19,694 - root - INFO - Tentando acessar pasta: Documentos Compartilhados/04 - Propostas Automatizadas Média Tensão
+2025-01-31 09:07:19,843 - root - INFO - Conectado com sucesso à pasta: Documentos Compartilhados/04 - Propostas Automatizadas Média Tensão
+2025-01-31 09:07:19,911 - root - ERROR - Erro ao baixar arquivo None: Shareplum HTTP Get Failed : 404 Client Error: Not Found for url: https://solucoestehokas.sharepoint.com/sites/PortalGestaoComercialBlutrafos/_api/web/GetFileByServerRelativeUrl('/sites/PortalGestaoComercialBlutrafos/Documentos%20Compartilhados/04%20-%20Propostas%20Automatizadas%20M%C3%A9dia%20Tens%C3%A3o/None')/$value
+2025-01-31 09:07:19,911 - root - ERROR - Arquivo None não encontrado. Arquivos disponíveis na pasta:
+2025-01-31 09:07:19,911 - root - INFO - - Template_Proposta_Comercial.docx
+2025-01-31 09:07:19,912 - root - ERROR - Erro ao obter template: Template None não encontrado na pasta 04 - Propostas Automatizadas Média Tensão
+2025-01-31 09:07:19,912 - root - ERROR - Erro ao gerar documentos: Template None não encontrado na pasta 04 - Propostas Automatizadas Média Tensão
+2025-01-31 09:08:51,651 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 24
+2025-01-31 09:08:51,652 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 09:08:51,671 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 24
+2025-01-31 09:08:51,674 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 24
+2025-01-31 09:08:51,676 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 24
+2025-01-31 09:08:51,683 - root - INFO - Tipo de produto identificado: MT
+2025-01-31 09:08:51,685 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 24
+2025-01-31 09:08:51,685 - root - INFO - Detectados produtos MT e BT - usando pasta unificada (08)
+2025-01-31 09:08:53,286 - root - INFO - Tentando acessar pasta: Documentos Compartilhados/08 - Propostas Automatizadas Trafo
+2025-01-31 09:08:53,456 - root - INFO - Conectado com sucesso à pasta: Documentos Compartilhados/08 - Propostas Automatizadas Trafo
+2025-01-31 09:08:53,515 - root - INFO - Listando arquivos da pasta 08 - Propostas Automatizadas Trafo:
+2025-01-31 09:08:53,515 - root - INFO - Detectados produtos MT e BT - usando template unificado
+2025-01-31 09:08:53,515 - root - INFO - Procurando template: None
+2025-01-31 09:08:53,515 - root - INFO - Tentando baixar arquivo: None
+2025-01-31 09:08:53,515 - root - INFO - Da pasta: 08 - Propostas Automatizadas Trafo
+2025-01-31 09:08:54,789 - root - INFO - Tentando acessar pasta: Documentos Compartilhados/08 - Propostas Automatizadas Trafo
+2025-01-31 09:08:54,934 - root - INFO - Conectado com sucesso à pasta: Documentos Compartilhados/08 - Propostas Automatizadas Trafo
+2025-01-31 09:08:55,003 - root - ERROR - Erro ao baixar arquivo None: Shareplum HTTP Get Failed : 404 Client Error: Not Found for url: https://solucoestehokas.sharepoint.com/sites/PortalGestaoComercialBlutrafos/_api/web/GetFileByServerRelativeUrl('/sites/PortalGestaoComercialBlutrafos/Documentos%20Compartilhados/08%20-%20Propostas%20Automatizadas%20Trafo/None')/$value
+2025-01-31 09:08:55,003 - root - ERROR - Arquivo None não encontrado. Arquivos disponíveis na pasta:
+2025-01-31 09:08:55,004 - root - ERROR - Erro ao obter template: Template None não encontrado na pasta 08 - Propostas Automatizadas Trafo
+2025-01-31 09:08:55,004 - root - ERROR - Erro ao gerar documentos: Template None não encontrado na pasta 08 - Propostas Automatizadas Trafo
+2025-01-31 09:15:04,787 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 24
+2025-01-31 09:15:04,787 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 09:15:04,807 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 24
+2025-01-31 09:15:04,809 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 24
+2025-01-31 09:15:04,811 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 24
+2025-01-31 09:15:04,819 - root - INFO - Tipo de produto identificado: MT
+2025-01-31 09:15:04,821 - dotenv.main - WARNING - Python-dotenv could not parse statement starting at line 24
+2025-01-31 09:15:04,821 - root - INFO - Detectados produtos MT e BT - usando pasta unificada
+2025-01-31 09:15:06,547 - root - INFO - Tentando acessar pasta: Documentos Compartilhados/08 - Propostas Automatizadas Transformadores
+2025-01-31 09:15:06,706 - root - INFO - Conectado com sucesso à pasta: Documentos Compartilhados/08 - Propostas Automatizadas Transformadores
+2025-01-31 09:15:06,770 - root - INFO - Listando arquivos da pasta 08 - Propostas Automatizadas Transformadores:
+2025-01-31 09:15:06,770 - root - INFO - - template_unificado_trafo.docx
+2025-01-31 09:15:06,770 - root - INFO - Detectados produtos MT e BT - usando template unificado
+2025-01-31 09:15:06,770 - root - INFO - Procurando template: None
+2025-01-31 09:15:06,771 - root - INFO - Tentando baixar arquivo: None
+2025-01-31 09:15:06,771 - root - INFO - Da pasta: 08 - Propostas Automatizadas Transformadores
+2025-01-31 09:15:08,419 - root - INFO - Tentando acessar pasta: Documentos Compartilhados/08 - Propostas Automatizadas Transformadores
+2025-01-31 09:15:08,572 - root - INFO - Conectado com sucesso à pasta: Documentos Compartilhados/08 - Propostas Automatizadas Transformadores
+2025-01-31 09:15:08,640 - root - ERROR - Erro ao baixar arquivo None: Shareplum HTTP Get Failed : 404 Client Error: Not Found for url: https://solucoestehokas.sharepoint.com/sites/PortalGestaoComercialBlutrafos/_api/web/GetFileByServerRelativeUrl('/sites/PortalGestaoComercialBlutrafos/Documentos%20Compartilhados/08%20-%20Propostas%20Automatizadas%20Transformadores/None')/$value
+2025-01-31 09:15:08,641 - root - ERROR - Arquivo None não encontrado. Arquivos disponíveis na pasta:
+2025-01-31 09:15:08,641 - root - INFO - - template_unificado_trafo.docx
+2025-01-31 09:15:08,641 - root - ERROR - Erro ao obter template: Template None não encontrado na pasta 08 - Propostas Automatizadas Transformadores
+2025-01-31 09:15:08,641 - root - ERROR - Erro ao gerar documentos: Template None não encontrado na pasta 08 - Propostas Automatizadas Transformadores
+2025-01-31 09:16:03,264 - root - INFO - Tipo de produto identificado: MT
+2025-01-31 09:16:03,267 - root - INFO - Detectados produtos MT e BT - usando pasta unificada
+2025-01-31 09:16:04,624 - root - INFO - Tentando acessar pasta: Documentos Compartilhados/08 - Propostas Automatizadas Transformadores
+2025-01-31 09:16:04,768 - root - INFO - Conectado com sucesso à pasta: Documentos Compartilhados/08 - Propostas Automatizadas Transformadores
+2025-01-31 09:16:04,833 - root - INFO - Listando arquivos da pasta 08 - Propostas Automatizadas Transformadores:
+2025-01-31 09:16:04,833 - root - INFO - - template_unificado_trafo.docx
+2025-01-31 09:16:04,834 - root - INFO - Detectados produtos MT e BT - usando template unificado
+2025-01-31 09:16:04,834 - root - INFO - Procurando template: template_unificado_trafo.docx
+2025-01-31 09:16:04,834 - root - INFO - Tentando baixar arquivo: template_unificado_trafo.docx
+2025-01-31 09:16:04,834 - root - INFO - Da pasta: 08 - Propostas Automatizadas Transformadores
+2025-01-31 09:16:06,049 - root - INFO - Tentando acessar pasta: Documentos Compartilhados/08 - Propostas Automatizadas Transformadores
+2025-01-31 09:16:06,215 - root - INFO - Conectado com sucesso à pasta: Documentos Compartilhados/08 - Propostas Automatizadas Transformadores
+2025-01-31 09:16:06,579 - root - INFO - Arquivo baixado com sucesso para: C:\Users\EDUARD~1.POL\AppData\Local\Temp\template_unificado_trafo.docx
+2025-01-31 09:16:06,580 - root - INFO - Template carregado: C:\Users\EDUARD~1.POL\AppData\Local\Temp\template_unificado_trafo.docx
+2025-01-31 09:16:06,601 - root - INFO - Documento base carregado com sucesso
+2025-01-31 09:16:06,601 - root - INFO - Iniciando substituição de texto...
+2025-01-31 09:16:06,601 - root - INFO - Substituição de texto concluída
+2025-01-31 09:16:06,601 - root - INFO - Iniciando inserção de tabelas...
+2025-01-31 09:16:06,843 - services.document.master.manager - INFO - Iniciando inserção de texto de pagamento
+2025-01-31 09:16:06,848 - services.document.master.manager - INFO - Parágrafo 'Condições de Pagamento' encontrado no índice: 96
+2025-01-31 09:16:06,848 - services.document.master.manager - INFO - Transformadores encontrados - MT: True, BT: True
+2025-01-31 09:16:06,848 - services.document.master.manager - INFO - Processando eventos de média tensão
+2025-01-31 09:16:06,849 - services.document.master.manager - INFO - Iniciando processamento de eventos
+2025-01-31 09:16:06,849 - services.document.master.manager - INFO - A combinar: False
+2025-01-31 09:16:06,849 - services.document.master.manager - INFO - Número de eventos a processar: 4
+2025-01-31 09:16:06,852 - services.document.master.manager - INFO - Eventos MT processados com sucesso
+2025-01-31 09:16:06,852 - services.document.master.manager - INFO - Processando eventos de baixa tensão
+2025-01-31 09:16:06,853 - services.document.master.manager - INFO - Iniciando processamento de eventos
+2025-01-31 09:16:06,853 - services.document.master.manager - INFO - A combinar: False
+2025-01-31 09:16:06,853 - services.document.master.manager - INFO - Número de eventos a processar: 4
+2025-01-31 09:16:06,855 - services.document.master.manager - INFO - Eventos BT processados com sucesso
+2025-01-31 09:16:06,856 - services.document.master.manager - INFO - Inserção de texto de pagamento concluída com sucesso
+2025-01-31 09:16:06,869 - root - INFO - Inserção de tabelas concluída
+2025-01-31 09:16:06,869 - root - INFO - Iniciando processamento de imagens...
+2025-01-31 09:16:06,869 - root - INFO - Processando imagens para MT...
+2025-01-31 09:16:06,869 - root - INFO - Processamento de imagens concluído
+2025-01-31 09:16:07,001 - root - INFO - Documento gerado com sucesso: output\proposta_mt.docx
+2025-01-31 09:16:08,279 - services.revision_service - INFO - 
+        Iniciando atualização de revisão:
+        - ID Revisão: 1669ef13-b8a5-482a-9c1e-e040e7067f01
+        - Valor: 0
+        - Número Revisão: 0
+        - Word Path: Proposta Blutrafos nº BT 80002-Rev00.docx
+        - PDF Path: Resumo_Proposta_BT_80002-Rev00_EXTRATO.pdf
+        - Escopo: 0,000 MVA
+        
+2025-01-31 09:16:08,279 - services.revision_service - INFO - Preparando dados para atualização da revisão...
+2025-01-31 09:16:08,279 - services.revision_service - INFO - Dados JSON preparados com sucesso
+2025-01-31 09:16:08,280 - services.revision_service - INFO - Executando query de UPDATE na tabela revisoes...
+2025-01-31 09:16:08,683 - services.revision_service - INFO - Resultado do UPDATE: ('1669ef13-b8a5-482a-9c1e-e040e7067f01', '66acbbe6-aebf-4654-b157-acb32d2ad757')
+2025-01-31 09:16:08,683 - services.revision_service - INFO - Revisão atualizada com sucesso. ID: 1669ef13-b8a5-482a-9c1e-e040e7067f01, ID Proposta: 66acbbe6-aebf-4654-b157-acb32d2ad757
+2025-01-31 09:16:08,683 - services.revision_service - INFO - Verificando se revisão 0 é a mais recente...
+2025-01-31 09:16:10,279 - services.revision_service - INFO - 
+                Verificando se revisão 0 é a maior:
+                - Maior revisão encontrada: 0
+                - Nova revisão: 0
+                - É a maior? True
+            
+2025-01-31 09:16:10,280 - services.revision_service - INFO - Revisão 0 é a mais recente. Atualizando proposta...
+2025-01-31 09:16:10,280 - services.revision_service - INFO - 
+    Iniciando atualização da proposta:
+    - ID: 66acbbe6-aebf-4654-b157-acb32d2ad757
+    - Escopo: 0,000 MVA
+    - Valor: 0
+    - Última Revisão: 0
+    - ID Revisão (se fornecido): None
+    
+2025-01-31 09:16:11,490 - services.revision_service - INFO - Buscando ID da revisão mais recente para proposta 66acbbe6-aebf-4654-b157-acb32d2ad757 e revisão 0
+2025-01-31 09:16:11,890 - services.revision_service - INFO - ID da revisão para atualização: 1669ef13-b8a5-482a-9c1e-e040e7067f01
+2025-01-31 09:16:12,088 - services.revision_service - INFO - 
+            Valores atuais da proposta antes da atualização:
+            - Escopo: 0,000 MVA
+            - Valor: 0.00
+            - Última Revisão: 0
+            
+2025-01-31 09:16:12,088 - services.revision_service - INFO - 
+        Executando query de atualização com parâmetros:
+        - Escopo: 0,000 MVA
+        - Valor: 0
+        - Última Revisão: 0
+        - ID Proposta: 66acbbe6-aebf-4654-b157-acb32d2ad757
+        
+2025-01-31 09:16:12,289 - services.revision_service - INFO - 
+            Proposta atualizada com sucesso:
+            - ID: 66acbbe6-aebf-4654-b157-acb32d2ad757
+            - Novo Escopo: 0,000 MVA
+            - Novo Valor: 0.00
+            - Nova Última Revisão: 0
+            
+2025-01-31 09:16:12,488 - services.revision_service - INFO - Commit realizado com sucesso
+2025-01-31 09:16:12,882 - services.revision_service - INFO - 
+            Valores finais da proposta após atualização:
+            - Escopo: 0,000 MVA
+            - Valor: 0.00
+            - Última Revisão: 0
+            
+2025-01-31 09:16:12,883 - services.revision_service - INFO - Conexão fechada com sucesso
+2025-01-31 09:23:12,717 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 09:23:12,748 - root - INFO - Tipos de produtos identificados - MT: True, BT: True
+2025-01-31 09:23:12,751 - root - INFO - Detectados produtos MT e BT - usando pasta unificada
+2025-01-31 09:23:14,989 - root - INFO - Tentando acessar pasta: Documentos Compartilhados/08 - Propostas Automatizadas Transformadores
+2025-01-31 09:23:15,171 - root - INFO - Conectado com sucesso à pasta: Documentos Compartilhados/08 - Propostas Automatizadas Transformadores
+2025-01-31 09:23:15,236 - root - INFO - Listando arquivos da pasta 08 - Propostas Automatizadas Transformadores:
+2025-01-31 09:23:15,236 - root - INFO - - template_unificado_trafo.docx
+2025-01-31 09:23:15,236 - root - INFO - Detectados produtos MT e BT - usando template unificado
+2025-01-31 09:23:15,237 - root - INFO - Procurando template: template_unificado_trafo.docx
+2025-01-31 09:23:15,237 - root - INFO - Tentando baixar arquivo: template_unificado_trafo.docx
+2025-01-31 09:23:15,237 - root - INFO - Da pasta: 08 - Propostas Automatizadas Transformadores
+2025-01-31 09:23:16,505 - root - INFO - Tentando acessar pasta: Documentos Compartilhados/08 - Propostas Automatizadas Transformadores
+2025-01-31 09:23:16,646 - root - INFO - Conectado com sucesso à pasta: Documentos Compartilhados/08 - Propostas Automatizadas Transformadores
+2025-01-31 09:23:16,991 - root - INFO - Arquivo baixado com sucesso para: C:\Users\EDUARD~1.POL\AppData\Local\Temp\template_unificado_trafo.docx
+2025-01-31 09:23:16,992 - root - INFO - Template carregado: C:\Users\EDUARD~1.POL\AppData\Local\Temp\template_unificado_trafo.docx
+2025-01-31 09:23:17,013 - root - INFO - Documento base carregado com sucesso
+2025-01-31 09:23:17,033 - root - INFO - Iniciando processamento unificado...
+2025-01-31 09:23:17,034 - services.document.unificado.word_service_unificado - INFO - Iniciando inserção de tabelas em documento unificado
+2025-01-31 09:23:17,252 - services.document.unificado.word_service_unificado - ERROR - Erro ao inserir tabelas: list index out of range
+Traceback (most recent call last):
+  File "C:\Users\eduardo.poli\Desktop\proposta media tensao\proposta_media_tensao_blutrafos\services\document\unificado\word_service_unificado.py", line 80, in inserir_tabelas_word
+    table = create_custom_table(doc, itens_mt, itens_bt, observacao)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\eduardo.poli\Desktop\proposta media tensao\proposta_media_tensao_blutrafos\services\document\unificado\word_tables_unificado.py", line 74, in create_custom_table
+    header_mt = create_header(table.rows[current_row], "Transformadores de Média Tensão")
+                ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\eduardo.poli\Desktop\proposta media tensao\proposta_media_tensao_blutrafos\services\document\unificado\word_tables_unificado.py", line 36, in create_header
+    run = paragraph.runs[0]
+          ~~~~~~~~~~~~~~^^^
+IndexError: list index out of range
+2025-01-31 09:23:17,253 - root - ERROR - Erro durante o processamento do documento: list index out of range
+2025-01-31 09:23:17,253 - root - ERROR - Erro ao gerar documentos: list index out of range
+2025-01-31 09:26:32,634 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 09:26:32,658 - root - INFO - Tipos de produtos identificados - MT: True, BT: True
+2025-01-31 09:26:32,660 - root - INFO - Detectados produtos MT e BT - usando pasta unificada
+2025-01-31 09:26:34,395 - root - INFO - Tentando acessar pasta: Documentos Compartilhados/08 - Propostas Automatizadas Transformadores
+2025-01-31 09:26:34,541 - root - INFO - Conectado com sucesso à pasta: Documentos Compartilhados/08 - Propostas Automatizadas Transformadores
+2025-01-31 09:26:34,603 - root - INFO - Listando arquivos da pasta 08 - Propostas Automatizadas Transformadores:
+2025-01-31 09:26:34,604 - root - INFO - - template_unificado_trafo.docx
+2025-01-31 09:26:34,604 - root - INFO - Detectados produtos MT e BT - usando template unificado
+2025-01-31 09:26:34,604 - root - INFO - Procurando template: template_unificado_trafo.docx
+2025-01-31 09:26:34,604 - root - INFO - Tentando baixar arquivo: template_unificado_trafo.docx
+2025-01-31 09:26:34,604 - root - INFO - Da pasta: 08 - Propostas Automatizadas Transformadores
+2025-01-31 09:26:35,839 - root - INFO - Tentando acessar pasta: Documentos Compartilhados/08 - Propostas Automatizadas Transformadores
+2025-01-31 09:26:35,976 - root - INFO - Conectado com sucesso à pasta: Documentos Compartilhados/08 - Propostas Automatizadas Transformadores
+2025-01-31 09:26:36,286 - root - INFO - Arquivo baixado com sucesso para: C:\Users\EDUARD~1.POL\AppData\Local\Temp\template_unificado_trafo.docx
+2025-01-31 09:26:36,287 - root - INFO - Template carregado: C:\Users\EDUARD~1.POL\AppData\Local\Temp\template_unificado_trafo.docx
+2025-01-31 09:26:36,308 - root - INFO - Documento base carregado com sucesso
+2025-01-31 09:26:36,316 - root - ERROR - Erro durante o processamento do documento: cannot import name 'create_custom_table_escopo' from 'services.document.unificado.word_tables_unificado' (C:\Users\eduardo.poli\Desktop\proposta media tensao\proposta_media_tensao_blutrafos\services\document\unificado\word_tables_unificado.py)
+2025-01-31 09:26:36,316 - root - ERROR - Erro ao gerar documentos: cannot import name 'create_custom_table_escopo' from 'services.document.unificado.word_tables_unificado' (C:\Users\eduardo.poli\Desktop\proposta media tensao\proposta_media_tensao_blutrafos\services\document\unificado\word_tables_unificado.py)
+2025-01-31 09:28:04,701 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 09:28:04,725 - root - INFO - Tipos de produtos identificados - MT: True, BT: True
+2025-01-31 09:28:04,727 - root - INFO - Detectados produtos MT e BT - usando pasta unificada
+2025-01-31 09:28:06,192 - root - INFO - Tentando acessar pasta: Documentos Compartilhados/08 - Propostas Automatizadas Transformadores
+2025-01-31 09:28:06,387 - root - INFO - Conectado com sucesso à pasta: Documentos Compartilhados/08 - Propostas Automatizadas Transformadores
+2025-01-31 09:28:06,453 - root - INFO - Listando arquivos da pasta 08 - Propostas Automatizadas Transformadores:
+2025-01-31 09:28:06,453 - root - INFO - - template_unificado_trafo.docx
+2025-01-31 09:28:06,453 - root - INFO - Detectados produtos MT e BT - usando template unificado
+2025-01-31 09:28:06,453 - root - INFO - Procurando template: template_unificado_trafo.docx
+2025-01-31 09:28:06,454 - root - INFO - Tentando baixar arquivo: template_unificado_trafo.docx
+2025-01-31 09:28:06,454 - root - INFO - Da pasta: 08 - Propostas Automatizadas Transformadores
+2025-01-31 09:28:07,672 - root - INFO - Tentando acessar pasta: Documentos Compartilhados/08 - Propostas Automatizadas Transformadores
+2025-01-31 09:28:07,882 - root - INFO - Conectado com sucesso à pasta: Documentos Compartilhados/08 - Propostas Automatizadas Transformadores
+2025-01-31 09:28:08,191 - root - INFO - Arquivo baixado com sucesso para: C:\Users\EDUARD~1.POL\AppData\Local\Temp\template_unificado_trafo.docx
+2025-01-31 09:28:08,192 - root - INFO - Template carregado: C:\Users\EDUARD~1.POL\AppData\Local\Temp\template_unificado_trafo.docx
+2025-01-31 09:28:08,214 - root - INFO - Documento base carregado com sucesso
+2025-01-31 09:28:08,221 - root - INFO - Iniciando processamento unificado...
+2025-01-31 09:28:08,221 - services.document.unificado.word_service_unificado - INFO - Iniciando inserção de tabelas em documento unificado
+2025-01-31 09:28:08,471 - services.document.unificado.word_service_unificado - ERROR - Erro ao inserir tabelas: list index out of range
+Traceback (most recent call last):
+  File "C:\Users\eduardo.poli\Desktop\proposta media tensao\proposta_media_tensao_blutrafos\services\document\unificado\word_service_unificado.py", line 80, in inserir_tabelas_word
+    table = create_custom_table(doc, itens_mt, itens_bt, observacao)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\eduardo.poli\Desktop\proposta media tensao\proposta_media_tensao_blutrafos\services\document\unificado\word_tables_unificado.py", line 170, in create_custom_table
+    fill_item_row(table.rows[current_row], item, idx)
+                  ~~~~~~~~~~^^^^^^^^^^^^^
+  File "C:\Users\eduardo.poli\AppData\Local\Programs\Python\Python312\Lib\site-packages\docx\table.py", line 526, in __getitem__
+    return list(self)[idx]
+           ~~~~~~~~~~^^^^^
+IndexError: list index out of range
+2025-01-31 09:28:08,482 - root - ERROR - Erro durante o processamento do documento: list index out of range
+2025-01-31 09:28:08,483 - root - ERROR - Erro ao gerar documentos: list index out of range
+2025-01-31 09:30:01,133 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 09:30:01,158 - root - INFO - Tipos de produtos identificados - MT: True, BT: True
+2025-01-31 09:30:01,160 - root - INFO - Detectados produtos MT e BT - usando pasta unificada
+2025-01-31 09:30:02,838 - root - INFO - Tentando acessar pasta: Documentos Compartilhados/08 - Propostas Automatizadas Transformadores
+2025-01-31 09:30:03,117 - root - INFO - Conectado com sucesso à pasta: Documentos Compartilhados/08 - Propostas Automatizadas Transformadores
+2025-01-31 09:30:03,184 - root - INFO - Listando arquivos da pasta 08 - Propostas Automatizadas Transformadores:
+2025-01-31 09:30:03,184 - root - INFO - - template_unificado_trafo.docx
+2025-01-31 09:30:03,184 - root - INFO - Detectados produtos MT e BT - usando template unificado
+2025-01-31 09:30:03,184 - root - INFO - Procurando template: template_unificado_trafo.docx
+2025-01-31 09:30:03,185 - root - INFO - Tentando baixar arquivo: template_unificado_trafo.docx
+2025-01-31 09:30:03,185 - root - INFO - Da pasta: 08 - Propostas Automatizadas Transformadores
+2025-01-31 09:30:04,575 - root - INFO - Tentando acessar pasta: Documentos Compartilhados/08 - Propostas Automatizadas Transformadores
+2025-01-31 09:30:04,711 - root - INFO - Conectado com sucesso à pasta: Documentos Compartilhados/08 - Propostas Automatizadas Transformadores
+2025-01-31 09:30:05,000 - root - INFO - Arquivo baixado com sucesso para: C:\Users\EDUARD~1.POL\AppData\Local\Temp\template_unificado_trafo.docx
+2025-01-31 09:30:05,001 - root - INFO - Template carregado: C:\Users\EDUARD~1.POL\AppData\Local\Temp\template_unificado_trafo.docx
+2025-01-31 09:30:05,022 - root - INFO - Documento base carregado com sucesso
+2025-01-31 09:30:05,030 - root - INFO - Iniciando processamento unificado...
+2025-01-31 09:30:05,030 - services.document.unificado.word_service_unificado - INFO - Iniciando inserção de tabelas em documento unificado
+2025-01-31 09:30:05,240 - services.document.unificado.word_tables_unificado - INFO - Criando tabela com 9 linhas
+2025-01-31 09:30:05,306 - services.document.unificado.word_tables_unificado - INFO - Tabela criada com sucesso
+2025-01-31 09:30:05,313 - services.document.unificado.word_service_unificado - INFO - Tabelas inseridas com sucesso
+2025-01-31 09:30:05,313 - services.document.master.manager - INFO - Iniciando inserção de texto de pagamento
+2025-01-31 09:30:05,319 - services.document.master.manager - INFO - Parágrafo 'Condições de Pagamento' encontrado no índice: 96
+2025-01-31 09:30:05,319 - services.document.master.manager - INFO - Transformadores encontrados - MT: True, BT: True
+2025-01-31 09:30:05,319 - services.document.master.manager - INFO - Processando eventos de média tensão
+2025-01-31 09:30:05,320 - services.document.master.manager - INFO - Iniciando processamento de eventos
+2025-01-31 09:30:05,320 - services.document.master.manager - INFO - A combinar: False
+2025-01-31 09:30:05,320 - services.document.master.manager - INFO - Número de eventos a processar: 4
+2025-01-31 09:30:05,323 - services.document.master.manager - INFO - Eventos MT processados com sucesso
+2025-01-31 09:30:05,323 - services.document.master.manager - INFO - Processando eventos de baixa tensão
+2025-01-31 09:30:05,325 - services.document.master.manager - INFO - Iniciando processamento de eventos
+2025-01-31 09:30:05,325 - services.document.master.manager - INFO - A combinar: False
+2025-01-31 09:30:05,325 - services.document.master.manager - INFO - Número de eventos a processar: 4
+2025-01-31 09:30:05,327 - services.document.master.manager - INFO - Eventos BT processados com sucesso
+2025-01-31 09:30:05,328 - services.document.master.manager - INFO - Inserção de texto de pagamento concluída com sucesso
+2025-01-31 09:30:05,341 - root - ERROR - Erro ao acessar função dos serviços: module 'services.document.unificado.word_service_unificado' has no attribute 'inserir_titulo_e_imagem'
+2025-01-31 09:30:05,341 - root - ERROR - Erro ao gerar documentos: Função necessária não encontrada: module 'services.document.unificado.word_service_unificado' has no attribute 'inserir_titulo_e_imagem'
+2025-01-31 09:30:50,730 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 09:30:50,760 - root - INFO - Tipos de produtos identificados - MT: True, BT: True
+2025-01-31 09:30:50,762 - root - INFO - Detectados produtos MT e BT - usando pasta unificada
+2025-01-31 09:30:52,351 - root - INFO - Tentando acessar pasta: Documentos Compartilhados/08 - Propostas Automatizadas Transformadores
+2025-01-31 09:30:52,485 - root - INFO - Conectado com sucesso à pasta: Documentos Compartilhados/08 - Propostas Automatizadas Transformadores
+2025-01-31 09:30:52,546 - root - INFO - Listando arquivos da pasta 08 - Propostas Automatizadas Transformadores:
+2025-01-31 09:30:52,546 - root - INFO - - template_unificado_trafo.docx
+2025-01-31 09:30:52,546 - root - INFO - Detectados produtos MT e BT - usando template unificado
+2025-01-31 09:30:52,547 - root - INFO - Procurando template: template_unificado_trafo.docx
+2025-01-31 09:30:52,547 - root - INFO - Tentando baixar arquivo: template_unificado_trafo.docx
+2025-01-31 09:30:52,547 - root - INFO - Da pasta: 08 - Propostas Automatizadas Transformadores
+2025-01-31 09:30:53,887 - root - INFO - Tentando acessar pasta: Documentos Compartilhados/08 - Propostas Automatizadas Transformadores
+2025-01-31 09:30:54,098 - root - INFO - Conectado com sucesso à pasta: Documentos Compartilhados/08 - Propostas Automatizadas Transformadores
+2025-01-31 09:30:54,372 - root - INFO - Arquivo baixado com sucesso para: C:\Users\EDUARD~1.POL\AppData\Local\Temp\template_unificado_trafo.docx
+2025-01-31 09:30:54,373 - root - INFO - Template carregado: C:\Users\EDUARD~1.POL\AppData\Local\Temp\template_unificado_trafo.docx
+2025-01-31 09:30:54,393 - root - INFO - Documento base carregado com sucesso
+2025-01-31 09:30:54,395 - root - INFO - Iniciando processamento unificado...
+2025-01-31 09:30:54,396 - services.document.unificado.word_service_unificado - INFO - Iniciando inserção de tabelas em documento unificado
+2025-01-31 09:30:54,603 - services.document.unificado.word_tables_unificado - INFO - Criando tabela com 9 linhas
+2025-01-31 09:30:54,670 - services.document.unificado.word_tables_unificado - INFO - Tabela criada com sucesso
+2025-01-31 09:30:54,676 - services.document.unificado.word_service_unificado - INFO - Tabelas inseridas com sucesso
+2025-01-31 09:30:54,676 - services.document.master.manager - INFO - Iniciando inserção de texto de pagamento
+2025-01-31 09:30:54,681 - services.document.master.manager - INFO - Parágrafo 'Condições de Pagamento' encontrado no índice: 96
+2025-01-31 09:30:54,681 - services.document.master.manager - INFO - Transformadores encontrados - MT: True, BT: True
+2025-01-31 09:30:54,682 - services.document.master.manager - INFO - Processando eventos de média tensão
+2025-01-31 09:30:54,682 - services.document.master.manager - INFO - Iniciando processamento de eventos
+2025-01-31 09:30:54,683 - services.document.master.manager - INFO - A combinar: False
+2025-01-31 09:30:54,683 - services.document.master.manager - INFO - Número de eventos a processar: 4
+2025-01-31 09:30:54,686 - services.document.master.manager - INFO - Eventos MT processados com sucesso
+2025-01-31 09:30:54,686 - services.document.master.manager - INFO - Processando eventos de baixa tensão
+2025-01-31 09:30:54,687 - services.document.master.manager - INFO - Iniciando processamento de eventos
+2025-01-31 09:30:54,687 - services.document.master.manager - INFO - A combinar: False
+2025-01-31 09:30:54,687 - services.document.master.manager - INFO - Número de eventos a processar: 4
+2025-01-31 09:30:54,690 - services.document.master.manager - INFO - Eventos BT processados com sucesso
+2025-01-31 09:30:54,690 - services.document.master.manager - INFO - Inserção de texto de pagamento concluída com sucesso
+2025-01-31 09:30:54,703 - root - ERROR - Erro ao acessar função dos serviços: module 'services.document.unificado.word_service_unificado' has no attribute 'inserir_titulo_e_imagem'
+2025-01-31 09:30:54,704 - root - ERROR - Erro ao gerar documentos: Função necessária não encontrada: module 'services.document.unificado.word_service_unificado' has no attribute 'inserir_titulo_e_imagem'
+2025-01-31 09:32:00,255 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 09:32:00,284 - root - INFO - Tipos de produtos identificados - MT: True, BT: True
+2025-01-31 09:32:00,286 - root - INFO - Detectados produtos MT e BT - usando pasta unificada
+2025-01-31 09:32:01,792 - root - INFO - Tentando acessar pasta: Documentos Compartilhados/08 - Propostas Automatizadas Transformadores
+2025-01-31 09:32:01,950 - root - INFO - Conectado com sucesso à pasta: Documentos Compartilhados/08 - Propostas Automatizadas Transformadores
+2025-01-31 09:32:02,012 - root - INFO - Listando arquivos da pasta 08 - Propostas Automatizadas Transformadores:
+2025-01-31 09:32:02,012 - root - INFO - - template_unificado_trafo.docx
+2025-01-31 09:32:02,012 - root - INFO - Detectados produtos MT e BT - usando template unificado
+2025-01-31 09:32:02,013 - root - INFO - Procurando template: template_unificado_trafo.docx
+2025-01-31 09:32:02,013 - root - INFO - Tentando baixar arquivo: template_unificado_trafo.docx
+2025-01-31 09:32:02,013 - root - INFO - Da pasta: 08 - Propostas Automatizadas Transformadores
+2025-01-31 09:32:03,834 - root - INFO - Tentando acessar pasta: Documentos Compartilhados/08 - Propostas Automatizadas Transformadores
+2025-01-31 09:32:04,095 - root - INFO - Conectado com sucesso à pasta: Documentos Compartilhados/08 - Propostas Automatizadas Transformadores
+2025-01-31 09:32:04,386 - root - INFO - Arquivo baixado com sucesso para: C:\Users\EDUARD~1.POL\AppData\Local\Temp\template_unificado_trafo.docx
+2025-01-31 09:32:04,387 - root - INFO - Template carregado: C:\Users\EDUARD~1.POL\AppData\Local\Temp\template_unificado_trafo.docx
+2025-01-31 09:32:04,407 - root - INFO - Documento base carregado com sucesso
+2025-01-31 09:32:04,410 - root - INFO - Iniciando processamento unificado...
+2025-01-31 09:32:04,410 - services.document.unificado.word_service_unificado - INFO - Iniciando inserção de tabelas em documento unificado
+2025-01-31 09:32:04,619 - services.document.unificado.word_tables_unificado - INFO - Criando tabela com 9 linhas
+2025-01-31 09:32:04,686 - services.document.unificado.word_tables_unificado - INFO - Tabela criada com sucesso
+2025-01-31 09:32:04,692 - services.document.unificado.word_service_unificado - INFO - Tabelas inseridas com sucesso
+2025-01-31 09:32:04,692 - services.document.master.manager - INFO - Iniciando inserção de texto de pagamento
+2025-01-31 09:32:04,697 - services.document.master.manager - INFO - Parágrafo 'Condições de Pagamento' encontrado no índice: 96
+2025-01-31 09:32:04,698 - services.document.master.manager - INFO - Transformadores encontrados - MT: True, BT: True
+2025-01-31 09:32:04,698 - services.document.master.manager - INFO - Processando eventos de média tensão
+2025-01-31 09:32:04,699 - services.document.master.manager - INFO - Iniciando processamento de eventos
+2025-01-31 09:32:04,699 - services.document.master.manager - INFO - A combinar: False
+2025-01-31 09:32:04,699 - services.document.master.manager - INFO - Número de eventos a processar: 4
+2025-01-31 09:32:04,702 - services.document.master.manager - INFO - Eventos MT processados com sucesso
+2025-01-31 09:32:04,702 - services.document.master.manager - INFO - Processando eventos de baixa tensão
+2025-01-31 09:32:04,703 - services.document.master.manager - INFO - Iniciando processamento de eventos
+2025-01-31 09:32:04,703 - services.document.master.manager - INFO - A combinar: False
+2025-01-31 09:32:04,703 - services.document.master.manager - INFO - Número de eventos a processar: 4
+2025-01-31 09:32:04,705 - services.document.master.manager - INFO - Eventos BT processados com sucesso
+2025-01-31 09:32:04,705 - services.document.master.manager - INFO - Inserção de texto de pagamento concluída com sucesso
+2025-01-31 09:32:04,858 - root - INFO - Documento gerado com sucesso: output\proposta_unificada.docx
+2025-01-31 09:32:06,112 - services.revision_service - INFO - 
+        Iniciando atualização de revisão:
+        - ID Revisão: 1669ef13-b8a5-482a-9c1e-e040e7067f01
+        - Valor: 0
+        - Número Revisão: 0
+        - Word Path: Proposta Blutrafos nº BT 80002-Rev00.docx
+        - PDF Path: Resumo_Proposta_BT_80002-Rev00_EXTRATO.pdf
+        - Escopo: 0,000 MVA
+        
+2025-01-31 09:32:06,113 - services.revision_service - INFO - Preparando dados para atualização da revisão...
+2025-01-31 09:32:06,113 - services.revision_service - INFO - Dados JSON preparados com sucesso
+2025-01-31 09:32:06,113 - services.revision_service - INFO - Executando query de UPDATE na tabela revisoes...
+2025-01-31 09:32:06,514 - services.revision_service - INFO - Resultado do UPDATE: ('1669ef13-b8a5-482a-9c1e-e040e7067f01', '66acbbe6-aebf-4654-b157-acb32d2ad757')
+2025-01-31 09:32:06,515 - services.revision_service - INFO - Revisão atualizada com sucesso. ID: 1669ef13-b8a5-482a-9c1e-e040e7067f01, ID Proposta: 66acbbe6-aebf-4654-b157-acb32d2ad757
+2025-01-31 09:32:06,515 - services.revision_service - INFO - Verificando se revisão 0 é a mais recente...
+2025-01-31 09:32:08,122 - services.revision_service - INFO - 
+                Verificando se revisão 0 é a maior:
+                - Maior revisão encontrada: 0
+                - Nova revisão: 0
+                - É a maior? True
+            
+2025-01-31 09:32:08,123 - services.revision_service - INFO - Revisão 0 é a mais recente. Atualizando proposta...
+2025-01-31 09:32:08,123 - services.revision_service - INFO - 
+    Iniciando atualização da proposta:
+    - ID: 66acbbe6-aebf-4654-b157-acb32d2ad757
+    - Escopo: 0,000 MVA
+    - Valor: 0
+    - Última Revisão: 0
+    - ID Revisão (se fornecido): None
+    
+2025-01-31 09:32:09,341 - services.revision_service - INFO - Buscando ID da revisão mais recente para proposta 66acbbe6-aebf-4654-b157-acb32d2ad757 e revisão 0
+2025-01-31 09:32:09,758 - services.revision_service - INFO - ID da revisão para atualização: 1669ef13-b8a5-482a-9c1e-e040e7067f01
+2025-01-31 09:32:09,958 - services.revision_service - INFO - 
+            Valores atuais da proposta antes da atualização:
+            - Escopo: 0,000 MVA
+            - Valor: 0.00
+            - Última Revisão: 0
+            
+2025-01-31 09:32:09,959 - services.revision_service - INFO - 
+        Executando query de atualização com parâmetros:
+        - Escopo: 0,000 MVA
+        - Valor: 0
+        - Última Revisão: 0
+        - ID Proposta: 66acbbe6-aebf-4654-b157-acb32d2ad757
+        
+2025-01-31 09:32:10,160 - services.revision_service - INFO - 
+            Proposta atualizada com sucesso:
+            - ID: 66acbbe6-aebf-4654-b157-acb32d2ad757
+            - Novo Escopo: 0,000 MVA
+            - Novo Valor: 0.00
+            - Nova Última Revisão: 0
+            
+2025-01-31 09:32:10,362 - services.revision_service - INFO - Commit realizado com sucesso
+2025-01-31 09:32:10,762 - services.revision_service - INFO - 
+            Valores finais da proposta após atualização:
+            - Escopo: 0,000 MVA
+            - Valor: 0.00
+            - Última Revisão: 0
+            
+2025-01-31 09:32:10,763 - services.revision_service - INFO - Conexão fechada com sucesso
+2025-01-31 09:34:17,242 - root - INFO - Tipos de produtos identificados - MT: True, BT: True
+2025-01-31 09:34:17,244 - root - INFO - Detectados produtos MT e BT - usando pasta unificada
+2025-01-31 09:34:18,918 - root - INFO - Tentando acessar pasta: Documentos Compartilhados/08 - Propostas Automatizadas Transformadores
+2025-01-31 09:34:19,055 - root - INFO - Conectado com sucesso à pasta: Documentos Compartilhados/08 - Propostas Automatizadas Transformadores
+2025-01-31 09:34:19,122 - root - INFO - Listando arquivos da pasta 08 - Propostas Automatizadas Transformadores:
+2025-01-31 09:34:19,122 - root - INFO - - template_unificado_trafo.docx
+2025-01-31 09:34:19,122 - root - INFO - Detectados produtos MT e BT - usando template unificado
+2025-01-31 09:34:19,122 - root - INFO - Procurando template: template_unificado_trafo.docx
+2025-01-31 09:34:19,123 - root - INFO - Tentando baixar arquivo: template_unificado_trafo.docx
+2025-01-31 09:34:19,123 - root - INFO - Da pasta: 08 - Propostas Automatizadas Transformadores
+2025-01-31 09:34:20,389 - root - INFO - Tentando acessar pasta: Documentos Compartilhados/08 - Propostas Automatizadas Transformadores
+2025-01-31 09:34:20,529 - root - INFO - Conectado com sucesso à pasta: Documentos Compartilhados/08 - Propostas Automatizadas Transformadores
+2025-01-31 09:34:20,848 - root - INFO - Arquivo baixado com sucesso para: C:\Users\EDUARD~1.POL\AppData\Local\Temp\template_unificado_trafo.docx
+2025-01-31 09:34:20,849 - root - INFO - Template carregado: C:\Users\EDUARD~1.POL\AppData\Local\Temp\template_unificado_trafo.docx
+2025-01-31 09:34:20,871 - root - INFO - Documento base carregado com sucesso
+2025-01-31 09:34:20,871 - root - INFO - Iniciando processamento unificado...
+2025-01-31 09:34:20,871 - services.document.unificado.word_service_unificado - INFO - Iniciando inserção de tabelas em documento unificado
+2025-01-31 09:34:21,079 - services.document.unificado.word_tables_unificado - INFO - Criando tabela com 9 linhas
+2025-01-31 09:34:21,148 - services.document.unificado.word_tables_unificado - INFO - Tabela criada com sucesso
+2025-01-31 09:34:21,154 - services.document.unificado.word_service_unificado - INFO - Tabelas inseridas com sucesso
+2025-01-31 09:34:21,154 - services.document.master.manager - INFO - Iniciando inserção de texto de pagamento
+2025-01-31 09:34:21,159 - services.document.master.manager - INFO - Parágrafo 'Condições de Pagamento' encontrado no índice: 96
+2025-01-31 09:34:21,159 - services.document.master.manager - INFO - Transformadores encontrados - MT: True, BT: True
+2025-01-31 09:34:21,160 - services.document.master.manager - INFO - Processando eventos de média tensão
+2025-01-31 09:34:21,161 - services.document.master.manager - INFO - Iniciando processamento de eventos
+2025-01-31 09:34:21,161 - services.document.master.manager - INFO - A combinar: False
+2025-01-31 09:34:21,161 - services.document.master.manager - INFO - Número de eventos a processar: 4
+2025-01-31 09:34:21,163 - services.document.master.manager - INFO - Eventos MT processados com sucesso
+2025-01-31 09:34:21,164 - services.document.master.manager - INFO - Processando eventos de baixa tensão
+2025-01-31 09:34:21,164 - services.document.master.manager - INFO - Iniciando processamento de eventos
+2025-01-31 09:34:21,165 - services.document.master.manager - INFO - A combinar: False
+2025-01-31 09:34:21,165 - services.document.master.manager - INFO - Número de eventos a processar: 4
+2025-01-31 09:34:21,168 - services.document.master.manager - INFO - Eventos BT processados com sucesso
+2025-01-31 09:34:21,168 - services.document.master.manager - INFO - Inserção de texto de pagamento concluída com sucesso
+2025-01-31 09:34:21,329 - root - INFO - Documento gerado com sucesso: output\proposta_unificada.docx
+2025-01-31 09:34:22,584 - services.revision_service - INFO - 
+        Iniciando atualização de revisão:
+        - ID Revisão: 1669ef13-b8a5-482a-9c1e-e040e7067f01
+        - Valor: 0
+        - Número Revisão: 0
+        - Word Path: Proposta Blutrafos nº BT 80002-Rev00.docx
+        - PDF Path: Resumo_Proposta_BT_80002-Rev00_EXTRATO.pdf
+        - Escopo: 0,000 MVA
+        
+2025-01-31 09:34:22,584 - services.revision_service - INFO - Preparando dados para atualização da revisão...
+2025-01-31 09:34:22,585 - services.revision_service - INFO - Dados JSON preparados com sucesso
+2025-01-31 09:34:22,585 - services.revision_service - INFO - Executando query de UPDATE na tabela revisoes...
+2025-01-31 09:34:22,985 - services.revision_service - INFO - Resultado do UPDATE: ('1669ef13-b8a5-482a-9c1e-e040e7067f01', '66acbbe6-aebf-4654-b157-acb32d2ad757')
+2025-01-31 09:34:22,985 - services.revision_service - INFO - Revisão atualizada com sucesso. ID: 1669ef13-b8a5-482a-9c1e-e040e7067f01, ID Proposta: 66acbbe6-aebf-4654-b157-acb32d2ad757
+2025-01-31 09:34:22,985 - services.revision_service - INFO - Verificando se revisão 0 é a mais recente...
+2025-01-31 09:34:24,577 - services.revision_service - INFO - 
+                Verificando se revisão 0 é a maior:
+                - Maior revisão encontrada: 0
+                - Nova revisão: 0
+                - É a maior? True
+            
+2025-01-31 09:34:24,577 - services.revision_service - INFO - Revisão 0 é a mais recente. Atualizando proposta...
+2025-01-31 09:34:24,578 - services.revision_service - INFO - 
+    Iniciando atualização da proposta:
+    - ID: 66acbbe6-aebf-4654-b157-acb32d2ad757
+    - Escopo: 0,000 MVA
+    - Valor: 0
+    - Última Revisão: 0
+    - ID Revisão (se fornecido): None
+    
+2025-01-31 09:34:25,783 - services.revision_service - INFO - Buscando ID da revisão mais recente para proposta 66acbbe6-aebf-4654-b157-acb32d2ad757 e revisão 0
+2025-01-31 09:34:26,184 - services.revision_service - INFO - ID da revisão para atualização: 1669ef13-b8a5-482a-9c1e-e040e7067f01
+2025-01-31 09:34:26,381 - services.revision_service - INFO - 
+            Valores atuais da proposta antes da atualização:
+            - Escopo: 0,000 MVA
+            - Valor: 0.00
+            - Última Revisão: 0
+            
+2025-01-31 09:34:26,381 - services.revision_service - INFO - 
+        Executando query de atualização com parâmetros:
+        - Escopo: 0,000 MVA
+        - Valor: 0
+        - Última Revisão: 0
+        - ID Proposta: 66acbbe6-aebf-4654-b157-acb32d2ad757
+        
+2025-01-31 09:34:26,578 - services.revision_service - INFO - 
+            Proposta atualizada com sucesso:
+            - ID: 66acbbe6-aebf-4654-b157-acb32d2ad757
+            - Novo Escopo: 0,000 MVA
+            - Novo Valor: 0.00
+            - Nova Última Revisão: 0
+            
+2025-01-31 09:34:26,776 - services.revision_service - INFO - Commit realizado com sucesso
+2025-01-31 09:34:27,168 - services.revision_service - INFO - 
+            Valores finais da proposta após atualização:
+            - Escopo: 0,000 MVA
+            - Valor: 0.00
+            - Última Revisão: 0
+            
+2025-01-31 09:34:27,169 - services.revision_service - INFO - Conexão fechada com sucesso
+2025-01-31 09:40:23,350 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 09:40:23,375 - root - INFO - Tipos de produtos identificados - MT: True, BT: True
+2025-01-31 09:40:23,377 - root - INFO - Detectados produtos MT e BT - usando pasta unificada
+2025-01-31 09:40:25,114 - root - INFO - Tentando acessar pasta: Documentos Compartilhados/08 - Propostas Automatizadas Transformadores
+2025-01-31 09:40:25,274 - root - INFO - Conectado com sucesso à pasta: Documentos Compartilhados/08 - Propostas Automatizadas Transformadores
+2025-01-31 09:40:25,342 - root - INFO - Listando arquivos da pasta 08 - Propostas Automatizadas Transformadores:
+2025-01-31 09:40:25,343 - root - INFO - - template_unificado_trafo.docx
+2025-01-31 09:40:25,343 - root - INFO - Detectados produtos MT e BT - usando template unificado
+2025-01-31 09:40:25,343 - root - INFO - Procurando template: template_unificado_trafo.docx
+2025-01-31 09:40:25,343 - root - INFO - Tentando baixar arquivo: template_unificado_trafo.docx
+2025-01-31 09:40:25,343 - root - INFO - Da pasta: 08 - Propostas Automatizadas Transformadores
+2025-01-31 09:40:27,072 - root - INFO - Tentando acessar pasta: Documentos Compartilhados/08 - Propostas Automatizadas Transformadores
+2025-01-31 09:40:27,248 - root - INFO - Conectado com sucesso à pasta: Documentos Compartilhados/08 - Propostas Automatizadas Transformadores
+2025-01-31 09:40:27,586 - root - INFO - Arquivo baixado com sucesso para: C:\Users\EDUARD~1.POL\AppData\Local\Temp\template_unificado_trafo.docx
+2025-01-31 09:40:27,587 - root - INFO - Template carregado: C:\Users\EDUARD~1.POL\AppData\Local\Temp\template_unificado_trafo.docx
+2025-01-31 09:40:27,607 - root - INFO - Documento base carregado com sucesso
+2025-01-31 09:40:27,614 - root - ERROR - Erro durante o processamento do documento: cannot import name 'create_custom_table_escopo' from 'services.document.unificado.word_tables_unificado' (C:\Users\eduardo.poli\Desktop\proposta media tensao\proposta_media_tensao_blutrafos\services\document\unificado\word_tables_unificado.py)
+2025-01-31 09:40:27,614 - root - ERROR - Erro ao gerar documentos: cannot import name 'create_custom_table_escopo' from 'services.document.unificado.word_tables_unificado' (C:\Users\eduardo.poli\Desktop\proposta media tensao\proposta_media_tensao_blutrafos\services\document\unificado\word_tables_unificado.py)
+2025-01-31 09:41:00,251 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 09:41:00,276 - root - INFO - Tipos de produtos identificados - MT: True, BT: True
+2025-01-31 09:41:00,278 - root - INFO - Detectados produtos MT e BT - usando pasta unificada
+2025-01-31 09:41:01,910 - root - INFO - Tentando acessar pasta: Documentos Compartilhados/08 - Propostas Automatizadas Transformadores
+2025-01-31 09:41:02,061 - root - INFO - Conectado com sucesso à pasta: Documentos Compartilhados/08 - Propostas Automatizadas Transformadores
+2025-01-31 09:41:02,131 - root - INFO - Listando arquivos da pasta 08 - Propostas Automatizadas Transformadores:
+2025-01-31 09:41:02,132 - root - INFO - - template_unificado_trafo.docx
+2025-01-31 09:41:02,132 - root - INFO - Detectados produtos MT e BT - usando template unificado
+2025-01-31 09:41:02,132 - root - INFO - Procurando template: template_unificado_trafo.docx
+2025-01-31 09:41:02,132 - root - INFO - Tentando baixar arquivo: template_unificado_trafo.docx
+2025-01-31 09:41:02,132 - root - INFO - Da pasta: 08 - Propostas Automatizadas Transformadores
+2025-01-31 09:41:03,754 - root - INFO - Tentando acessar pasta: Documentos Compartilhados/08 - Propostas Automatizadas Transformadores
+2025-01-31 09:41:03,900 - root - INFO - Conectado com sucesso à pasta: Documentos Compartilhados/08 - Propostas Automatizadas Transformadores
+2025-01-31 09:41:04,189 - root - INFO - Arquivo baixado com sucesso para: C:\Users\EDUARD~1.POL\AppData\Local\Temp\template_unificado_trafo.docx
+2025-01-31 09:41:04,191 - root - INFO - Template carregado: C:\Users\EDUARD~1.POL\AppData\Local\Temp\template_unificado_trafo.docx
+2025-01-31 09:41:04,212 - root - INFO - Documento base carregado com sucesso
+2025-01-31 09:41:04,220 - root - INFO - Iniciando processamento unificado...
+2025-01-31 09:41:04,220 - services.document.unificado.word_service_unificado - INFO - Iniciando inserção de tabelas em documento unificado
+2025-01-31 09:41:04,453 - services.document.unificado.word_service_unificado - ERROR - Erro ao inserir tabelas: 'decimal.Decimal' object is not iterable
+Traceback (most recent call last):
+  File "C:\Users\eduardo.poli\Desktop\proposta media tensao\proposta_media_tensao_blutrafos\services\document\unificado\word_service_unificado.py", line 80, in inserir_tabelas_word
+    table = create_custom_table(doc, itens_mt, itens_bt, observacao)
+            ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\eduardo.poli\Desktop\proposta media tensao\proposta_media_tensao_blutrafos\services\document\unificado\word_tables_unificado.py", line 159, in create_custom_table
+    fill_item_row_mt(table.rows[current_row], item, idx)
+  File "C:\Users\eduardo.poli\Desktop\proposta media tensao\proposta_media_tensao_blutrafos\services\document\unificado\word_tables_unificado.py", line 66, in fill_item_row_mt
+    run = paragraph.add_run(cell_text)
+          ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\eduardo.poli\AppData\Local\Programs\Python\Python312\Lib\site-packages\docx\text\paragraph.py", line 41, in add_run
+    run.text = text
+    ^^^^^^^^
+  File "C:\Users\eduardo.poli\AppData\Local\Programs\Python\Python312\Lib\site-packages\docx\text\run.py", line 213, in text
+    self._r.text = text
+    ^^^^^^^^^^^^
+  File "C:\Users\eduardo.poli\AppData\Local\Programs\Python\Python312\Lib\site-packages\docx\oxml\text\run.py", line 129, in text
+    _RunContentAppender.append_to_run_from_text(self, text)
+  File "C:\Users\eduardo.poli\AppData\Local\Programs\Python\Python312\Lib\site-packages\docx\oxml\text\run.py", line 248, in append_to_run_from_text
+    appender.add_text(text)
+  File "C:\Users\eduardo.poli\AppData\Local\Programs\Python\Python312\Lib\site-packages\docx\oxml\text\run.py", line 252, in add_text
+    for char in text:
+TypeError: 'decimal.Decimal' object is not iterable
+2025-01-31 09:41:04,475 - root - ERROR - Erro durante o processamento do documento: 'decimal.Decimal' object is not iterable
+2025-01-31 09:41:04,475 - root - ERROR - Erro ao gerar documentos: 'decimal.Decimal' object is not iterable
+2025-01-31 09:42:36,302 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 09:42:36,327 - root - INFO - Tipos de produtos identificados - MT: True, BT: True
+2025-01-31 09:42:36,329 - root - INFO - Detectados produtos MT e BT - usando pasta unificada
+2025-01-31 09:42:37,709 - root - INFO - Tentando acessar pasta: Documentos Compartilhados/08 - Propostas Automatizadas Transformadores
+2025-01-31 09:42:37,865 - root - INFO - Conectado com sucesso à pasta: Documentos Compartilhados/08 - Propostas Automatizadas Transformadores
+2025-01-31 09:42:37,946 - root - INFO - Listando arquivos da pasta 08 - Propostas Automatizadas Transformadores:
+2025-01-31 09:42:37,946 - root - INFO - - template_unificado_trafo.docx
+2025-01-31 09:42:37,946 - root - INFO - Detectados produtos MT e BT - usando template unificado
+2025-01-31 09:42:37,946 - root - INFO - Procurando template: template_unificado_trafo.docx
+2025-01-31 09:42:37,946 - root - INFO - Tentando baixar arquivo: template_unificado_trafo.docx
+2025-01-31 09:42:37,947 - root - INFO - Da pasta: 08 - Propostas Automatizadas Transformadores
+2025-01-31 09:42:39,271 - root - INFO - Tentando acessar pasta: Documentos Compartilhados/08 - Propostas Automatizadas Transformadores
+2025-01-31 09:42:39,422 - root - INFO - Conectado com sucesso à pasta: Documentos Compartilhados/08 - Propostas Automatizadas Transformadores
+2025-01-31 09:42:39,728 - root - INFO - Arquivo baixado com sucesso para: C:\Users\EDUARD~1.POL\AppData\Local\Temp\template_unificado_trafo.docx
+2025-01-31 09:42:39,728 - root - INFO - Template carregado: C:\Users\EDUARD~1.POL\AppData\Local\Temp\template_unificado_trafo.docx
+2025-01-31 09:42:39,751 - root - INFO - Documento base carregado com sucesso
+2025-01-31 09:42:39,759 - root - INFO - Iniciando processamento unificado...
+2025-01-31 09:42:39,759 - services.document.unificado.word_service_unificado - INFO - Iniciando inserção de tabelas em documento unificado
+2025-01-31 09:42:40,027 - services.document.unificado.word_tables_unificado - INFO - Tabela criada com sucesso
+2025-01-31 09:42:40,033 - services.document.unificado.word_service_unificado - INFO - Tabelas inseridas com sucesso
+2025-01-31 09:42:40,033 - services.document.master.manager - INFO - Iniciando inserção de texto de pagamento
+2025-01-31 09:42:40,039 - services.document.master.manager - INFO - Parágrafo 'Condições de Pagamento' encontrado no índice: 96
+2025-01-31 09:42:40,039 - services.document.master.manager - INFO - Transformadores encontrados - MT: True, BT: True
+2025-01-31 09:42:40,039 - services.document.master.manager - INFO - Processando eventos de média tensão
+2025-01-31 09:42:40,040 - services.document.master.manager - INFO - Iniciando processamento de eventos
+2025-01-31 09:42:40,040 - services.document.master.manager - INFO - A combinar: False
+2025-01-31 09:42:40,040 - services.document.master.manager - INFO - Número de eventos a processar: 4
+2025-01-31 09:42:40,043 - services.document.master.manager - INFO - Eventos MT processados com sucesso
+2025-01-31 09:42:40,043 - services.document.master.manager - INFO - Processando eventos de baixa tensão
+2025-01-31 09:42:40,044 - services.document.master.manager - INFO - Iniciando processamento de eventos
+2025-01-31 09:42:40,044 - services.document.master.manager - INFO - A combinar: False
+2025-01-31 09:42:40,045 - services.document.master.manager - INFO - Número de eventos a processar: 4
+2025-01-31 09:42:40,047 - services.document.master.manager - INFO - Eventos BT processados com sucesso
+2025-01-31 09:42:40,048 - services.document.master.manager - INFO - Inserção de texto de pagamento concluída com sucesso
+2025-01-31 09:42:40,199 - root - INFO - Documento gerado com sucesso: output\proposta_unificada.docx
+2025-01-31 09:42:41,441 - services.revision_service - INFO - 
+        Iniciando atualização de revisão:
+        - ID Revisão: 1669ef13-b8a5-482a-9c1e-e040e7067f01
+        - Valor: 0
+        - Número Revisão: 0
+        - Word Path: Proposta Blutrafos nº BT 80002-Rev00.docx
+        - PDF Path: Resumo_Proposta_BT_80002-Rev00_EXTRATO.pdf
+        - Escopo: 0,000 MVA
+        
+2025-01-31 09:42:41,441 - services.revision_service - INFO - Preparando dados para atualização da revisão...
+2025-01-31 09:42:41,442 - services.revision_service - INFO - Dados JSON preparados com sucesso
+2025-01-31 09:42:41,442 - services.revision_service - INFO - Executando query de UPDATE na tabela revisoes...
+2025-01-31 09:42:41,921 - services.revision_service - INFO - Resultado do UPDATE: ('1669ef13-b8a5-482a-9c1e-e040e7067f01', '66acbbe6-aebf-4654-b157-acb32d2ad757')
+2025-01-31 09:42:41,921 - services.revision_service - INFO - Revisão atualizada com sucesso. ID: 1669ef13-b8a5-482a-9c1e-e040e7067f01, ID Proposta: 66acbbe6-aebf-4654-b157-acb32d2ad757
+2025-01-31 09:42:41,921 - services.revision_service - INFO - Verificando se revisão 0 é a mais recente...
+2025-01-31 09:42:43,596 - services.revision_service - INFO - 
+                Verificando se revisão 0 é a maior:
+                - Maior revisão encontrada: 0
+                - Nova revisão: 0
+                - É a maior? True
+            
+2025-01-31 09:42:43,597 - services.revision_service - INFO - Revisão 0 é a mais recente. Atualizando proposta...
+2025-01-31 09:42:43,597 - services.revision_service - INFO - 
+    Iniciando atualização da proposta:
+    - ID: 66acbbe6-aebf-4654-b157-acb32d2ad757
+    - Escopo: 0,000 MVA
+    - Valor: 0
+    - Última Revisão: 0
+    - ID Revisão (se fornecido): None
+    
+2025-01-31 09:42:44,819 - services.revision_service - INFO - Buscando ID da revisão mais recente para proposta 66acbbe6-aebf-4654-b157-acb32d2ad757 e revisão 0
+2025-01-31 09:42:45,230 - services.revision_service - INFO - ID da revisão para atualização: 1669ef13-b8a5-482a-9c1e-e040e7067f01
+2025-01-31 09:42:45,432 - services.revision_service - INFO - 
+            Valores atuais da proposta antes da atualização:
+            - Escopo: 0,000 MVA
+            - Valor: 0.00
+            - Última Revisão: 0
+            
+2025-01-31 09:42:45,432 - services.revision_service - INFO - 
+        Executando query de atualização com parâmetros:
+        - Escopo: 0,000 MVA
+        - Valor: 0
+        - Última Revisão: 0
+        - ID Proposta: 66acbbe6-aebf-4654-b157-acb32d2ad757
+        
+2025-01-31 09:42:45,632 - services.revision_service - INFO - 
+            Proposta atualizada com sucesso:
+            - ID: 66acbbe6-aebf-4654-b157-acb32d2ad757
+            - Novo Escopo: 0,000 MVA
+            - Novo Valor: 0.00
+            - Nova Última Revisão: 0
+            
+2025-01-31 09:42:45,834 - services.revision_service - INFO - Commit realizado com sucesso
+2025-01-31 09:42:46,241 - services.revision_service - INFO - 
+            Valores finais da proposta após atualização:
+            - Escopo: 0,000 MVA
+            - Valor: 0.00
+            - Última Revisão: 0
+            
+2025-01-31 09:42:46,242 - services.revision_service - INFO - Conexão fechada com sucesso
+2025-01-31 09:47:03,223 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 09:47:03,249 - root - INFO - Tipos de produtos identificados - MT: True, BT: True
+2025-01-31 09:47:03,251 - root - INFO - Detectados produtos MT e BT - usando pasta unificada
+2025-01-31 09:47:04,462 - root - INFO - Tentando acessar pasta: Documentos Compartilhados/08 - Propostas Automatizadas Transformadores
+2025-01-31 09:47:04,618 - root - INFO - Conectado com sucesso à pasta: Documentos Compartilhados/08 - Propostas Automatizadas Transformadores
+2025-01-31 09:47:04,834 - root - INFO - Listando arquivos da pasta 08 - Propostas Automatizadas Transformadores:
+2025-01-31 09:47:04,834 - root - INFO - - template_unificado_trafo.docx
+2025-01-31 09:47:04,835 - root - INFO - Detectados produtos MT e BT - usando template unificado
+2025-01-31 09:47:04,835 - root - INFO - Procurando template: template_unificado_trafo.docx
+2025-01-31 09:47:04,835 - root - INFO - Tentando baixar arquivo: template_unificado_trafo.docx
+2025-01-31 09:47:04,835 - root - INFO - Da pasta: 08 - Propostas Automatizadas Transformadores
+2025-01-31 09:47:06,099 - root - INFO - Tentando acessar pasta: Documentos Compartilhados/08 - Propostas Automatizadas Transformadores
+2025-01-31 09:47:06,262 - root - INFO - Conectado com sucesso à pasta: Documentos Compartilhados/08 - Propostas Automatizadas Transformadores
+2025-01-31 09:47:06,607 - root - INFO - Arquivo baixado com sucesso para: C:\Users\EDUARD~1.POL\AppData\Local\Temp\template_unificado_trafo.docx
+2025-01-31 09:47:06,607 - root - INFO - Template carregado: C:\Users\EDUARD~1.POL\AppData\Local\Temp\template_unificado_trafo.docx
+2025-01-31 09:47:06,628 - root - INFO - Documento base carregado com sucesso
+2025-01-31 09:47:06,635 - root - INFO - Iniciando processamento unificado...
+2025-01-31 09:47:06,636 - services.document.unificado.word_service_unificado - INFO - Iniciando inserção de tabelas em documento unificado
+2025-01-31 09:47:06,888 - services.document.unificado.word_tables_unificado - INFO - Tabela criada com sucesso
+2025-01-31 09:47:06,894 - services.document.unificado.word_service_unificado - INFO - Tabelas inseridas com sucesso
+2025-01-31 09:47:06,894 - services.document.master.manager - INFO - Iniciando inserção de texto de pagamento
+2025-01-31 09:47:06,900 - services.document.master.manager - INFO - Parágrafo 'Condições de Pagamento' encontrado no índice: 96
+2025-01-31 09:47:06,900 - services.document.master.manager - INFO - Transformadores encontrados - MT: True, BT: True
+2025-01-31 09:47:06,900 - services.document.master.manager - INFO - Processando eventos de média tensão
+2025-01-31 09:47:06,901 - services.document.master.manager - INFO - Iniciando processamento de eventos
+2025-01-31 09:47:06,901 - services.document.master.manager - INFO - A combinar: False
+2025-01-31 09:47:06,901 - services.document.master.manager - INFO - Número de eventos a processar: 4
+2025-01-31 09:47:06,904 - services.document.master.manager - INFO - Eventos MT processados com sucesso
+2025-01-31 09:47:06,904 - services.document.master.manager - INFO - Processando eventos de baixa tensão
+2025-01-31 09:47:06,905 - services.document.master.manager - INFO - Iniciando processamento de eventos
+2025-01-31 09:47:06,905 - services.document.master.manager - INFO - A combinar: False
+2025-01-31 09:47:06,905 - services.document.master.manager - INFO - Número de eventos a processar: 4
+2025-01-31 09:47:06,909 - services.document.master.manager - INFO - Eventos BT processados com sucesso
+2025-01-31 09:47:06,909 - services.document.master.manager - INFO - Inserção de texto de pagamento concluída com sucesso
+2025-01-31 09:47:07,063 - root - INFO - Documento gerado com sucesso: output\proposta_unificada.docx
+2025-01-31 09:47:08,324 - services.revision_service - INFO - 
+        Iniciando atualização de revisão:
+        - ID Revisão: 1669ef13-b8a5-482a-9c1e-e040e7067f01
+        - Valor: 0
+        - Número Revisão: 0
+        - Word Path: Proposta Blutrafos nº BT 80002-Rev00.docx
+        - PDF Path: Resumo_Proposta_BT_80002-Rev00_EXTRATO.pdf
+        - Escopo: 0,000 MVA
+        
+2025-01-31 09:47:08,324 - services.revision_service - INFO - Preparando dados para atualização da revisão...
+2025-01-31 09:47:08,324 - services.revision_service - INFO - Dados JSON preparados com sucesso
+2025-01-31 09:47:08,325 - services.revision_service - INFO - Executando query de UPDATE na tabela revisoes...
+2025-01-31 09:47:08,726 - services.revision_service - INFO - Resultado do UPDATE: ('1669ef13-b8a5-482a-9c1e-e040e7067f01', '66acbbe6-aebf-4654-b157-acb32d2ad757')
+2025-01-31 09:47:08,727 - services.revision_service - INFO - Revisão atualizada com sucesso. ID: 1669ef13-b8a5-482a-9c1e-e040e7067f01, ID Proposta: 66acbbe6-aebf-4654-b157-acb32d2ad757
+2025-01-31 09:47:08,727 - services.revision_service - INFO - Verificando se revisão 0 é a mais recente...
+2025-01-31 09:47:10,332 - services.revision_service - INFO - 
+                Verificando se revisão 0 é a maior:
+                - Maior revisão encontrada: 0
+                - Nova revisão: 0
+                - É a maior? True
+            
+2025-01-31 09:47:10,333 - services.revision_service - INFO - Revisão 0 é a mais recente. Atualizando proposta...
+2025-01-31 09:47:10,333 - services.revision_service - INFO - 
+    Iniciando atualização da proposta:
+    - ID: 66acbbe6-aebf-4654-b157-acb32d2ad757
+    - Escopo: 0,000 MVA
+    - Valor: 0
+    - Última Revisão: 0
+    - ID Revisão (se fornecido): None
+    
+2025-01-31 09:47:11,544 - services.revision_service - INFO - Buscando ID da revisão mais recente para proposta 66acbbe6-aebf-4654-b157-acb32d2ad757 e revisão 0
+2025-01-31 09:47:11,943 - services.revision_service - INFO - ID da revisão para atualização: 1669ef13-b8a5-482a-9c1e-e040e7067f01
+2025-01-31 09:47:12,141 - services.revision_service - INFO - 
+            Valores atuais da proposta antes da atualização:
+            - Escopo: 0,000 MVA
+            - Valor: 0.00
+            - Última Revisão: 0
+            
+2025-01-31 09:47:12,142 - services.revision_service - INFO - 
+        Executando query de atualização com parâmetros:
+        - Escopo: 0,000 MVA
+        - Valor: 0
+        - Última Revisão: 0
+        - ID Proposta: 66acbbe6-aebf-4654-b157-acb32d2ad757
+        
+2025-01-31 09:47:12,339 - services.revision_service - INFO - 
+            Proposta atualizada com sucesso:
+            - ID: 66acbbe6-aebf-4654-b157-acb32d2ad757
+            - Novo Escopo: 0,000 MVA
+            - Novo Valor: 0.00
+            - Nova Última Revisão: 0
+            
+2025-01-31 09:47:12,542 - services.revision_service - INFO - Commit realizado com sucesso
+2025-01-31 09:47:12,943 - services.revision_service - INFO - 
+            Valores finais da proposta após atualização:
+            - Escopo: 0,000 MVA
+            - Valor: 0.00
+            - Última Revisão: 0
+            
+2025-01-31 09:47:12,944 - services.revision_service - INFO - Conexão fechada com sucesso
