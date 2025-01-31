@@ -90,25 +90,6 @@ def pagina_resumo():
                     output_path = doc_manager.gerar_documentos(
                         itens=st.session_state['itens'],
                         observacao=st.session_state['dados_iniciais'].get('comentario', ''),
-                        replacements = {
-                            '{{CLIENTE}}': str(dados_iniciais.get('cliente', '')),
-                            '{{NOMECLIENTE}}': str(dados_iniciais.get('nomeCliente', '')),
-                            '{{FONE}}': str(dados_iniciais.get('fone', '')),
-                            '{{EMAIL}}': str(dados_iniciais.get('email', '')),
-                            '{{BT}}': str(dados_iniciais.get('bt', '')),
-                            '{{OBRA}}': str(dados_iniciais.get('obra', ' ')),
-                            '{{DIA}}': str(dados_iniciais.get('dia', '')),
-                            '{{MES}}': str(dados_iniciais.get('mes', '')),
-                            '{{ANO}}': str(dados_iniciais.get('ano', '')),
-                            '{{REV}}': str(dados_iniciais.get('rev', '')),
-                            '{{LOCAL}}': str(dados_iniciais.get('local_frete', '')),
-                            '{{LOCALFRETE}}': str(impostos.get('local_frete_itens', '')),
-                            '{{ICMS}}': f"{impostos.get('icms', 0):.1f}%",
-                            '{{IP}}': ', '.join(set(str(item['IP']) for item in itens.get('itens_configurados_bt', []) 
-                                            if item['IP'] != '00')),
-                            '{obra}': '' if not dados_iniciais.get('obra', '').strip() else 'Obra:'
-                        }
-                        
                     )
                     # # Gerar PDF
                     # pdf_path = doc_manager.gerar_pdf(output_path)

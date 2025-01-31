@@ -479,8 +479,7 @@ class DocumentManager:
 
 
     @staticmethod
-    @staticmethod
-    def gerar_documentos(itens: Dict, observacao: str, replacements: Dict):
+    def gerar_documentos(itens: Dict, observacao: str,):
         """
         Gera documentos baseado no tipo de produto (MT, BT ou unificado)
         """
@@ -507,44 +506,33 @@ class DocumentManager:
                 
             output_path = os.path.join(output_dir, output_filename)
             
-            # 4. Carregar documento base
-            doc = Document(template_path)
-            logging.info("Documento base carregado com sucesso")
-            
             try:
                 # 5. Determinar serviços baseado no tipo de produto
                 if tem_mt and tem_bt:
                     # Caso unificado
-                    from services.document.unificado import (
-                        word_service_unificado,
-                        word_formatter_unificado,
-                        word_tables_unificado
-                    )
-                    word_service = word_service_unificado
-                    word_formatter = word_formatter_unificado
-                    word_tables = word_tables_unificado
+                    from services.document.unificado import word_tables_unificado
                     
                     # Separar itens MT e BT
                     itens_mt = itens.get('itens_configurados_mt', [])
                     itens_bt = itens.get('itens_configurados_bt', [])
                     
+                    # Preparar dados iniciais
+                    dados_iniciais = st.session_state['dados_iniciais']
+                    impostos = st.session_state['impostos']
                     # Usar funções unificadas
                     logging.info("Iniciando processamento unificado...")
-                    word_service.inserir_tabelas_word(
-                        doc,
-                        itens_mt=itens_mt,
-                        itens_bt=itens_bt,
-                        observacao=observacao,
-                        replacements=replacements
-                    )
                     
-                    # Inserir eventos de pagamento, desvios e prazos
-                    inserir_eventos_pagamento(doc, st.session_state, produtos_configurados)
-                    inserir_desvios(doc)
-                    inserir_prazo_entrega(doc)
+                    # Gerar documento
+                    buffer_documento = word_tables_unificado.gerar_documento(
+                        template_path, 
+                        dados_iniciais,
+                        impostos,       
+                        itens_mt, 
+                        itens_bt)
                     
-                    # Processar imagens para ambos os tipos
-                   # word_service.inserir_titulo_e_imagem(doc, itens_mt, itens_bt)
+                    # Salvar o documento do buffer
+                    with open(output_path, 'wb') as f:
+                        f.write(buffer_documento.getvalue())
                     
                 else:
                     # Casos individuais (MT ou BT)
@@ -557,6 +545,7 @@ class DocumentManager:
                         word_service = word_service_bt
                         items_key = 'itens_configurados_bt'
                     
+                    doc = Document(template_path)
                     itens_configurados = itens.get(items_key, [])
                     
                     # Inserir tabelas
@@ -565,7 +554,6 @@ class DocumentManager:
                         doc,
                         itens_configurados=itens_configurados,
                         observacao=observacao,
-                        replacements=replacements
                     )
 
                     # Inserir eventos de pagamento, desvios e prazos
@@ -573,7 +561,7 @@ class DocumentManager:
                     inserir_desvios(doc)
                     inserir_prazo_entrega(doc)
                     
-                     # Processar imagens específicas
+                    # Processar imagens específicas
                     if tem_mt:
                         if hasattr(pdf_service_mt, 'inserir_titulo_e_imagem'):
                             pdf_service_mt.inserir_titulo_e_imagem(doc, itens_configurados)
@@ -581,9 +569,10 @@ class DocumentManager:
                         resultados_produtos = pdf_service_bt.verificar_produto_ip(itens_configurados)
                         if hasattr(pdf_service_bt, 'inserir_titulo_e_imagem'):
                             pdf_service_bt.inserir_titulo_e_imagem(doc, resultados_produtos)
+                    
+                    # Salvar documento
+                    doc.save(output_path)
                 
-                # Salvar documento
-                doc.save(output_path)
                 logging.info(f"Documento gerado com sucesso: {output_path}")
                 return output_path
                 

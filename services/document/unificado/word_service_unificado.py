@@ -1,195 +1,125 @@
 from docx import Document
 from typing import Dict, List
 from io import BytesIO
-import os
 import logging
-from .word_tables_unificado import create_custom_table, create_custom_table_escopo
-from ..bt import pdf_service_bt
-from ..mt import pdf_service_mt
+from .word_tables_unificado import  inserir_tabelas_separadas
 
 logger = logging.getLogger(__name__)
 
-def substituir_texto_documento(doc, replacements):
-    """
-    Substitui o texto no documento Word com base no dicionário de substituições
-    """
-    def remove_paragraph(paragraph):
-        p = paragraph._element
-        p.getparent().remove(p)
-        paragraph._p = paragraph._element = None
+# def substituir_texto_documento(doc, replacements):
+#     if not doc:
+#         raise ValueError("Documento não pode ser None")
 
-    # Substituir texto em todos os parágrafos do documento
-    for paragraph in doc.paragraphs:
-        for old_text, new_text in replacements.items():
-            if old_text in paragraph.text:
-                if old_text == "{{IP}}" and not new_text.strip():
-                    remove_paragraph(paragraph)
-                    break
-                else:
-                    inline = paragraph.runs
-                    for run in inline:
-                        if old_text in run.text:
-                            run.text = run.text.replace(old_text, new_text)
+#     logger.info(f"Substituições a serem feitas: {replacements}")
 
-    # Substituir texto em todas as tabelas do documento
-    for table in doc.tables:
-        for row in table.rows:
-            for cell in row.cells:
-                for paragraph in cell.paragraphs:
-                    for old_text, new_text in replacements.items():
-                        if old_text in paragraph.text:
-                            if old_text == "{{IP}}" and not new_text.strip():
-                                remove_paragraph(paragraph)
-                                break
-                            else:
-                                inline = paragraph.runs
-                                for run in inline:
-                                    if old_text in run.text:
-                                        run.text = run.text.replace(old_text, new_text)
+#     def substituir_em_paragrafo(paragraph):
+#         texto_completo = ''.join(run.text for run in paragraph.runs)
+#         texto_modificado = texto_completo
 
-    # Substituir texto no cabeçalho de todas as seções
-    for section in doc.sections:
-        header = section.header
-        for paragraph in header.paragraphs:
-            for old_text, new_text in replacements.items():
-                if old_text in paragraph.text:
-                    if old_text == "{{IP}}" and not new_text.strip():
-                        remove_paragraph(paragraph)
-                        break
-                    else:
-                        inline = paragraph.runs
-                        for run in inline:
-                            if old_text in run.text:
-                                run.text = run.text.replace(old_text, new_text)
+#         for old_text, new_text in replacements.items():
+#             if old_text in texto_completo:
+#                 texto_modificado = texto_modificado.replace(old_text, str(new_text))
 
-def inserir_tabelas_word(doc, itens_mt, itens_bt, observacao, replacements):
-    """
-    Insere as tabelas no documento e realiza substituições de texto para documentos unificados
-    """
-    logger.info("Iniciando inserção de tabelas em documento unificado")
-    
-    try:
-        # Substituir texto no documento
-        substituir_texto_documento(doc, replacements)
-        logger.debug("Texto substituído com sucesso")
+#         if texto_modificado != texto_completo:
+#             # Limpa todos os runs
+#             for run in paragraph.runs:
+#                 run.text = ""
+#             # Coloca todo o texto no primeiro run
+#             if paragraph.runs:
+#                 paragraph.runs[0].text = texto_modificado
+#             else:
+#                 run = paragraph.add_run(texto_modificado)
 
-        # Inserir tabela de preços após o título "Quadro de Preços"
-        for i, paragraph in enumerate(doc.paragraphs):
-            if "Quadro de Preços" in paragraph.text:
-                logger.debug("Encontrado parágrafo 'Quadro de Preços'")
-                table = create_custom_table(doc, itens_mt, itens_bt, observacao)
-                doc.paragraphs[i+1]._element.addnext(table._element)
-                break
+#     # Corpo do documento
+#     for paragraph in doc.paragraphs:
+#         substituir_em_paragrafo(paragraph)
 
-        # Inserir tabela de escopo após o título "Escopo de Fornecimento"
-        for i, paragraph in enumerate(doc.paragraphs):
-            if "Escopo de Fornecimento" in paragraph.text:
-                logger.debug("Encontrado parágrafo 'Escopo de Fornecimento'")
-                table_escopo = create_custom_table_escopo(doc, itens_mt, itens_bt)
-                doc.paragraphs[i+1]._element.addnext(table_escopo._element)
-                break
+#     # Tabelas
+#     for table in doc.tables:
+#         for row in table.rows:
+#             for cell in row.cells:
+#                 for paragraph in cell.paragraphs:
+#                     substituir_em_paragrafo(paragraph)
 
-        logger.info("Tabelas inseridas com sucesso")
-        return doc
+#     # Cabeçalhos e rodapés
+#     for section in doc.sections:
+#         for paragraph in section.header.paragraphs:
+#             substituir_em_paragrafo(paragraph)
+#         for paragraph in section.footer.paragraphs:
+#             substituir_em_paragrafo(paragraph)
 
-    except Exception as e:
-        logger.error(f"Erro ao inserir tabelas: {str(e)}", exc_info=True)
-        raise
+#     logger.info("Substituições concluídas")
+#     return doc
 
-# def get_template_file(sharepoint):
+ 
+# def gerar_documento(template_path: str, dados_iniciais: Dict, 
+#                    impostos: Dict, itens_mt: List[Dict], itens_bt: List[Dict]) -> BytesIO:
 #     """
-#     Obtém o arquivo de template unificado do SharePoint
+#     Gera o documento Word unificado com os dados fornecidos
 #     """
-#     logger.info("Obtendo arquivo de template unificado")
+#     logger.info("Iniciando geração de documento unificado")
 #     try:
-#         local_template_path = "/tmp/Template_Proposta_Comercial_Unificado.docx"
-#         if not os.path.exists(local_template_path):
-#             template_name = os.getenv('TEMPLATE_UNIFICADO', 'Template_Proposta_Comercial_Unificado.docx')
-#             local_template_path = sharepoint.download_file(template_name)
-#             logger.debug(f"Template baixado para: {local_template_path}")
-#         return local_template_path
-#     except Exception as e:
-#         logger.error(f"Erro ao obter template: {str(e)}", exc_info=True)
-#         raise
-
-def gerar_documento(template_path: str, dados_iniciais: Dict, 
-                   impostos: Dict, itens_mt: List[Dict], itens_bt: List[Dict]) -> BytesIO:
-    """
-    Gera o documento Word unificado com os dados fornecidos
-    """
-    logger.info("Iniciando geração de documento unificado")
-    try:
-        # Preparar substituições de texto
-        ips_mt = set(str(item['IP']) for item in itens_mt if item['IP'] != '00')
-        ips_bt = set(str(item['IP']) for item in itens_bt if item['IP'] != '00')
-        todos_ips = ips_mt.union(ips_bt)
-
-        # Construir o dicionário de substituições
-        replacements = {
-            '{{CLIENTE}}': str(dados_iniciais.get('cliente', '')),
-            '{{NOMECLIENTE}}': str(dados_iniciais.get('nomeCliente', '')),
-            '{{FONE}}': str(dados_iniciais.get('fone', '')),
-            '{{EMAIL}}': str(dados_iniciais.get('email', '')),
-            '{{BT}}': str(dados_iniciais.get('bt', '')),
-            '{{OBRA}}': str(dados_iniciais.get('obra', ' ')),
-            '{{DIA}}': str(dados_iniciais.get('dia', '')),
-            '{{MES}}': str(dados_iniciais.get('mes', '')),
-            '{{ANO}}': str(dados_iniciais.get('ano', '')),
-            '{{REV}}': str(dados_iniciais.get('rev', '')),
-            '{{LOCAL}}': str(dados_iniciais.get('local_frete', '')),
-            '{{LOCALFRETE}}': str(impostos.get('local_frete_itens', '')),
-            '{{ICMS}}': f"{impostos.get('icms', 0):.1f}%",
-            '{{IP}}': ', '.join(todos_ips) if todos_ips else '',
-            '{obra}': '' if not dados_iniciais.get('obra', '').strip() else 'Obra:'
-        }
-
-        # Gerar documento
-        buffer = BytesIO()
-        doc = Document(template_path)
-        doc = inserir_tabelas_word(doc, itens_mt, itens_bt, '', replacements)
-        doc.save(buffer)
-        buffer.seek(0)
+#         # Validar tipos de entrada
+#         if not isinstance(template_path, str):
+#             raise TypeError("template_path deve ser uma string")
         
-        logger.info("Documento unificado gerado com sucesso")
-        return buffer
+#         if not isinstance(dados_iniciais, dict):
+#             logger.warning(f"dados_iniciais não é um dicionário. Tipo recebido: {type(dados_iniciais)}")
+#             dados_iniciais = {}
+        
+#         if not isinstance(impostos, dict):
+#             logger.warning(f"impostos não é um dicionário. Tipo recebido: {type(impostos)}")
+#             impostos = {}
+        
+#         if not isinstance(itens_mt, list):
+#             logger.warning(f"itens_mt não é uma lista. Tipo recebido: {type(itens_mt)}")
+#             itens_mt = []
+        
+#         if not isinstance(itens_bt, list):
+#             logger.warning(f"itens_bt não é uma lista. Tipo recebido: {type(itens_bt)}")
+#             itens_bt = []
 
-    except Exception as e:
-        logger.error(f"Erro ao gerar documento: {str(e)}", exc_info=True)
-        raise
+#         # Preparar substituições de texto
+#         ips_mt = set(str(item.get('IP', '')) for item in itens_mt if item.get('IP', '00') != '00')
+#         ips_bt = set(str(item.get('IP', '')) for item in itens_bt if item.get('IP', '00') != '00')
+#         todos_ips = ips_mt.union(ips_bt)
 
-# def inserir_titulo_e_imagem(doc, itens_mt, itens_bt):
-#     """
-#     Insere títulos e imagens para ambos os tipos de produtos
-#     """
-#     logger.info("Iniciando inserção de títulos e imagens")
-#     try:
-#         # Encontrar o ponto de inserção
-#         ponto_insercao = None
-#         for i, paragraph in enumerate(doc.paragraphs):
-#             if "A liberação da fabricação ocorrerá imediatamente após o recebimento do pedido de compra." in paragraph.text:
-#                 ponto_insercao = paragraph
-#                 break
+#         # Construir o dicionário de substituições
+#         replacements = {
+#             '{{CLIENTE}}': str(dados_iniciais.get('cliente', '')),
+#             '{{NOMECLIENTE}}': str(dados_iniciais.get('nomeCliente', '')),
+#             '{{FONE}}': str(dados_iniciais.get('fone', '')),
+#             '{{EMAIL}}': str(dados_iniciais.get('email', '')),
+#             '{{BT}}': str(dados_iniciais.get('bt', '')),
+#             '{{OBRA}}': str(dados_iniciais.get('obra', ' ')),
+#             '{{DIA}}': str(dados_iniciais.get('dia', '')),
+#             '{{MES}}': str(dados_iniciais.get('mes', '')),
+#             '{{ANO}}': str(dados_iniciais.get('ano', '')),
+#             '{{REV}}': str(dados_iniciais.get('rev', '')),
+#             '{{LOCAL}}': str(dados_iniciais.get('local_frete', '')),
+#             '{{LOCALFRETE}}': str(impostos.get('local_frete_itens', '')),
+#             '{{ICMS}}': f"{impostos.get('icms', 0):.1f}%",
+#             '{{IP}}': ', '.join(todos_ips) if todos_ips else '',
+#             '{obra}': '' if not dados_iniciais.get('obra', '').strip() else 'Obra:'
+#         }
 
-#         if not ponto_insercao:
-#             logger.error("Ponto de inserção não encontrado")
-#             return doc
-
-#         # Processa itens MT
-#         if itens_mt:
-#             from pdf_service_mt import inserir_titulo_e_imagem as inserir_mt
-#             logger.debug("Processando imagens MT")
-#             inserir_mt(doc, itens_mt)
-
-#         # Processa itens BT
-#         if itens_bt:
-#             from bt.pdf_service_bt import verificar_produto_ip, inserir_titulo_e_imagem as inserir_bt
-#             logger.debug("Processando imagens BT")
-#             resultados_produtos = verificar_produto_ip(itens_bt)
-#             inserir_bt(doc, resultados_produtos)
-
-#         logger.info("Títulos e imagens inseridos com sucesso")
-#         return doc
+#         # Gerar documento
+#         buffer = BytesIO()
+#         doc = Document(template_path)
+        
+#         # Substituir texto
+#         doc = substituir_texto_documento(doc, replacements)
+        
+#         # Inserir tabelas sepa
+#         doc = inserir_tabelas_separadas(doc, itens_mt, itens_bt, replacements)
+        
+#         # Salvar documento
+#         doc.save(buffer)
+#         buffer.seek(0)
+        
+#         logger.info("Documento unificado gerado com sucesso")
+#         return buffer
 
 #     except Exception as e:
-#         logger.error(f"Erro ao inserir títulos e imagens: {str(e)}", exc_info=True)
+#         logger.error(f"Erro ao gerar documento: {str(e)}", exc_info=True)
 #         raise
