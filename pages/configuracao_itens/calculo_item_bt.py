@@ -1,9 +1,10 @@
-# calculo_item.py
+# calculo_item_bt.py
 
 from typing import Dict, Any
 import streamlit as st
 import pandas as pd
 from decimal import Decimal
+from pages.configuracao_itens.utils import converter_valor_ajustado
 from utils.constants import TAX_CONSTANTS
 
 def buscar_cod_caixa_proj(df: pd.DataFrame, id: int) -> Dict[str, Any]:
@@ -74,6 +75,7 @@ def buscar_preco_por_potencia(df: pd.DataFrame, potencia: float, produto: str,
         tensao_maior = max(tensao_primaria, tensao_secundaria)
         tensao_menor = min(tensao_primaria, tensao_secundaria)
         potencia_ajustada = (potencia / tensao_maior) * (tensao_maior - tensao_menor)
+        st.write(f"Potencia ajustada:{potencia_ajustada}")
         produto = 'TT'
     
     df_produto_material = df[(df['produto'] == produto) & (df['material'] == material)]
@@ -130,23 +132,130 @@ def buscar_preco_por_potencia(df: pd.DataFrame, potencia: float, produto: str,
     
     return preco_encontrado
 
-def calcular_percentuais() -> float:
+def calcular_preco_encontrado(
+    df: pd.DataFrame,
+    preco_base: float, 
+    potencia: float, 
+    produto: str,
+    ip: str,
+    tensao_primaria: float,
+    tensao_secundaria: float,
+    material: str,
+    item: Dict[str, Any]
+) -> float:
     """
-    Calcula os percentuais totais aplicados ao preço.
+    Calcula o preço de um item encontrado.
     """
-    icms_base = 0.12
-    irpj_cssl = 0.0228
-    tkxadmmkt = 0.037
-    mocusfixo = 0.20
-    pisconfins = 0.0925
+    # Lógica de ajuste de tensão para produto ATT
+    tensao_primaria_padrao = 380
+    tensao_secundaria_padrao = 220
+    potencia_ajustada = potencia
+
+    if produto == "ATT" and (tensao_primaria != tensao_primaria_padrao or tensao_secundaria != tensao_secundaria_padrao):
+        tensao_maior = max(tensao_primaria, tensao_secundaria)
+        tensao_menor = min(tensao_primaria, tensao_secundaria)
+        potencia_ajustada = (potencia / tensao_maior) * (tensao_maior - tensao_menor)
+        st.write(f"Potencia ajustada:{potencia_ajustada}")
+        produto = 'TT'
     
-    return (
-        (st.session_state['impostos']['lucro'] / 100)
-        + icms_base
-        + (st.session_state['impostos']['comissao'] / 100)
-        + (st.session_state['impostos']['frete'] / 100)
-        + irpj_cssl
-        + tkxadmmkt
-        + mocusfixo
-        + pisconfins
+    # Busca preço base na tabela
+    df_produto_material = df[(df['produto'] == produto) & (df['material'] == material)]
+    if df_produto_material.empty:
+        return 0
+
+    df_sorted = df_produto_material.sort_values(by='potencia_numerica', ascending=True)
+    potencia_mais_proxima = df_sorted[df_sorted['potencia_numerica'] >= potencia_ajustada].iloc[0]
+    preco_trafo = potencia_mais_proxima['preco']
+    
+    # Cálculo de adicional de caixa para IP
+    soma_cx_preco = 0
+
+    adicional_ip = Decimal('0')
+    if ip not in ['00', '54']:
+        soma_cx_preco = df_sorted.loc[
+            df_sorted['potencia_numerica'] == potencia_mais_proxima['potencia_numerica'], 
+            'preco_caixa'
+        ].sum()
+        
+    # Incializa variáveis
+    adicional_acessorios_percentual = 0
+    adicional_acessorios_fixo = 0
+    # Ajustes de preço baseados nas características do item
+    if item['Frequencia 50Hz']:
+        adicional_acessorios_percentual += 0.2
+
+    if item['Blindagem Eletrostática']:
+        adicional_acessorios_percentual += 0.3
+
+    # Adiciona preços de acessórios específicos
+    adicional_acessorios_fixo += item['Preço Rele']
+
+    if item['Rele'] != "Nenhum":
+        adicional_acessorios_fixo += 3 * 51.83
+
+    # Ajustes para ensaios
+    if item['Ensaios']['Elev. Temperat.']:
+        if potencia_mais_proxima['potencia_numerica'] < 1000:
+            adicional_acessorios_fixo += 2910
+        elif potencia_mais_proxima['potencia_numerica'] >= 1250:
+            adicional_acessorios_fixo += 4807
+
+    if item['Ensaios']['Nível de Ruído']:
+        adicional_acessorios_fixo += 1265
+
+
+
+    # Ajustes para flanges
+    if ip in ['21', '23']:
+        if item['Flange'] == 1:
+            adicional_ip =  0.3
+            st.write("FLANGE 1")
+        elif item['Flange'] == 2:
+            adicional_ip =  0.5
+            st.write("FLANGE 2")
+    elif ip == '54':
+        if item['Flange'] == 1:
+            adicional_ip =  0.8
+            st.write("FLANGE 1 IP 54")
+        elif item['Flange'] == 2:
+            adicional_ip =  1.5
+    
+
+
+    preco_caixa = converter_valor_ajustado(Decimal(str(soma_cx_preco)), Decimal('0'))
+    
+    # Cálculo do adicional IP como percentual do preço da caixa
+    adicional_ip_valor = preco_caixa * Decimal(str(adicional_ip))
+    
+    # Cálculo do preço unitário
+    preco_unitario = (
+        converter_valor_ajustado(Decimal(str(preco_trafo)), Decimal('0')) + 
+        preco_caixa + 
+        adicional_ip_valor + 
+        Decimal(str(adicional_acessorios_fixo)) + 
+        Decimal(str(adicional_acessorios_percentual))
     )
+    
+    # Detalhamento do cálculo
+    st.markdown("### 📊 Detalhamento do Preço Unitário")
+    
+    # Cria colunas para organizar o detalhamento
+    col1, col2 = st.columns(2)
+    
+    with col1:
+        st.markdown("#### Valores Base")
+        st.write(f"- Preço Trafo: R$ {float(preco_trafo):.2f}")
+        st.write(f"- Preço Caixa s/ percentuais: R$ {float(soma_cx_preco):.2f}")
+        st.write(f"- Preço Caixa c/ percentuais: R$ {float(preco_caixa):.2f}")
+    
+    with col2:
+        st.markdown("#### Adicionais")
+        st.write(f"- Percentual Adicional IP: {float(adicional_ip):.2%}")
+        st.write(f"- Adicional IP: R$ {float(adicional_ip_valor):.2f}")
+        st.write(f"- Adicional Acessórios Fixos: R$ {float(adicional_acessorios_fixo):.2f}")
+        st.write(f"- Adicional Acessórios Percentuais: R$ {float(adicional_acessorios_percentual):.2f}")
+    
+    # Destaque do preço final
+    st.markdown(f"### 💰 **Preço Unitário Final:** R$ {float(preco_unitario):.2f}")
+    
+    return float(preco_unitario)

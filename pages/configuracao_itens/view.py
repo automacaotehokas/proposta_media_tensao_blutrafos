@@ -12,8 +12,7 @@ from typing import List, Dict
 from .componentsBT import ComponenteBT
 from .calculo_item_bt import (
     buscar_cod_caixa_proj,
-    buscar_preco_por_potencia,
-    calcular_percentuais
+    buscar_preco_por_potencia
 )
 
 
@@ -76,49 +75,6 @@ def initialize_item() -> Dict:
 
 
 
-def exibir_resumo_resultados(itens, tipo='MT'):
-    """
-    Exibe o resumo dos itens calculados em formato de tabela.
-    """
-    st.markdown("---")
-    st.subheader(f"Resumo dos Itens {tipo} Configurados")
-    
-    # Cria DataFrame para exibição
-    resumo_data = []
-    for idx, item in enumerate(itens, 1):
-        resumo_data.append({
-            'Item': idx,
-            'Quantidade': item['Quantidade'],
-            'Produto': item['Produto'],
-            'Potência': item.get('Potência ', ''),
-            'Fator K': item['Fator K'],
-            'Tensões': f"{item['Tensão Primária']} V / {item['Tensão Secundária']} V",
-            'IP': item['IP'],
-            'Preço Unitário': f"R$ {item['Preço Unitário']:,.2f}",
-            'Preço Total': f"R$ {item['Preço Total']:,.2f}",
-            'IPI': '0%'
-        })
-
-    df_resumo = pd.DataFrame(resumo_data)
-    st.table(df_resumo)
-
-    # Exibe o valor total
-    total = sum(item['Preço Total'] for item in itens)
-    st.subheader(f"Valor Total do Fornecimento {tipo}: R$ {total:,.2f}")
-
-def carregar_tensoes_padrao(item: Dict, df: pd.DataFrame, index: int):
-    """
-    Carrega as tensões padrão para um item se necessário.
-    """
-    if item['Produto'] == "ATT" and (item.get('Tensão Primária') != 380 or item.get('Tensão Secundária') != 220):
-        st.warning(f"As tensões padrão (380V e 220V) não serão carregadas para o Item {index + 1}.")
-    else:
-        if item['Descrição']:
-            descricao_selecionada = df[df['descricao'] == item['Descrição']].iloc[0]
-            item['Tensão Primária'] = descricao_selecionada['tensao_primaria']
-            item['Tensão Secundária'] = descricao_selecionada['tensao_secundaria']
-            st.success(f"Tensões carregadas para o Item {index + 1}!")
-
             
 
 def pagina_configuracao_MT():
@@ -129,12 +85,13 @@ def pagina_configuracao_MT():
     st.session_state['impostos'] = componentsMT.render_tax_inputs(st.session_state['impostos'])
     
     # Renderização dos componentes MT
-    with st.expander("Adicionar Novo Item MT", expanded=True):
+    with st.expander("Adicionar Novo Item MT", expanded=False):
         df = CustoMediaTensaoRepository().buscar_todos()
         item_index = len(st.session_state['itens']['itens_configurados_mt'])
         item_data = initialize_item()
         percentuais = calcular_percentuais(st.session_state['impostos'])
-        componentsMT.render_item_config(item_index, df, item_data, percentuais)
+
+        componentsMT.render_item_config(item_index, df, item_data)
     
     # Renderização do resumo
     
@@ -144,10 +101,10 @@ def pagina_configuracao_BT():
     st.subheader("Configuração de Itens - Baixa Tensão")
     
     # Renderização dos componentes BT
-    with st.expander("Adicionar Novo Item BT", expanded=True):
+    with st.expander("Adicionar Novo Item BT", expanded=False):
         ComponenteBT.render_bt_components()
     
-    # Exibe o resumo dos resultados automaticamente se houver itens calculados
+
 
 def pagina_configuracao():
     """Página principal de configuração de itens"""
@@ -212,7 +169,7 @@ def initialize_session_state():
         st.session_state['impostos'] = {
             'lucro': 5.0,
             'icms': 12.0,
-            'frete': 0.0,
+            'frete': 4.0,
             'comissao': 5.0,
             'contribuinte_icms': "Sim",
             'difal': 0.0,
@@ -279,25 +236,90 @@ def configuracao_itens_page():
         percentuais = calcular_percentuais(st.session_state['impostos'])
     
 
+def render_impostos(dados_impostos: Dict[str, Any]) -> None:
+    """Renderiza os campos de entrada para impostos"""
+    st.sidebar.header("Configuração de Impostos")
 
-# def update_items_list(quantidade_itens: int):
-#     """Atualiza a lista de itens baseado na quantidade desejada"""
-#     while len(st.session_state['itens']['itens_configurados_mt']) < quantidade_itens:
-#         st.session_state['itens']['itens_configurados_mt'].append({
-#             'Item': len(st.session_state['itens']) + 1,
-#             'Quantidade': 1,
-#             'Descrição': "",
-#             'Potência': None,
-#             'Tensão Primária': None,
-#             'Tensão Secundária': "380",
-#             'Derivações': "13,8/13,2/12,6/12,0/11,4",
-#             'Fator K': 1,
-#             'IP': '00',
-#             'Perdas': None,
-#             'Preço Unitário': 0.0,
-#             'Preço Total': 0.0,
-#             'IPI': 0.0,
-#             'classe_tensao': None,
-#             'adicional_caixa_classe': None
-#         })
+    # Inicializar impostos no session_state se não existirem
+    if 'impostos' not in st.session_state:
+        st.session_state['impostos'] = {
+            'lucro': dados_impostos.get('lucro', 5.0),
+            'icms': dados_impostos.get('icms', 12.0),
+            'frete': dados_impostos.get('frete', 4.0),
+            'comissao': dados_impostos.get('comissao', 5.0),
+            'difal': dados_impostos.get('difal', 0.0),
+            'f_pobreza': dados_impostos.get('f_pobreza', 0.0),
+            'tipo_frete': dados_impostos.get('tipo_frete', "CIF")
+        }
+
+    # Valores básicos
+    st.session_state['impostos']['lucro'] = st.sidebar.number_input('Lucro (%):', 
+                        min_value=0.0, 
+                        max_value=100.0, 
+                        step=0.1, 
+                        value=st.session_state['impostos']['lucro'],
+                        key='input_lucro')
     
+    st.session_state['impostos']['icms'] = st.sidebar.number_input('ICMS (%):', 
+                        min_value=0.0, 
+                        max_value=100.0, 
+                        step=0.1, 
+                        value=st.session_state['impostos']['icms'],
+                        key='input_icms')
+    
+    st.session_state['impostos']['comissao'] = st.sidebar.number_input('Comissão (%):', 
+                            min_value=0.0, 
+                            step=0.1, 
+                            value=st.session_state['impostos']['comissao'],
+                            key='input_comissao')
+
+    # Callback para atualizar o valor do frete quando o tipo muda
+    def on_tipo_frete_change():
+        if st.session_state.select_tipo_frete == "FOB":
+            st.session_state['impostos']['frete'] = 0.0
+            st.session_state['impostos']['tipo_frete'] = "FOB"
+        else:
+            st.session_state['impostos']['tipo_frete'] = "CIF"
+
+    # Usar session_state para manter o tipo de frete
+    tipo_frete = st.sidebar.selectbox(
+        'Tipo de Frete:', 
+        ["FOB","CIF"],
+        key='select_tipo_frete',
+        on_change=on_tipo_frete_change,
+        index=0 if st.session_state['impostos']['tipo_frete'] == "FOB" else 1
+    )
+
+    # Input do frete
+    st.session_state['impostos']['frete'] = st.sidebar.number_input(
+        'Frete (%):', 
+        min_value=0.0, 
+        step=0.1, 
+        value=st.session_state['impostos']['frete'],
+        key='input_frete',
+        disabled=tipo_frete=="FOB"
+    )
+
+    contribuinte_icms = st.sidebar.radio(
+        "O cliente é contribuinte do ICMS?",
+        options=["Sim", "Não"],
+        index=0 if dados_impostos.get('contribuinte_icms') != "Não" else 1,
+        key='radio_contribuinte'
+    )
+    
+    # Campos condicionais baseados na escolha do contribuinte
+    if contribuinte_icms == "Não":
+        st.session_state['impostos']['difal'] = st.sidebar.number_input('DIFAL (%):', 
+                            min_value=0.0, 
+                            value=st.session_state['impostos']['difal'],
+                            step=0.1,
+                            key='input_difal')
+        
+        st.session_state['impostos']['f_pobreza'] = st.sidebar.number_input('F. Pobreza (%):', 
+                                min_value=0.0,
+                                value=st.session_state['impostos']['f_pobreza'],
+                                step=0.1,
+                                key='input_f_pobreza')
+    else:
+        st.session_state['impostos']['difal'] = 0.0
+        st.session_state['impostos']['f_pobreza'] = 0.0

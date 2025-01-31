@@ -3,8 +3,9 @@
 import streamlit as st
 from typing import Dict, List
 from repositories.custos_baixa_tensao import CustoBaixaTensaoRepository
-from .utils import verificar_campos_preenchidos
-
+from .utils import verificar_campos_preenchidos, converter_valor_ajustado
+from .calculo_item_bt import calcular_preco_encontrado
+from decimal import Decimal
 
 class ComponenteBT:
 
@@ -61,9 +62,46 @@ class ComponenteBT:
         ComponenteBT.render_item_description(0, item, df_bt)
         ComponenteBT.render_item_specifications(0, item)
         ComponenteBT.render_item_accessories(0, item)
-        # Botão para adicionar o item
         
+        # Calcula o preço
+        if item['Produto'] and item['material']:
+            try:
+                preco_unitario = calcular_preco_encontrado(
+                    df=df_bt,
+                    preco_base=item['preco'],
+                    potencia=item['potencia_numerica'],
+                    produto=item['Produto'],
+                    ip=item['IP'],
+                    tensao_primaria=item['Tensão Primária'],
+                    tensao_secundaria=item['Tensão Secundária'],
+                    material=item['material'],
+                    item={
+                        'Frequencia 50Hz': item['frequencia_50hz'],
+                        'Blindagem Eletrostática': item['blindagem_eletrostatica'],
+                        'Preço Rele': item['preco_rele'],
+                        'Rele': item['rele'],
+                        'Ensaios': {
+                            'Elev. Temperat.': item['ensaios']['elevacao_temperatura'],
+                            'Nível de Ruído': item['ensaios']['nivel_ruido']
+                        },
+                        'Flange': item['flange']
+                    }
+                )
+                
+                # Atualiza o item com o preço calculado
+                item['Preço Unitário'] = preco_unitario
+                item['Preço Total'] = preco_unitario * item['Quantidade']
+                
+                # Atualiza o session state
+                st.session_state['current_bt_item'] = item
 
+
+                
+              
+            except Exception as e:
+                st.error(f"Erro ao calcular preço: {str(e)}")
+        st.write(f"Preço Unitário: {item['Preço Unitário']}")
+        # Botão para adicionar o item
         if st.button("Adicionar Item BT"):
             campos_vazios = verificar_campos_preenchidos(item, campos_obrigatorios=[
                 'descricao',
@@ -219,56 +257,91 @@ class ComponenteBT:
     @staticmethod
     def render_item_accessories(index: int, item: Dict) -> Dict:
         """
-        Renderiza os componentes de acessórios do item.
+        Renderiza os acessórios para um item BT.
+        
+        Args:
+            index (int): Índice do item (não utilizado no momento)
+            item (Dict): Dicionário com as informações do item
         """
+        # Título da seção de acessórios
+        st.markdown("### 🔧 Acessórios do Transformador")
+        
+        # Cria colunas para organizar os widgets
         col1, col2, col3, col4 = st.columns(4)
-
-        opcoes_rele = [
-            {"label": "Nenhum", "value": "", "price": 0},
-            {"label": "Relé TH104", "value": "TH104", "price": 433.4},
-            {"label": "Relé NT935 AD", "value": "NT935_AD", "price": 1248.0},
-            {"label": "Relé NT935 ETH", "value": "NT935_ETH", "price": 3515.0}
-        ]
-
+        
         with col1:
+            st.markdown("#### 🔲 Configurações")
+            # Frequência 50Hz
+ 
             item['frequencia_50hz'] = st.checkbox(
-                f"Freqüência de 50Hz para o Item {index + 1}",
-                value=item['frequencia_50hz']
+                f"Frequência 50Hz: (20% sobre o valor do Transformador)", 
+                value=item.get('frequencia_50hz', False),
+                key=f'frequencia_50hz_{index}'
             )
 
-        with col2:
+            # Blindagem Eletrostática
             item['blindagem_eletrostatica'] = st.checkbox(
-                f"Blindagem Eletrostática para o Item {index + 1}",
-                value=item['blindagem_eletrostatica']
+                "Blindagem Eletrostática: (30% sobre o valor do Transformador)", 
+                value=item.get('blindagem_eletrostatica', False),
+                key=f'blindagem_eletrostatica_{index}'
             )
 
-        with col3:
+            # Ensaio de Elevação de Temperatura
+            elevacao_temp_valor = converter_valor_ajustado(Decimal('2910'), Decimal('0'))
             item['ensaios']['elevacao_temperatura'] = st.checkbox(
-                f"Elev. Temperat. para o Item {index + 1}",
-                value=item['ensaios']['elevacao_temperatura']
+                f"Ensaio Elevação Temperatura (R$ {elevacao_temp_valor:.2f})", 
+                value=item['ensaios'].get('elevacao_temperatura', False),
+                key=f'elevacao_temperatura_{index}'
             )
-            
-            labels_rele = [opcao["label"] for opcao in opcoes_rele]
-            indice_inicial = labels_rele.index(item['rele']) if item['rele'] in labels_rele else 0
+
+            # Ensaio de Nível de Ruído
+            nivel_ruido_valor = converter_valor_ajustado(Decimal('1265'), Decimal('0'))
+            item['ensaios']['nivel_ruido'] = st.checkbox(
+                f"Ensaio Nível de Ruído (R$ {nivel_ruido_valor:.2f})", 
+                value=item['ensaios'].get('nivel_ruido', False),
+                key=f'nivel_ruido_{index}'
+            )
+        
+        with col2:
+            st.markdown("#### 📋 Relé")
+            # Seleção de Relé
+            rele_options = ["Nenhum", "Relé TH104", "Relé NT935 AD", "Relé NT935 ETH"]
+            rele_prices = {
+                "Nenhum": 0,
+                "Relé TH104": 433.4,
+                "Relé NT935 AD": 1248.0,
+                "Relé NT935 ETH": 3515.0
+            }
             
             item['rele'] = st.selectbox(
-                "Selecione o tipo de Relé",
-                labels_rele,
-                index=indice_inicial,
-                key=f"rele_{item['id']}_{index}"
+                "Tipo de Relé", 
+                options=rele_options, 
+                index=rele_options.index(item.get('rele', "Nenhum")),
+                key=f'rele_{index}'
             )
-            
-            item['preco_rele'] = next((opcao['price'] for opcao in opcoes_rele if opcao['label'] == item['rele']), 0)
-
+            preco_do_rele = converter_valor_ajustado(Decimal(str(rele_prices[item['rele']])), Decimal('0'))
+            # Preço do Relé (se aplicável)
+            item['preco_rele'] = rele_prices[item['rele']]
+            st.text_input(
+                "Preço Relé", 
+                value=f"R$ {preco_do_rele:.2f}",
+                disabled=True,
+                key=f'preco_rele_display_{index}'
+            )
+        
+        with col3:
+            st.markdown("#### 🔢 Taps")
+            # Renderiza taps
+            ComponenteBT.render_item_taps(index, item)
+        
         with col4:
-            item['ensaios']['nivel_ruido'] = st.checkbox(
-                f"Nível de Ruído para o Item {index + 1}",
-                value=item['ensaios']['nivel_ruido']
-            )
-
-        ComponenteBT.render_item_taps(index, item)
-        ComponenteBT.render_item_tensoes(index, item)
-
+            st.markdown("#### 🔢 Tensões")
+            # Renderiza tensões
+            ComponenteBT.render_item_tensoes(index, item)
+        
+        # Adiciona um espaçador para melhorar o layout
+        st.markdown("---")
+        
         return item
 
     @staticmethod

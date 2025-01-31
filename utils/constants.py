@@ -52,6 +52,7 @@ def get_default_voltage_values(classe_tensao: str) -> Dict[str, str]:
         "nbi": "0"
     })
 
+
 ACESSORIOS_FIXOS = [
     {"descricao": "Conjunto de 3 Buchas Plug-in", "valor": 1459},
     {"descricao": "Sensor PT - 100", "valor": 51},
