@@ -9,66 +9,97 @@ from .word_formatter_mt import (
     set_cell_shading, add_double_borders, set_table_left_indent
 )
 
-
-
-
+import logging
+logger = logging.getLogger(__name__)
 
 def substituir_texto_documento(doc, replacements):
-    """
-    Substitui o texto no documento Word com base no dicionário de substituições
-    
-    Args:
-        doc: Documento Word
-        replacements (Dict): Dicionário com as substituições
-    """
-    def remove_paragraph(paragraph):
-        p = paragraph._element
-        p.getparent().remove(p)
-        paragraph._p = paragraph._element = None
-
-    # Substituir texto em todos os parágrafos do documento
-    for paragraph in doc.paragraphs:
+    def process_run(run, replacements):
+        """Processa um único run de texto"""
+        modified = False
+        text = run.text
         for old_text, new_text in replacements.items():
-            if old_text in paragraph.text:
-                if old_text == "{{IP}}" and not new_text.strip():
-                    remove_paragraph(paragraph)
-                    break
-                else:
-                    inline = paragraph.runs
-                    for run in inline:
-                        if old_text in run.text:
-                            run.text = run.text.replace(old_text, new_text)
-
-    # Substituir texto em todas as tabelas do documento
+            if old_text in text:
+                text = text.replace(old_text, new_text)
+                modified = True
+        if modified:
+            run.text = text
+    def process_paragraph(paragraph):
+        """Processa um parágrafo inteiro"""
+        if not paragraph or not hasattr(paragraph, 'runs'):
+            return
+ 
+        # Guarda o texto original para comparação
+        original_text = paragraph.text
+        # Primeiro tenta processar run por run
+        for run in paragraph.runs:
+            process_run(run, replacements)
+        # Se ainda existem substituições para fazer, tenta uma abordagem mais agressiva
+        if any(old_text in paragraph.text for old_text in replacements):
+            try:
+                # Preserva o primeiro run com formatação
+                first_run = paragraph.runs[0] if paragraph.runs else None
+                # Guarda a formatação
+                font_props = {}
+                if first_run:
+                    font = first_run.font
+                    font_props = {
+                        'name': font.name,
+                        'size': font.size,
+                        'bold': font.bold,
+                        'italic': font.italic,
+                        'underline': font.underline,
+                        'color': font.color
+                    }
+                # Limpa todos os runs exceto aqueles com imagens
+                text = paragraph.text
+                for run in paragraph.runs[:]:
+                    if not hasattr(run, '_r'):  # Pula runs inválidos
+                        continue
+                    try:
+                        # Verifica se o run contém uma imagem
+                        has_image = bool(run._r.findall("*//pic:pic", {'pic': 'http://schemas.openxmlformats.org/drawingml/2006/picture'}))
+                        if not has_image:
+                            p = run._element
+                            p.getparent().remove(p)
+                    except Exception:
+                        continue
+                # Faz todas as substituições no texto
+                for old_text, new_text in replacements.items():
+                    text = text.replace(old_text, new_text)
+                # Adiciona o novo texto como um único run
+                new_run = paragraph.add_run(text)
+                # Aplica a formatação salva
+                if font_props:
+                    for prop, value in font_props.items():
+                        if value is not None:
+                            setattr(new_run.font, prop, value)
+            except Exception as e:
+                logger.error(f"Erro ao reprocessar parágrafo: {str(e)}")
+        # Verifica se precisa remover o parágrafo (caso IP)
+        if "{{IP}}" in original_text and replacements.get("{{IP}}", "").strip() == "":
+            try:
+                p = paragraph._element
+                p.getparent().remove(p)
+            except Exception as e:
+                logger.error(f"Erro ao remover parágrafo: {str(e)}")
+ 
+    # Processa cabeçalhos
+    for section in doc.sections:
+        if section.header:
+            for paragraph in section.header.paragraphs:
+                process_paragraph(paragraph)
+    # Processa parágrafos normais
+    for paragraph in doc.paragraphs:
+        process_paragraph(paragraph)
+    # Processa tabelas
     for table in doc.tables:
         for row in table.rows:
             for cell in row.cells:
                 for paragraph in cell.paragraphs:
-                    for old_text, new_text in replacements.items():
-                        if old_text in paragraph.text:
-                            if old_text == "{{IP}}" and not new_text.strip():
-                                remove_paragraph(paragraph)
-                                break
-                            else:
-                                inline = paragraph.runs
-                                for run in inline:
-                                    if old_text in run.text:
-                                        run.text = run.text.replace(old_text, new_text)
+                    process_paragraph(paragraph)
+    return doc
 
-    # Substituir texto no cabeçalho de todas as seções
-    for section in doc.sections:
-        header = section.header
-        for paragraph in header.paragraphs:
-            for old_text, new_text in replacements.items():
-                if old_text in paragraph.text:
-                    if old_text == "{{IP}}" and not new_text.strip():
-                        remove_paragraph(paragraph)
-                        break
-                    else:
-                        inline = paragraph.runs
-                        for run in inline:
-                            if old_text in run.text:
-                                run.text = run.text.replace(old_text, new_text)
+
 
 def determinar_eficiencia(perdas: str) -> str:
     """Determina a eficiência com base nas perdas"""
@@ -300,7 +331,7 @@ def inserir_tabelas_word(doc: Document, itens_configurados: List[Dict],
             doc.paragraphs[i+1]._element.addnext(table._element)
             break
 
-    # Inserir tabela de escopo
+   # Inserir tabela de escopo
     for i, paragraph in enumerate(doc.paragraphs):
         if "Escopo de Fornecimento" in paragraph.text:
             table_escopo = create_custom_table_escopo(doc, itens_configurados)
