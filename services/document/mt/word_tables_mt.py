@@ -331,7 +331,7 @@ def inserir_tabelas_word(doc: Document, itens_configurados: List[Dict],
             doc.paragraphs[i+1]._element.addnext(table._element)
             break
 
-    # Inserir tabela de escopo
+   # Inserir tabela de escopo
     for i, paragraph in enumerate(doc.paragraphs):
         if "Escopo de Fornecimento" in paragraph.text:
             table_escopo = create_custom_table_escopo(doc, itens_configurados)

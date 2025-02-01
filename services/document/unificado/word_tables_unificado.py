@@ -6,7 +6,30 @@ from io import BytesIO
 from services.document.mt import word_tables_mt
 from services.document.bt import word_tables_bt
 from services.document.mt.word_tables_mt import substituir_texto_documento
+
 logger = logging.getLogger(__name__)
+
+def inserir_tabelas_word(doc: Document, itens_configurados: List[Dict], 
+                        observacao: str, replacements: Dict) -> Document:
+    """Insere as tabelas no documento e realiza substituições de texto"""
+    # Substituir texto no documento
+    substituir_texto_documento(doc, replacements)
+
+    # Inserir tabela de preços
+    for i, paragraph in enumerate(doc.paragraphs):
+        if "Quadro de Preços" in paragraph.text:
+            table = word_tables_mt.create_custom_table(doc, itens_configurados, observacao)
+            doc.paragraphs[i+1]._element.addnext(table._element)
+            break
+
+    # Inserir tabela de escopo
+    # for i, paragraph in enumerate(doc.paragraphs):
+    #     if "Escopo de Fornecimento" in paragraph.text:
+    #         table_escopo = create_custom_table_escopo(doc, itens_configurados)
+    #         doc.paragraphs[i+1]._element.addnext(table_escopo._element)
+    #         break
+
+    return doc
 
 def inserir_tabelas_separadas(
     doc: Document, 
@@ -28,70 +51,82 @@ def inserir_tabelas_separadas(
         logger.warning("Nenhum item de MT ou BT fornecido. Nenhuma tabela será inserida.")
         return doc
 
-    # Tabela de preços MT
-    if itens_mt:
-        logger.info(f"Processando itens MT: {len(itens_mt)} itens")
-        
-        # Localizar o parágrafo marcador de forma mais flexível
-        paragrafos_encontrados = [p for p in doc.paragraphs if "QUADRO_PRECOS_MT" in str(p.text)]
-        logger.info(f"Parágrafos encontrados para MT: {len(paragrafos_encontrados)}")
-        
-        if paragrafos_encontrados:
-            paragraph = paragrafos_encontrados[0]
-            
+    # Controle de inserção das tabelas de preços
+    mt_price_inserted = False
+    bt_price_inserted = False
+
+    # Procurar marcadores e inserir tabelas de preços
+    for i, paragraph in enumerate(doc.paragraphs):
+        # Inserir tabela de preços MT
+        if not mt_price_inserted and "{{ QUADRO_PRECOS_MT}}" in paragraph.text and itens_mt:
+            logger.info(f"Processando itens MT: {len(itens_mt)} itens")
             try:
                 # Criar tabela de MT
-                result = word_tables_mt.inserir_tabelas_word(
-                    doc,
-                    itens_configurados=itens_mt,
-                    observacao="",
-                    replacements=replacements
-                )
-                
-                # Neste caso, result é o próprio documento
+                table = word_tables_mt.create_custom_table(doc, itens_mt, observacao)
+                doc.paragraphs[i + 1]._element.addnext(table._element)
+                paragraph.text = paragraph.text.replace("{{ QUADRO_PRECOS_MT}}", "")
+                mt_price_inserted = True
                 logger.info("Tabela MT inserida com sucesso")
-            
             except Exception as e:
                 logger.error(f"Erro ao criar tabela MT: {str(e)}", exc_info=True)
 
-    # Tabela de preços BT
-    if itens_bt:
-        logger.info(f"Processando itens BT: {len(itens_bt)} itens")
-        
-        paragrafos_encontrados = [p for p in doc.paragraphs if "QUADRO_PRECOS_BT" in str(p.text)]
-        logger.info(f"Parágrafos encontrados para BT: {len(paragrafos_encontrados)}")
-        
-        if paragrafos_encontrados:
+        # Inserir tabela de preços BT
+        if not bt_price_inserted and "{{ QUADRO_PRECOS_BT}}" in paragraph.text and itens_bt:
+            logger.info(f"Processando itens BT: {len(itens_bt)} itens")
             try:
                 # Criar tabela de BT
-                result = word_tables_bt.create_custom_table(
-                    doc,
-                    itens_configurados=itens_bt,
-                    observacao=""
-                )
-                replacements=replacements
-                # Neste caso, result é uma tabela
+                table = word_tables_bt.create_custom_table(doc, itens_bt, observacao)
+                doc.paragraphs[i + 1]._element.addnext(table._element)
+                paragraph.text = paragraph.text.replace("{{ QUADRO_PRECOS_BT}}", "")
+                bt_price_inserted = True
                 logger.info("Tabela BT inserida com sucesso")
-            
             except Exception as e:
                 logger.error(f"Erro ao criar tabela BT: {str(e)}", exc_info=True)
 
-    return doc
-    # Tabela de escopo
-    # if itens_mt or itens_bt:
-    #     from services.document.mt import word_tables_mt
-    #     for i, paragraph in enumerate(doc.paragraphs):
-    #         if "Escopo de Fornecimento" in paragraph.text:
-    #             logger.info("Inserindo tabela de escopo unificada")
-                
-    #             # Usar função de escopo MT (assumindo que é a mesma para MT e BT)
-    #             tabela_escopo = word_tables_mt.create_custom_table_escopo(
-    #                 doc, 
-    #                 itens_mt + itens_bt
-    #             )
-    #             doc.paragraphs[i+1]._element.addnext(tabela_escopo._element)
-    #             break
+        # Se ambas as tabelas necessárias foram inseridas, podemos parar
+        if (mt_price_inserted or not itens_mt) and (bt_price_inserted or not itens_bt):
+            break
 
+    # Avisos para tabelas de preços não inseridas
+    if not mt_price_inserted and itens_mt:
+        logger.warning("Marcador de quadro de preços MT não encontrado no documento")
+    if not bt_price_inserted and itens_bt:
+        logger.warning("Marcador de quadro de preços BT não encontrado no documento")
+
+    # Inserção das tabelas de escopo (mantendo a lógica existente)
+    if itens_mt or itens_bt:
+        mt_inserted = False
+        bt_inserted = False
+        
+        for i, paragraph in enumerate(doc.paragraphs):
+            # Handle MT escopo table
+            if not mt_inserted and "{{ ESCOPO_MT}}" in paragraph.text and itens_mt:
+                logger.info("Inserindo tabela de escopo MT")
+                if hasattr(word_tables_mt, 'create_custom_table_escopo'):
+                    tabela_escopo_mt = word_tables_mt.create_custom_table_escopo(doc, itens_mt)
+                    doc.paragraphs[i + 1]._element.addnext(tabela_escopo_mt._element)
+                paragraph.text = paragraph.text.replace("{{ ESCOPO_MT}}", "")
+                mt_inserted = True
+
+            # Handle BT escopo table
+            if not bt_inserted and "{{ ESCOPO_BT}}" in paragraph.text and itens_bt:
+                logger.info("Inserindo tabela de escopo BT")
+                if hasattr(word_tables_bt, 'create_custom_table_escopo'):
+                    tabela_escopo_bt = word_tables_bt.create_custom_table_escopo(doc, itens_bt)
+                    doc.paragraphs[i + 1]._element.addnext(tabela_escopo_bt._element)
+                paragraph.text = paragraph.text.replace("{{ ESCOPO_BT}}", "")
+                bt_inserted = True
+
+            if (mt_inserted or not itens_mt) and (bt_inserted or not itens_bt):
+                break
+
+        if not mt_inserted and itens_mt:
+            logger.warning("Marcador de escopo MT não encontrado no documento")
+        if not bt_inserted and itens_bt:
+            logger.warning("Marcador de escopo BT não encontrado no documento")
+
+    return doc
+    
     
 
 
