@@ -4,6 +4,7 @@ import logging
 import os
 from docx.shared import Inches
 import logging
+import streamlit as st
 
 logger=logging.getLogger(__name__)
 
@@ -226,8 +227,34 @@ def substituir_texto_documento(doc, replacements):
                                 run.text = run.text.replace(old_text, new_text)
 
 
-def inserir_tabelas_word(doc, itens_configurados, observacao, replacements):
+def inserir_tabelas_word(doc, itens_configurados, observacao):
     inserir_titulo_e_imagem(doc, itens_configurados)
+
+    dados_iniciais = st.session_state.get('dados_iniciais', {})
+    impostos = st.session_state.get('impostos', {})
+
+    replacements = {
+        '{{CLIENTE}}': str(dados_iniciais.get('cliente', '')),
+        '{{NOMECLIENTE}}': str(dados_iniciais.get('nomeCliente', '')),
+        '{{FONE}}': str(dados_iniciais.get('fone', '')),
+        '{{EMAIL}}': str(dados_iniciais.get('email', '')),
+        '{{BT}}': str(dados_iniciais.get('bt', '')),
+        '{{OBRA}}': str(dados_iniciais.get('obra', ' ')),
+        '{{DIA}}': str(dados_iniciais.get('dia', '')),
+        '{{MES}}': str(dados_iniciais.get('mes', '')),
+        '{{ANO}}': str(dados_iniciais.get('ano', '')),
+        '{{REV}}': str(dados_iniciais.get('rev', '')),
+        '{{LOCAL}}': str(dados_iniciais.get('local_frete', '')),
+        '{{LOCALFRETE}}': str(impostos.get('local_frete', '')),
+        '{{ICMS}}': f"{impostos.get('icms', 0):.1f}%",
+        '{{IP}}': ', '.join(set(str(item['IP']) for item in itens_configurados 
+                              if item['IP'] != '00')),
+        '{obra}': '' if not dados_iniciais.get('obra', '').strip() else 'Obra:',
+        '{{RESPONSAVEL}}': st.session_state.get('usuario', ''),
+        '{{GARANTIA}}': '12',
+        '{{VALIDADE}}': '07',
+        '{{TRANSPORTE}}': 'O transporte de equipamentos será realizado no formato CIF.' if impostos.get('tipo_frete', '') == 'CIF' else 'O transporte de equipamentos será realizado no formato FOB.',
+    }
     import logging
     logging.debug("Iniciando a função 'inserir_tabelas_word'.")
 

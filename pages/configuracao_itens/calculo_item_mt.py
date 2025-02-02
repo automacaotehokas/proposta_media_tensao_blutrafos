@@ -110,26 +110,14 @@ class CalculoItemMT:
         # Detalhamento do cálculo
         st.markdown("### 📊 Detalhamento do Preço Unitário")
         
-        # Cria colunas para organizar o detalhamento
-        col1, col2 = st.columns(2)
+        st.write(f"- Adicional IP: R$ {float(adicional_ip):.2f}")
+        st.write(f"- Adicional Caixa Classe: R$ {float(adicional_caixa_classe):.2f}")
+        st.write(f"- Adicional Acessórios Fixos: R$ {float(adicional_acessorios_fixo):.2f}")
+        st.write(f"- Adicional Acessórios Percentuais: R$ {float(preco_atual * somatoria_percentual_acessorios):.2f}")
         
-        with col1:
-            st.markdown("#### 💡 Valores Base")
-            st.write(f"- Preço Base: R$ {float(preco_base):.2f}")
-            st.write(f"- P_Trafo: {float(p_trafo):.4f}")
-            st.write(f"- Classe de Tensão: {classe_tensao}")
-            st.write(f"- IP Escolhido: {ip_escolhido}")
-            st.write(f"- Fator K: {fator_k}")
-        
-        with col2:
-            st.markdown("#### 💰 Adicionais")
-            st.write(f"- Adicional IP: R$ {float(adicional_ip):.2f}")
-            st.write(f"- Adicional Caixa Classe: R$ {float(adicional_caixa_classe):.2f}")
-            st.write(f"- Adicional Acessórios Fixos: R$ {float(adicional_acessorios_fixo):.2f}")
-            st.write(f"- Adicional Acessórios Percentuais: R$ {float(preco_atual * somatoria_percentual_acessorios):.2f}")
-        
+        preco_formatado = f"R$ {preco_unitario:,.2f}".replace(',', 'X').replace('.', ',').replace('X', '.')
         # Destaque do preço final
-        st.markdown(f"### 💵 **Preço Unitário Final:** R$ {float(preco_unitario):.2f}")
+        st.markdown(f"### 💵 **Preço Unitário Final:** {preco_formatado}")
         
         return preco_unitario
 

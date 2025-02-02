@@ -13,6 +13,7 @@ from pages.adm.view import admin_section
 from datetime import datetime
 import dotenv
 from streamlit.components.v1 import html as components_html
+from decimal import Decimal
 
 dotenv.load_dotenv()
 
@@ -20,7 +21,7 @@ def selecionar_tipo_proposta():
     """Função para selecionar se é nova revisão ou atualização"""
     params = st.query_params
     # revisao_id = params.get("id_revisao")
-    revisao_id = os.getenv("ID_REVISAO_TESTE")
+    revisao_id = params.get("id_revisao")
     
     # Se não tem id_revisao, define automaticamente como nova revisão
     if not revisao_id:
@@ -122,96 +123,188 @@ def exibir_tabela_unificada():
     st.markdown("---")
     col1, col2, col3 = st.columns(3)
     with col1:
-        total_mt = df_mt['valor_total'].sum() if not df_mt.empty else 0
+        # Convert valor_total to float before summing
+        total_mt = df_mt['valor_total'].apply(float).sum() if not df_mt.empty else 0
         st.metric("Total MT", f"R$ {total_mt:,.2f}")
+        st.session_state['valor_mt'] = total_mt
     with col2:
-        total_bt = df_bt['valor_total'].sum() if not df_bt.empty else 0
+        # Convert valor_total to float before summing
+        total_bt = df_bt['valor_total'].apply(float).sum() if not df_bt.empty else 0
         st.metric("Total BT", f"R$ {total_bt:,.2f}")
+        st.session_state['valor_bt'] = total_bt
     with col3:
-        total_geral = total_mt + total_bt
+        total_geral = Decimal(total_mt) + Decimal(total_bt)
         st.metric("Total Geral", f"R$ {total_geral:,.2f}")
+        st.session_state['valor_totalizado'] = float(total_geral)
 
+
+import logging
+
+# Configuração do logger
+logging.basicConfig(
+    level=logging.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    datefmt='%Y-%m-%d %H:%M:%S'
+)
+
+logger = logging.getLogger(__name__)
 
 def carregar_dados_revisao(revisao_id: str):
-    """Carrega dados de uma revisão existente"""
+    """Carrega dados de uma revisão existente com tratamento para JSON duplamente codificado"""
+    logger = logging.getLogger(__name__)
+    logger.info(f"Iniciando carregamento da revisão: {revisao_id}")
+    
+    conn = DatabaseConfig.get_connection()
+    cur = conn.cursor()
+    
     try:
-        conn = DatabaseConfig.get_connection()
-        cur = conn.cursor()
-        
         query = """
-            SELECT 
-                r.conteudo::text, 
-                r.revisao, 
-                p.cliente, 
-                p.proposta, 
-                p.obra,
-                p.dt_oferta,
-                p.contato
-            FROM revisoes r 
-            JOIN propostas p ON r.id_proposta_id = p.id_proposta 
-            WHERE r.id_revisao = %s
+           SELECT 
+               r.conteudo::text, 
+               r.revisao, 
+               p.cliente, 
+               p.proposta, 
+               p.obra,
+               p.dt_oferta,
+               p.contato
+           FROM revisoes r 
+           JOIN propostas p ON r.id_proposta_id = p.id_proposta 
+           WHERE r.id_revisao = %s
         """
         
         cur.execute(query, (revisao_id,))
         resultado = cur.fetchone()
         
         if resultado:
-            conteudo_json, numero_revisao, cliente, proposta, obra, dt_oferta, contato = resultado
+            logger.info("Dados encontrados no banco")
+            conteudo, numero_revisao, cliente, proposta, obra, dt_oferta, contato = resultado
             
-            if conteudo_json:
-                dados = json.loads(conteudo_json)
-                
-                # Inicializar a estrutura de itens se não existir
-                if 'itens' not in st.session_state:
+            if conteudo:
+                try:
+                    # Primeiro decode: converter para string JSON
+                    logger.info("Primeiro decode: convertendo dados do banco")
+                    if isinstance(conteudo, str):
+                        primeiro_decode = json.loads(conteudo)
+                        logger.info(f"Tipo após primeiro decode: {type(primeiro_decode)}")
+                        
+                        # Se ainda é string, precisa de segundo decode
+                        if isinstance(primeiro_decode, str):
+                            logger.info("Segundo decode necessário")
+                            dados = json.loads(primeiro_decode)
+                        else:
+                            dados = primeiro_decode
+                    else:
+                        dados = conteudo
+
+                    logger.info(f"Tipo final dos dados: {type(dados)}")
+                    logger.info(f"Chaves disponíveis: {dados.keys() if isinstance(dados, dict) else 'Não é um dicionário'}")
+
+                    # Garante que temos um dicionário
+                    if not isinstance(dados, dict):
+                        logger.error(f"Dados finais não são um dicionário: {type(dados)}")
+                        return False
+
+                    # Inicializa a estrutura de itens
+                    logger.info("Inicializando estrutura de itens")
                     st.session_state.itens = {
-                        'itens_configurados_mt': [],
-                        'itens_configurados_bt': []
+                        'itens_configurados_mt': dados.get('itens_configurados_mt', []),
+                        'itens_configurados_bt': dados.get('itens_configurados_bt', [])
                     }
-                
-                # Carregar dados na nova estrutura
-                if 'itens_configurados_mt' in dados:
-                    st.session_state.itens['itens_configurados_mt'] = dados['itens_configurados_mt']
-                elif 'itens_configurados' in dados:  # Compatibilidade com dados antigos
-                    st.session_state.itens['itens_configurados_mt'] = dados['itens_configurados']
-                
-                if 'itens_configurados_bt' in dados:
-                    st.session_state.itens['itens_configurados_bt'] = dados['itens_configurados_bt']
-                
-                # Carregar outros dados
-                for key in ['configuracoes_itens', 'impostos', 'dados_iniciais']:
-                    if key in dados:
-                        st.session_state[key] = dados[key]
+                    
+                    # Log dos itens carregados
+                    logger.info(f"Itens MT carregados: {len(st.session_state.itens['itens_configurados_mt'])}")
+                    logger.info(f"Itens BT carregados: {len(st.session_state.itens['itens_configurados_bt'])}")
+
+                    # Carrega dados iniciais
+                    if 'dados_iniciais' in dados:
+                        logger.info("Carregando dados iniciais do JSON")
+                        st.session_state['dados_iniciais'] = dados['dados_iniciais']
+                    else:
+                        logger.info("Criando dados iniciais a partir do banco")
+                        dt = dt_oferta or datetime.now()
+                        st.session_state['dados_iniciais'] = {
+                            'cliente': cliente,
+                            'bt': str(proposta),
+                            'obra': obra,
+                            'rev': str(numero_revisao).zfill(2),
+                            'dia': dt.strftime('%d'),
+                            'mes': dt.strftime('%m'),
+                            'ano': dt.strftime('%Y'),
+                            'nomeCliente': contato,
+                            'email': '',
+                            'fone': '',
+                            'local_frete': 'São Paulo/SP'
+                        }
+
+                    # Carrega outros dados
+                    chaves_para_carregar = [
+                        'impostos', 
+                        'eventos_mt',
+                        'eventos_bt',
+                        'prazo_entrega',
+                        'desvios'
+                    ]
+                    
+                    logger.info("Carregando outras configurações")
+                    for chave in chaves_para_carregar:
+                        if chave in dados:
+                            st.session_state[chave] = dados[chave]
+                            logger.info(f"Carregado: {chave}")
+
+                    # Marca como carregado
+                    st.session_state['revisao_loaded'] = True
+                    st.session_state['revisao_atual'] = revisao_id
+                    
+                    logger.info("Carregamento concluído com sucesso")
+                    return True
+
+                except json.JSONDecodeError as e:
+                    logger.error(f"Erro ao decodificar JSON: {str(e)}\nConteúdo: {conteudo[:200]}...")
+                    st.error("Erro ao decodificar os dados da revisão")
+                    return False
+                    
+                except Exception as e:
+                    logger.error(f"Erro inesperado: {str(e)}", exc_info=True)
+                    st.error(f"Erro ao processar os dados: {str(e)}")
+                    return False
             else:
-                dt = dt_oferta or datetime.now()
-                st.session_state['dados_iniciais'] = {
-                    'cliente': cliente,
-                    'bt': str(proposta),
-                    'obra': obra,
-                    'rev': str(numero_revisao).zfill(2),
-                    'dia': dt.strftime('%d'),
-                    'mes': dt.strftime('%m'),
-                    'ano': dt.strftime('%Y'),
-                    'nomeCliente': contato,
-                    'email': '',
-                    'fone': '',
-                    'local_frete': 'São Paulo/SP'
-                }
-                
-                # Inicializar itens vazios
-                st.session_state.itens = {
-                    'itens_configurados_mt': [],
-                    'itens_configurados_bt': []
-                }
-            
-            st.session_state['revisao_loaded'] = True
-            st.session_state['revisao_atual'] = revisao_id
-            
+                logger.warning("Conteúdo vazio")
+                return False
+        else:
+            logger.warning("Nenhum resultado encontrado")
+            return False
+        
+    finally:
         cur.close()
         conn.close()
-        
-    except Exception as e:
-        st.error(f"Erro ao carregar revisão: {str(e)}")
-        raise e
+
+
+
+def verificar_carregamento(id_revisao):
+    """Função auxiliar para verificar o carregamento dos dados"""
+    if id_revisao:
+        success = carregar_dados_revisao(id_revisao)
+        if success:
+            logger.info("Verificando dados carregados:")
+            
+            status = {
+                "Itens MT": len(st.session_state.itens.get('itens_configurados_mt', [])),
+                "Itens BT": len(st.session_state.itens.get('itens_configurados_bt', [])),
+                "Dados Iniciais": 'dados_iniciais' in st.session_state,
+                "Impostos": 'impostos' in st.session_state,
+                "Eventos": 'eventos_pagamento' in st.session_state,
+                "Prazo Entrega": 'prazo_entrega' in st.session_state,
+                "Desvios": 'desvios' in st.session_state
+            }
+            
+            for key, value in status.items():
+                logger.info(f"{key}: {value}")
+            
+            return status
+        else:
+            logger.error("Falha no carregamento dos dados")
+            return None
+    return None
 
 def inicializar_dados():
     """Inicia os dados da proposta com base nos parâmetros da URL"""
@@ -220,20 +313,22 @@ def inicializar_dados():
             return
             
         params = st.query_params
+
+        st.session_state['usuario'] = params.get('usuario').replace("+", " ")
         
         # Se já foi inicializado, mantém os dados existentes
         if st.session_state.get('app_initialized'):
             return
 
         # id_revisao = params.get('id_revisao')
-        id_revisao = os.getenv("ID_REVISAO_TESTE")
+        id_revisao = params.get('id_revisao')
         st.session_state['id_revisao'] = id_revisao
 
         # id_proposta = params.get('id_proposta')   
-        id_proposta = os.getenv("ID_PROPOSTA_TESTE")    
+        id_proposta = params.get('id_proposta')   
         st.session_state['id_proposta'] = id_proposta
 
-        token = os.getenv("TOKEN_TESTE")
+        token = params.get('token')
         st.session_state['token'] = token
 
         if id_revisao:

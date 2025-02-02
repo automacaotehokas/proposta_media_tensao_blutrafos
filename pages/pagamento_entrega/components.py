@@ -161,6 +161,7 @@ class ComponentsPagamentoEntrega:
         
         if not a_combinar:
             eventos = st.session_state[eventos_key]
+            eventos_mutaveis = list(eventos)
             
             for i, evento in enumerate(eventos):
                 col1, col2, col3, col4 = st.columns([2, 2, 2, 1])
@@ -191,9 +192,15 @@ class ComponentsPagamentoEntrega:
                     )
                 
                 with col4:
-                    if st.button("X", key=f"remover_{tipo_produto.lower()}_{i}"):
-                        eventos.pop(i)
+                    # Usar um botão com chave única e explícita
+                    if st.button("❌", key=f"remove_evento_{tipo_produto}_{i}"):
+                        # Remover o evento específico
+                        del eventos_mutaveis[i]
+                        # Atualizar o session state
+                        st.session_state[eventos_key] = eventos_mutaveis
                         st.rerun()
+                        
+            st.session_state[eventos_key] = eventos_mutaveis
 
             if st.button("Adicionar Evento", key=f"add_{tipo_produto.lower()}"):
                 eventos.append({

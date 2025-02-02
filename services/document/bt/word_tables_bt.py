@@ -21,15 +21,13 @@ def create_custom_table(doc, itens_configurados, observacao):
 
     table.left_indent = Cm(0)  
 
-    # Definir larguras fixas para as colunas
-    col_widths = [Cm(1.1), Cm(1.16), Cm(1.06), Cm(2.01), Cm(1.18), Cm(2.22), Cm(1.01), Cm(2.65), Cm(2.74), Cm(0.95)]
-    
+    # Set column widths to match MT table
+    col_widths = [Cm(1.25), Cm(1.25), Cm(1.5), Cm(2.0), Cm(1.0), Cm(2.5), Cm(1.0), Cm(2.92), Cm(2.92), Cm(1.0)]
+    set_column_widths(table, col_widths)
+
     # Desabilitar o ajuste automático
     table.autofit = False  # Desativa o autofit
     
-    # Aplicar largura das colunas
-    set_column_widths(table, col_widths)
-
     # Cabeçalho
     header_row = table.rows[0]
     header_data = ["Item", "Qtde", "Tipo","Potência", "K", "Tensões", "IP",  "Preço Uni. R$", "Preço Total R$", "IPI"]
@@ -61,7 +59,7 @@ def create_custom_table(doc, itens_configurados, observacao):
             row.cells[2].text = item["Produto"]  # Produto
             row.cells[3].text = item['Potência']
             row.cells[4].text = str(item["Fator K"])  # Fator K
-            row.cells[5].text = f"{item['Tensão Primária']}V /{item['Tensão Secundária']}V"  
+            row.cells[5].text = f"{int(item['Tensão Primária']):d}V /{int(item['Tensão Secundária']):d}V"  
             row.cells[6].text = str(item["IP"])  # IP
             row.cells[7].text = f"R$ {item['Preço Unitário']:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")  # Preço unitário
             row.cells[8].text = f"R$ {item['Preço Total']:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")  # Preço total
@@ -86,7 +84,9 @@ def create_custom_table(doc, itens_configurados, observacao):
         total_row.cells[0].merge(total_row.cells[6])  # Mesclar células até "Norma"
         total_row.cells[7].merge(total_row.cells[9])  # Mesclar as colunas Preço Uni., Preço Total e IPI
         total_row.cells[0].text = "Valor Total do Fornecimento:"
-        total_row.cells[7].text = f"R$ {sum(item['Preço Total'] for item in itens_configurados):,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
+        # Convert Preço Total to float before summing
+        total = sum(float(item['Preço Total']) for item in itens_configurados)
+        total_row.cells[7].text = f"R$ {total:,.2f}".replace(",", "X").replace(".", ",").replace("X", ".")
 
         # Definir altura da linha de total como 0,6 cm
         set_row_height(total_row, 0.6)
@@ -105,19 +105,8 @@ def create_custom_table(doc, itens_configurados, observacao):
     else:
         logging.warning("Linha de total não possui células suficientes para a mesclagem e preenchimento.")
 
-    # Adicionando a linha de observação
-    obs_row = table.add_row()
-    obs_row.cells[0].merge(obs_row.cells[9])  # Mesclar todas as células da linha de observação
-    obs_cell = obs_row.cells[0]
-    obs_cell.text = f"Obs.: {observacao}"
-    obs_paragraph = obs_cell.paragraphs[0]
-    obs_run = obs_paragraph.runs[0]
-    obs_run.font.name = 'Calibri Light (Títulos)'
-    obs_run.font.size = Pt(11)
-    apply_paragraph_formatting(obs_paragraph, alignment='left', space_before=Pt(0))  # Espaçamento removido
 
-    # Adicionar bordas duplas à célula de observação
-    add_double_borders(obs_cell)
+
 
     logging.debug("Tabela criada com sucesso.")
     return table
@@ -279,4 +268,3 @@ def create_custom_table_escopo(doc, itens_configurados):
 
     logger.debug("Tabela de escopo criada com sucesso")
     return table
-

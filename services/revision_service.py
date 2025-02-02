@@ -1,401 +1,450 @@
-import json
+import requests
 import os
 import logging
-import sys
+import json
+from typing import Dict, Optional, Any, Union, List
 from datetime import datetime
+import numpy as np
+import pandas as pd
+import streamlit as st
+from requests.exceptions import RequestException
 from decimal import Decimal
-from io import BytesIO
-from pathlib import Path
-from typing import Dict, Any, Optional, Tuple, List
-from config.databaseMT import DatabaseConfig
-import requests
-from requests_toolbelt.multipart.encoder import MultipartEncoder
 
+class ApiError(Exception):
+    """Custom exception for API-related errors"""
+    pass
 
-# Cria diretório de logs se não existir
-log_dir = Path("logs")
-log_dir.mkdir(exist_ok=True)
-
-# Configura o formato do log
-log_format = '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
-logging.basicConfig(
-    level=logging.INFO,
-    format=log_format,
-    handlers=[
-        # Handler para console
-        logging.StreamHandler(sys.stdout),
-        # Handler para arquivo
-        logging.FileHandler(
-            filename=f"logs/app_{datetime.now().strftime('%Y%m%d')}.log",
-            encoding='utf-8'
-        )
-    ]
-)
-
-# Configuração do logger específico
-logger = logging.getLogger(__name__)
-
-def atualizar_proposta(id_proposta: str, escopo: str, valor: float, ultima_revisao: int, id_revisao: str = None) -> None:
+def configure_logger(name: str) -> logging.Logger:
     """
-    Atualiza os dados da proposta com a última revisão.
+    Configura e retorna um logger com saída para console e arquivo
+    
+    :param name: Nome do logger
+    :return: Logger configurado
     """
-    logger.info(f"""
-    Iniciando atualização da proposta:
-    - ID: {id_proposta}
-    - Escopo: {escopo}
-    - Valor: {valor}
-    - Última Revisão: {ultima_revisao}
-    - ID Revisão (se fornecido): {id_revisao}
-    """)
+    log_dir = os.path.join(os.path.dirname(__file__), '..', 'logs')
+    os.makedirs(log_dir, exist_ok=True)
+    
+    logger = logging.getLogger(name)
+    logger.setLevel(logging.DEBUG)
 
-    try:
-        conn = DatabaseConfig.get_connection()
-        cur = conn.cursor()
+    formatter = logging.Formatter(
+        '%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+        datefmt='%Y-%m-%d %H:%M:%S'
+    )
 
-        # Se não foi fornecido id_revisao, busca ele
-        if not id_revisao:
-            logger.info(f"Buscando ID da revisão mais recente para proposta {id_proposta} e revisão {ultima_revisao}")
-            cur.execute("""
-                SELECT id_revisao::text 
-                FROM revisoes 
-                WHERE id_proposta_id = %s::uuid AND revisao = %s
-                ORDER BY dt_revisao DESC
-                LIMIT 1
-            """, (id_proposta, ultima_revisao))
+    file_handler = logging.FileHandler(
+        os.path.join(log_dir, f'{name}.log'), 
+        encoding='utf-8'
+    )
+    file_handler.setLevel(logging.DEBUG)
+    file_handler.setFormatter(formatter)
+
+    console_handler = logging.StreamHandler()
+    console_handler.setLevel(logging.INFO)
+    console_handler.setFormatter(formatter)
+
+    logger.handlers.clear()
+    logger.addHandler(file_handler)
+    logger.addHandler(console_handler)
+
+    return logger
+
+class DataConverter:
+    """Classe auxiliar para conversão de dados"""
+    
+    @staticmethod
+    def convert_numpy(obj: Union[np.integer, np.floating, np.ndarray]) -> Union[int, float, list]:
+        """Converte tipos numpy para tipos Python nativos"""
+        if isinstance(obj, (np.integer, np.int64)):
+            return int(obj)
+        if isinstance(obj, (np.floating, np.float64)):
+            return float(obj)
+        if isinstance(obj, np.ndarray):
+            return obj.tolist()
+        return obj
+
+    @staticmethod
+    def convert_pandas(obj: Union[pd.Series, pd.DataFrame]) -> Union[list, dict]:
+        """Converte tipos pandas para tipos Python nativos"""
+        try:
+            if isinstance(obj, pd.Series):
+                return obj.astype(str).tolist()
+            if isinstance(obj, pd.DataFrame):
+                return obj.astype(str).to_dict(orient='records')
+        except Exception as e:
+            logging.warning(f"Erro na conversão de dados pandas: {e}")
+            if isinstance(obj, pd.Series):
+                return obj.tolist()
+            if isinstance(obj, pd.DataFrame):
+                return obj.to_dict(orient='records')
+        return obj
+
+class StreamlitApiService:
+    def __init__(self, base_url=None):
+        self.base_url = base_url or os.getenv('API_BASE_URL', 'http://localhost:8000')
+        self.token = 'token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMyIsInVzZXJuYW1lIjoicHJvY2Vzc29zQGJsdXRyYWZvcy5jb20uYnIiLCJleHAiOjE3Mzg1MDU5NTV9.BClc7QQ9AI_gp3GQ7oiyTYs0czaJ35j6F4yqRvz_Wyw'
+        self.logger = configure_logger('StreamlitApiService')
+        self.converter = DataConverter()
+        self._update_itens_totais()
+        
+        self.logger.info(f"StreamlitApiService inicializado com base_url: {self.base_url}")
             
-            resultado = cur.fetchone()
-            
-            if not resultado:
-                logger.error(f"Nenhuma revisão encontrada para proposta {id_proposta} com revisão {ultima_revisao}")
-                return
+    def _update_itens_totais(self) -> None:
+            """Updates the combined items from both MT and BT session states"""
+            self.itens_totais = (
+                st.session_state.get('itens', {}).get('itens_configurados_mt', []) + 
+                st.session_state.get('itens', {}).get('itens_configurados_bt', [])
+            )
+    
 
-            id_revisao = resultado[0]
+    def _prepare_headers(self) -> Dict[str, str]:
+        """Prepara os cabeçalhos para requisição"""
+        headers = {
+            'Content-Type': 'application/json; charset=utf-8',
+            'Authorization': f'Token {self.token.split("=")[-1]}'  # Extrai o token JWT
+        }
+        return headers
 
-        logger.info(f"ID da revisão para atualização: {id_revisao}")
+    def _convert_to_serializable(self, obj: Any) -> Any:
+        """Converte objetos para tipos serializáveis JSON"""
+        if obj is None or isinstance(obj, (str, int, float, bool)):
+            return obj
 
-        # Log dos valores antes da atualização
-        cur.execute("""
-            SELECT escopo, valor, ultima_revisao
-            FROM propostas 
-            WHERE id_proposta = %s::uuid
-        """, (id_proposta,))
-        valores_antigos = cur.fetchone()
-        if valores_antigos:
-            logger.info(f"""
-            Valores atuais da proposta antes da atualização:
-            - Escopo: {valores_antigos[0]}
-            - Valor: {valores_antigos[1]}
-            - Última Revisão: {valores_antigos[2]}
-            """)
+        numpy_result = self.converter.convert_numpy(obj)
+        if numpy_result != obj:
+            return numpy_result
 
-        # Log da query de atualização
-        query = """
-            UPDATE propostas 
-            SET 
-                escopo = %s, 
-                valor = %s, 
-                ultima_revisao = %s
-            WHERE id_proposta = %s::uuid
-            RETURNING id_proposta, escopo, valor, ultima_revisao
+        pandas_result = self.converter.convert_pandas(obj)
+        if pandas_result != obj:
+            return pandas_result
+
+        if isinstance(obj, dict):
+            return {
+                str(k): self._convert_to_serializable(v)
+                for k, v in obj.items()
+                if v is not None
+            }
+
+        if isinstance(obj, list):
+            return [
+                self._convert_to_serializable(item)
+                for item in obj
+                if item is not None
+            ]
+
+        if hasattr(obj, '__bool__'):
+            return bool(obj)
+
+        try:
+            return str(obj)
+        except Exception as e:
+            self.logger.warning(f"Não foi possível converter objeto do tipo {type(obj)}: {e}")
+            return None
+
+    def _make_request(self, method: str, endpoint: str, data: Dict) -> Dict:
         """
+        Realiza requisição HTTP para a API
         
-        logger.info(f"""
-        Executando query de atualização com parâmetros:
-        - Escopo: {escopo}
-        - Valor: {valor}
-        - Última Revisão: {ultima_revisao}
-        - ID Proposta: {id_proposta}
-        """)
-
-        cur.execute(query, (
-            escopo, 
-            valor, 
-            ultima_revisao, 
-            id_proposta
-        ))
-
-        resultado_update = cur.fetchone()
-        if resultado_update:
-            logger.info(f"""
-            Proposta atualizada com sucesso:
-            - ID: {resultado_update[0]}
-            - Novo Escopo: {resultado_update[1]}
-            - Novo Valor: {resultado_update[2]}
-            - Nova Última Revisão: {resultado_update[3]}
-            """)
-        else:
-            logger.warning("Nenhuma linha foi atualizada na tabela propostas")
-
-        conn.commit()
-        logger.info("Commit realizado com sucesso")
+        :param method: Método HTTP ('GET', 'POST', etc)
+        :param endpoint: Endpoint da API
+        :param data: Dados a serem enviados
+        :return: Resposta da API
+        """
+        url = f"{self.base_url}{endpoint}"
         
-        # Verificação final
-        cur.execute("""
-            SELECT escopo, valor, ultima_revisao
-            FROM propostas 
-            WHERE id_proposta = %s::uuid
-        """, (id_proposta,))
-        valores_novos = cur.fetchone()
-        if valores_novos:
-            logger.info(f"""
-            Valores finais da proposta após atualização:
-            - Escopo: {valores_novos[0]}
-            - Valor: {valores_novos[1]}
-            - Última Revisão: {valores_novos[2]}
-            """)
-        
-        cur.close()
-        conn.close()
-        logger.info("Conexão fechada com sucesso")
-
-    except Exception as e:
-        logger.error(f"Erro ao atualizar proposta: {str(e)}")
-        logger.exception("Stacktrace completo:")
-        raise
-
-def is_ultima_revisao(id_proposta: str, numero_revisao: int) -> bool:
-    """
-    Verifica se o número da revisão é maior que todas as outras revisões da proposta.
-    
-    Args:
-        id_proposta: UUID da proposta
-        numero_revisao: Número da revisão a ser verificada
-    
-    Returns:
-        bool: True se for a maior revisão, False caso contrário
-    """
-    conn = DatabaseConfig.get_connection()
-    try:
-        with conn.cursor() as cur:
-            # Busca a maior revisão da proposta
-            cur.execute("""
-                SELECT MAX(revisao) as maior_revisao
-                FROM revisoes
-                WHERE id_proposta_id = %s::uuid;
-            """, (id_proposta,))
+        try:
+            # Adiciona o token como query parameter
+            if '?' in url:
+                url += f"&{self.token}"
+            else:
+                url += f"?{self.token}"
             
-            result = cur.fetchone()
-            if not result or result[0] is None:
-                logger.info(f"Nenhuma revisão encontrada para proposta {id_proposta}. Esta será a primeira.")
+            serialized_data = json.dumps(data, ensure_ascii=False)
+            self.logger.info(f"Enviando requisição para {url}")
+            self.logger.info(f"Payload: {serialized_data}")
+            
+            response = requests.request(
+                method=method,
+                url=url,
+                data=serialized_data,
+                headers=self._prepare_headers()
+            )
+            
+            # Log detalhado do erro para status codes de erro
+            if response.status_code >= 400:
+                self.logger.error(f"Erro na requisição: {response.status_code}")
+                self.logger.error(f"Cabeçalhos de resposta: {response.headers}")
+                self.logger.error(f"Conteúdo da resposta: {response.text}")
+                response.raise_for_status()
+            
+            return response.json()
+            
+        except json.JSONDecodeError as e:
+            self.logger.error(f"Erro de serialização JSON: {e}")
+            self.logger.error(f"Dados problemáticos: {data}")
+            raise ApiError(f"Erro ao serializar dados: {str(e)}")
+            
+        except RequestException as e:
+            self.logger.error(f"Erro na requisição HTTP: {e}")
+            if hasattr(e, 'response'):
+                self.logger.error(f"Conteúdo da resposta: {e.response.text}")
+            raise ApiError(f"Erro na comunicação com a API: {str(e)}")
+            
+        except Exception as e:
+            self.logger.error(f"Erro inesperado: {e}")
+            raise ApiError(f"Erro inesperado: {str(e)}")
+
+    def verificar_dados_completos(self) -> bool:
+        """
+        Verifica se todos os campos obrigatórios estão preenchidos nos dados iniciais
+        e se há usinas configuradas corretamente
+        
+        :return: True se todos os campos obrigatórios estiverem preenchidos, False caso contrário
+        """
+        dados_iniciais = st.session_state.get('dados_iniciais', {})
+        itens = int(st.session_state.get('valor_totalizado'))
+
+        campos_obrigatorios = [
+            'cliente', 'bt', 'dia', 'mes', 'ano', 'rev'
+        ]
+
+        for campo in campos_obrigatorios:
+            if not dados_iniciais.get(campo):
+                st.error(f"Campo obrigatório não preenchido: {campo}")
+                return False
+
+        if itens <= 0:
+            st.error("É necessário cadastrar pelo menos uma item para a proposta")
+            return False
+
+        return True
+
+    def somar_potencias_transformadores(self,itens_configurados_bt, itens_configurados_mt):
+        soma_potencia = 0
+        
+        # Soma potências BT
+        for item in itens_configurados_bt:
+            if "potencia_numerica" in item:
+                soma_potencia += item["potencia_numerica"]
+      
+        
+        # Soma potências MT
+        for item in itens_configurados_mt:
+            if "Potência" in item:
+                # Remove 'Decimal(' and ')' and convert to float
+                potencia_str = str(item["Potência"]).replace("Decimal('", "").replace("')", "")
+                try:
+                    potencia = float(potencia_str)
+                    soma_potencia += potencia
+                except ValueError:
+                    continue
+        
+        return f"{soma_potencia/1000:.3f} mVA"
+
+    def inserir_revisao(self, 
+                       comentario: str,
+                       usuario: str,
+                       id_proposta: str, 
+                       escopo: str, 
+                       valor: float, 
+                       numero_revisao: int, 
+                       dados: Dict) -> Dict:
+        """
+        Insere uma nova revisão via API do Django
+        
+        :param id_proposta: UUID da proposta
+        :param escopo: Descrição do escopo
+        :param valor: Valor da proposta
+        :param numero_revisao: Número da revisão
+        :param dados: Dicionário com dados da revisão
+        :return: Resposta da API
+        """
+        itens_mt = st.session_state.get('itens', {}).get('itens_configurados_mt', [])
+        itens_bt = st.session_state.get('itens', {}).get('itens_configurados_bt', [])
+
+        def get_preco_total(item):
+            preco_total_keys = ['Preço Total', 'Preço_Total', 'preco_total', 'valor_total']
+            for key in preco_total_keys:
+                if key in item:
+                    try:
+                        # Convert Decimal to float
+                        value = item[key]
+                        if isinstance(value, Decimal):
+                            return float(value)
+                        return float(value)
+                    except (TypeError, ValueError):
+                        continue
+            return 0.0
+
+        valor_mt = sum(get_preco_total(item) for item in itens_mt)
+        valor_bt = sum(get_preco_total(item) for item in itens_bt)
+
+
+        dados_serializaveis = self._convert_to_serializable(dados)
+        
+        payload = {
+            'id_proposta': str(id_proposta),
+            'escopo': str(escopo),
+            'valor': round(valor, 2),
+            'valor_mt': round(valor_mt, 2),
+            'valor_bt': round(valor_bt, 2),
+            'numero_revisao': int(numero_revisao),
+            'conteudo': dados_serializaveis,
+            'comentario': comentario,
+            'usuario': usuario
+        }
+        
+        return self._make_request('POST', '/api/streamlit/inserir_revisao/', payload)
+
+    def atualizar_revisao(self, 
+                          comentario: str,
+                          usuario: str,
+                          id_proposta: str, 
+                          id_revisao: str, 
+                          escopo: str, 
+                          valor: float, 
+                          dados: Dict) -> Dict:
+        """
+        Atualiza uma revisão existente via API do Django
+        
+        :param id_proposta: UUID da proposta
+        :param id_revisao: ID da revisão
+        :param escopo: Novo escopo
+        :param valor: Novo valor
+        :param dados: Dicionário com dados da revisão
+        :return: Resposta da API
+        """
+        itens_mt = st.session_state.get('itens', {}).get('itens_configurados_mt', [])
+        itens_bt = st.session_state.get('itens', {}).get('itens_configurados_bt', [])
+
+        def get_preco_total(item):
+            preco_total_keys = ['Preço Total', 'Preço_Total', 'preco_total', 'valor_total']
+            for key in preco_total_keys:
+                if key in item:
+                    try:
+                        # Convert Decimal to float
+                        value = item[key]
+                        if isinstance(value, Decimal):
+                            return float(value)
+                        return float(value)
+                    except (TypeError, ValueError):
+                        continue
+            return 0.0
+
+        valor_mt = sum(get_preco_total(item) for item in itens_mt)
+        valor_bt = sum(get_preco_total(item) for item in itens_bt)
+
+        dados_serializaveis = self._convert_to_serializable(dados)
+        
+        payload = {
+            'id_proposta': str(id_proposta),
+            'id_revisao': str(id_revisao),
+            'escopo': str(escopo),
+            'valor': round(valor, 2),
+            'valor_mt': round(valor_mt, 2),
+            'valor_bt': round(valor_bt, 2),
+            'conteudo': dados_serializaveis,
+            'comentario': comentario,
+            'usuario': usuario
+        }
+        
+        return self._make_request('POST', '/api/streamlit/atualizar_revisao/', payload)
+
+    def salvar_revisao_banco(self) -> bool:
+        """
+        Salva ou atualiza a revisão no banco de dados
+        
+        :return: True se a operação foi bem-sucedida, False caso contrário
+        """
+        try:
+            # Log todos os itens no session_state
+
+            self.logger.info(f"Itens MT: {st.session_state.get('itens', {}).get('itens_configurados_mt')}")
+            self.logger.info(f"Itens BT: {st.session_state.get('itens', {}).get('itens_configurados_bt')}")
+            
+            
+            itens_mt = st.session_state.get('itens', {}).get('itens_configurados_mt', [])
+            itens_bt = st.session_state.get('itens', {}).get('itens_configurados_bt', [])
+            if not self.verificar_dados_completos():
+                return False
+
+            dados_revisao = {
+                'itens_configurados_mt': st.session_state.get('itens', {}).get('itens_configurados_mt', []),
+                'itens_configurados_bt': st.session_state.get('itens', {}).get('itens_configurados_bt', []),
+                'dados_iniciais': st.session_state.get('dados_iniciais', {}),
+                'impostos': st.session_state.get('impostos', {}),
+                'eventos_mt': st.session_state.get('eventos_mt', {}),
+                'eventos_bt': st.session_state.get('eventos_bt', {}),
+                'prazo_entrega': st.session_state.get('prazo_entrega', {}),
+                'desvios': st.session_state.get('desvios', {})
+            }
+
+            self._update_itens_totais()
+
+            valor_total = sum(
+                float(item.get('Preço Total', 0.0))
+                for item in self.itens_totais
+            )
+
+            escopo = self.somar_potencias_transformadores(st.session_state.get('itens', {}).get('itens_configurados_bt', []),
+                                                          st.session_state.get('itens', {}).get('itens_configurados_mt', []))
+
+            is_nova_revisao = st.session_state.get('tipo_proposta') == "Nova revisão"
+            
+            try:
+                # Serialização robusta com conversão de tipos e log
+                def custom_serializer(obj):
+                    if isinstance(obj, (Decimal, np.number)):
+                        return float(obj)
+                    if hasattr(obj, 'isoformat'):  # Para objetos datetime
+                        return obj.isoformat()
+                    if isinstance(obj, bool):
+                        return obj  # Mantém valores booleanos
+                    self.logger.warning(f"Não foi possível serializar: {type(obj)} - {obj}")
+                    return str(obj)
+
+                # Converte dados para JSON e imprime para debug
+                json_str = json.dumps(dados_revisao, default=custom_serializer, ensure_ascii=False)
+                self.logger.info(f"JSON gerado: {json_str}")
+
+                # Tenta parsear o JSON para garantir que é válido
+                dados_serializados = json.loads(json_str)
+
+                if is_nova_revisao:
+                    resultado = self.inserir_revisao(
+                        comentario=st.session_state.get('comentario_revisao', ''),
+                        usuario=st.session_state.get('usuario', ''),
+                        id_proposta=st.session_state['id_proposta'],
+                        escopo=escopo,
+                        valor=valor_total,
+                        numero_revisao=int(st.session_state['dados_iniciais']['rev']),
+                        dados=dados_serializados
+                    )
+                    st.session_state['id_revisao'] = resultado.get('id')
+                    st.success("Nova revisão inserida com sucesso!")
+                else:
+                    resultado = self.atualizar_revisao(
+                        comentario=st.session_state.get('comentario_revisao', ''),
+                        usuario=st.session_state.get('usuario', ''),
+                        id_proposta=st.session_state['id_proposta'],
+                        id_revisao=st.session_state.get('id_revisao') or os.getenv('ID_REVISAO_TESTE'),
+                        escopo=escopo,
+                        valor=valor_total,
+                        dados=dados_serializados
+                    )
+                    st.success("Revisão atualizada com sucesso!")
+
+                st.session_state['dados_salvos'] = True
                 return True
+
+            except json.JSONDecodeError as e:
+                self.logger.error(f"Erro de decodificação JSON: {e}")
+                st.error(f"Erro de serialização: {e}")
+                return False
+            except ApiError as e:
+                st.error(f"Erro na comunicação com a API: {str(e)}")
+                return False
                 
-            maior_revisao = result[0]
-            eh_maior = numero_revisao >= maior_revisao
-            
-            logger.info(f"""
-                Verificando se revisão {numero_revisao} é a maior:
-                - Maior revisão encontrada: {maior_revisao}
-                - Nova revisão: {numero_revisao}
-                - É a maior? {eh_maior}
-            """)
-            
-            return eh_maior
-
-    except Exception as e:
-        logger.error(f"Erro ao verificar última revisão: {e}")
-        return False
-    finally:
-        conn.close()
-
-class RevisionService:
-    @staticmethod
-    def buscar_escopo_transformador(itens: List[Dict[str, Any]]) -> str:
-        """
-        Calcula a potência total dos transformadores em MVA, considerando a quantidade de cada item.
-        
-        Para cada item, multiplica sua potência pela sua quantidade e soma todos os resultados.
-        Por exemplo:
-        Item 1: 500 kVA × 2 unidades = 1000 kVA
-        Item 2: 750 kVA × 3 unidades = 2250 kVA
-        Total: 3250 kVA = 3,250 MVA
-        """
-        try:
-            # Soma o produto da potência pela quantidade para cada item
-            potencia_total = sum(
-                float(item.get('Potência', 0)) * float(item.get('Quantidade', 0))
-                for item in itens
-            ) / 1000  # Converte de kVA para MVA
-            
-            # Formata com 3 casas decimais e substitui ponto por vírgula
-            potencia_formatada = f"{potencia_total:.3f}".replace('.', ',')
-            return f"{potencia_formatada} MVA"
-
-        except (ValueError, TypeError) as e:
-            logger.error(f"Erro ao calcular escopo do transformador: {e}")
-            return "0,000 MVA"
-
-    @staticmethod
-    def _inserir_revisao(
-        dados: Dict[str, Any],
-        id_proposta: str,
-        valor: float,
-        numero_revisao: int,
-        word_path: BytesIO,  
-        pdf_path: BytesIO,   
-        escopo: str
-    ) -> Optional[str]:
-        """
-        Insere uma nova revisão através da API.
-        """
-        logger.info(f"""
-        Iniciando inserção de revisão via API:
-        - ID Proposta: {id_proposta}
-        - Valor: {valor}
-        - Número Revisão: {numero_revisao}
-        - Escopo: {escopo}
-        """)
-
-        try:
-            # Preparar os dados do formulário
-            form_data = {
-                'id_proposta': id_proposta,
-                'revisao': str(numero_revisao),
-                'valor': str(valor),
-                'escopo': escopo,
-                'tipo': dados.get('tipo', ''),
-                'conteudo': json.dumps(dados, default=lambda x: float(x) if isinstance(x, Decimal) else x)
-            }
-
-            # Log dos dados antes de enviar
-            logger.info(f"Dados do formulário: {form_data}")
-
-            # Adicionar arquivo do buffer
-            form_data['arquivo'] = ('proposta.docx', word_path, 'application/vnd.openxmlformats-officedocument.wordprocessingml.document')
-
-            # Criar MultipartEncoder para enviar arquivos
-            multipart_data = MultipartEncoder(fields=form_data)
-            
-            # Configurar headers
-            headers = {
-                'Content-Type': multipart_data.content_type,
-                'Accept': 'application/json',
-                'Authorization': f'Bearer {dados.get("token")}'  # Mudando de Token para Bearer
-            }
-            
-            logger.info(f"Headers da requisição: {headers}")
-            
-            # Fazer a requisição POST
-            response = requests.post(
-                'http://localhost:8000/api/streamlit/inserir_revisao/',
-                data=multipart_data,
-                headers=headers
-            )
-            
-            logger.info(f"Status code da resposta: {response.status_code}")
-            logger.info(f"Headers da resposta: {response.headers}")
-            logger.info(f"Conteúdo da resposta: {response.text}")
-            
-            # Verificar se a requisição foi bem sucedida
-            response.raise_for_status()
-            
-            result = response.json()
-            
-            if not result.get('success'):
-                raise Exception(result.get('error', 'Erro desconhecido ao criar revisão'))
-            
-            logger.info(f"Revisão criada com sucesso via API: {result}")
-            return result.get('revisao', {}).get('id')
-            
-        except requests.exceptions.RequestException as e:
-            logger.error(f"Erro ao criar revisão via API: {str(e)}")
-            raise Exception(f"Erro ao criar revisão via API: {str(e)}")
         except Exception as e:
-            logger.error(f"Erro inesperado ao criar revisão: {str(e)}")
-            raise Exception(f"Erro inesperado ao criar revisão: {str(e)}")
-
-    @staticmethod
-    def _atualizar_revisao(
-        dados: Dict[str, Any],
-        valor: float,
-        numero_revisao: int,
-        word_path: BytesIO,  
-        pdf_path: BytesIO,   
-        escopo: str,
-        revisao_id: str
-    ) -> str:
-        """
-        Atualiza uma revisão existente através da API.
-        """
-        logger.info(f"""
-        Iniciando atualização de revisão via API:
-        - ID Revisão: {revisao_id}
-        - Valor: {valor}
-        - Número Revisão: {numero_revisao}
-        - Escopo: {escopo}
-        """)
-
-        try:
-            # Preparar os dados do formulário
-            form_data = {
-                'revisao_id': revisao_id,
-                'valor': str(valor),
-                'escopo': escopo,
-                'tipo': dados.get('tipo', ''),
-                'conteudo': json.dumps(dados, default=lambda x: float(x) if isinstance(x, Decimal) else x)
-            }
-
-            # Adicionar arquivo do buffer
-            form_data['arquivo'] = ('proposta.docx', word_path, 'application/vnd.openxmlformats-officedocument.wordprocessingml.document')
-
-            # Criar MultipartEncoder para enviar arquivos
-            multipart_data = MultipartEncoder(fields=form_data)
-            
-            # Configurar headers
-            headers = {
-                'Content-Type': multipart_data.content_type,
-                'Authorization': f'Bearer {dados.get("token")}'  # Mudando de Token para Bearer
-            }
-            
-            # Fazer a requisição POST
-            response = requests.post(
-                'http://localhost:8000/api/streamlit/atualizar_revisao/',
-                data=multipart_data,
-                headers=headers
-            )
-            
-            # Verificar se a requisição foi bem sucedida
-            response.raise_for_status()
-            
-            result = response.json()
-            
-            if not result.get('success'):
-                raise Exception(result.get('error', 'Erro desconhecido ao atualizar revisão'))
-            
-            logger.info(f"Revisão atualizada com sucesso via API: {result}")
-            return revisao_id
-            
-        except requests.exceptions.RequestException as e:
-            logger.error(f"Erro ao atualizar revisão via API: {str(e)}")
-            raise Exception(f"Erro ao atualizar revisão via API: {str(e)}")
-        except Exception as e:
-            logger.error(f"Erro inesperado ao atualizar revisão: {str(e)}")
-            raise Exception(f"Erro inesperado ao atualizar revisão: {str(e)}")
-
-    @staticmethod
-    def _salvar_arquivos(bt: str, rev: int, files: Dict[str, BytesIO]) -> Tuple[str, str]:
-        """
-        Save word and pdf files to disk.
-        """
-        base_path = Path("media/propostas")
-        base_path.mkdir(parents=True, exist_ok=True)
-
-        word_filename = f"proposta_{bt}_rev{rev}.docx"
-        pdf_filename = f"proposta_{bt}_rev{rev}.pdf"
-        
-        word_path = f"propostas/{word_filename}"
-        pdf_path = f"propostas/{pdf_filename}"
-
-        full_word_path = base_path / word_filename
-        full_pdf_path = base_path / pdf_filename
-
-        try:
-            if 'word' in files:
-                full_word_path.write_bytes(files['word'].getvalue())
-
-            if 'pdf' in files:
-                full_pdf_path.write_bytes(files['pdf'].getvalue())
-
-            return word_path, pdf_path
-        except Exception as e:
-            logger.error(f"Error saving files: {e}")
-            raise
+            st.error(f"Erro inesperado ao processar dados: {str(e)}")
+            return False

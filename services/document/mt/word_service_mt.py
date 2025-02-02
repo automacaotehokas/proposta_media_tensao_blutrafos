@@ -3,6 +3,7 @@ from typing import Dict, List
 from io import BytesIO
 from .word_tables_mt import inserir_tabelas_word, substituir_texto_documento
 import os
+import streamlit as st
 
 
 @staticmethod
@@ -35,7 +36,11 @@ def gerar_documento(template_path: str, dados_iniciais: Dict,
         '{{ICMS}}': f"{impostos.get('icms', 0):.1f}%",
         '{{IP}}': ', '.join(set(str(item['IP']) for item in itens_configurados 
                               if item['IP'] != '00')),
-        '{obra}': '' if not dados_iniciais.get('obra', '').strip() else 'Obra:'
+        '{obra}': '' if not dados_iniciais.get('obra', '').strip() else 'Obra:',
+        '{{RESPONSAVEL}}': st.session_state.get('usuario', ''),
+        '{{GARANTIA}}': '12',
+        '{{VALIDADE}}': '07',
+        
     }
     buffer = BytesIO()
     doc = Document(template_path)

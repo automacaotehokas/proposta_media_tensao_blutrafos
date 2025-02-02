@@ -100,7 +100,6 @@ class ComponenteBT:
               
             except Exception as e:
                 st.error(f"Erro ao calcular preço: {str(e)}")
-        st.write(f"Preço Unitário: {item['Preço Unitário']}")
         # Botão para adicionar o item
         if st.button("Adicionar Item BT"):
             campos_vazios = verificar_campos_preenchidos(item, campos_obrigatorios=[
