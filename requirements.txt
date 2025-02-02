@@ -1,7 +1,6 @@
 pip>=24.2
 setuptools>=67.6.1
 wheel>=0.38.4
-python-docx
 python-dotenv
 streamlit
 pandas
@@ -14,6 +13,16 @@ openpyxl>=3.0.9
 sqlalchemy>=1.4.46
 Pillow
 babel
-
-
-
+djangorestframework>=3.12.0
+djangorestframework-simplejwt>=5.2.0
+django-cors-headers>=3.10.0
+googlemaps
+django
+djangorestframework
+django-filter
+jwt
+traceback
+typing
+pathlib
+python-jose
+requests
