@@ -1,10 +1,45 @@
 import requests
 import streamlit as st
-from googlemaps import Client
-from dotenv import load_dotenv  
+import logging
 import os
+from dotenv import load_dotenv
+
+# Attempt to import googlemaps with fallback
+try:
+    from googlemaps import Client
+except ImportError:
+    logging.warning("googlemaps package not found. Attempting alternative import.")
+    try:
+        import googlemaps as Client
+    except ImportError:
+        logging.error("Could not import googlemaps. Functionality will be limited.")
+        Client = None
 
 load_dotenv()
+
+# Add logging for API key debugging
+logging.basicConfig(level=logging.INFO)
+logger = logging.getLogger(__name__)
+
+# Validate API key and create client
+API_KEY = os.getenv("API_KEY")
+
+if not API_KEY:
+    logger.error("Google Maps API key is missing. Please set the API_KEY in your .env file.")
+    st.error("Google Maps functionality is disabled due to missing API key.")
+    gmaps = None
+elif Client is None:
+    logger.error("Google Maps client could not be created.")
+    st.error("Google Maps functionality is unavailable.")
+    gmaps = None
+else:
+    try:
+        gmaps = Client(key=API_KEY)
+        logger.info("Google Maps client initialized successfully.")
+    except Exception as e:
+        logger.error(f"Error initializing Google Maps client: {e}")
+        st.error(f"Google Maps initialization failed: {e}")
+        gmaps = None
 
 def buscar_cidades():
     """Busca a lista de cidades da API do IBGE"""
@@ -20,11 +55,12 @@ def buscar_cidades():
     # st.error(f"Erro ao conectar com a API: {e}")    
     # return []
     
-API_KEY = os.getenv("API_KEY")
-gmaps = Client(key=API_KEY)
-
 # Função para calcular distância
 def distancia_cidade_capital(cidade_estado):
+    if gmaps is None:
+        st.error("Google Maps functionality is not available.")
+        return None
+    
     capitais = {
         "SC": "Florianópolis",
         "RS": "Porto Alegre",
@@ -67,4 +103,3 @@ def distancia_cidade_capital(cidade_estado):
         return estado, distancia
     except Exception as e:
         return f"Erro ao calcular a distância: {e}"
-
