@@ -30,7 +30,7 @@ def selecionar_tipo_proposta():
     """Função para selecionar se é nova revisão ou atualização"""
     params = st.query_params
     # revisao_id = params.get("id_revisao")
-    revisao_id = os.getenv('ID_REVISAO_TESTE')
+    revisao_id = params.get("id_revisao")
     
     # Se não tem id_revisao, define automaticamente como nova revisão
     if not revisao_id:
@@ -384,7 +384,7 @@ def inicializar_dados():
             print("App já inicializado, retornando")
             return
 
-        id_proposta = os.getenv('ID_PROPOSTA_TESTE')
+        id_proposta = params.get('id_proposta')
         print(f"ID Proposta carregado: {id_proposta}")
         st.session_state['id_proposta'] = id_proposta
 
