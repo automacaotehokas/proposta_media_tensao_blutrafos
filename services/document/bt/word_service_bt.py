@@ -269,8 +269,10 @@ def inserir_tabelas_word(doc, itens_configurados, observacao):
         '{{RESPONSAVEL}}': st.session_state.get('usuario', ''),
         '{{GARANTIA}}': '12',
         '{{VALIDADE}}': '07',
-        '{{TRANSPORTE}}': f'CIP - {str(dados_iniciais.get('local_frete', ''))}, sobre o veículo transportador (descarga não inclusa)' if impostos.get('tipo_frete', '') == 'CIP' else f'FOB - {str(dados_iniciais.get('local_frete', ''))}, sobre o veículo transportador (descarga não inclusa)',
-    }
+                '{{TRANSPORTE}}': f"CIP - {str(dados_iniciais.get('local_frete', ''))}" 
+                               if impostos.get('tipo_frete', '') == 'CIP'
+                               else f"FOB - {str(dados_iniciais.get('local_frete', ''))}",       
+                                 }
     import logging
     logging.debug("Iniciando a função 'inserir_tabelas_word'.")
 
