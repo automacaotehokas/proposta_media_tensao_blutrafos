@@ -357,11 +357,12 @@ def inserir_tabelas_word(doc: Document, itens_configurados: List[Dict],
             '{{RESPONSAVEL}}': st.session_state.get('usuario', ''),
             '{{GARANTIA}}': '12',
             '{{VALIDADE}}': '07',
-            '{{TRANSPORTE}}': f'CIP - {str(dados_iniciais.get('local_frete', ''))}, sobre o veículo transportador (descarga não inclusa)'
-                               if impostos.get('tipo_frete', '') == 'CIP' 
-                               else f'FOB - {str(dados_iniciais.get('local_frete', ''))}, sobre o veículo transportador (descarga não inclusa)'
+            '{{TRANSPORTE}}': f'CIP - {str(dados_iniciais.get('local_frete', ''))}' 
+                               if impostos.get('tipo_frete', '') == 'CIP'
+                               else f'FOB - {str(dados_iniciais.get('local_frete', ''))}', 
         }
-    logger.error(f'{replacements}')
+        
+
     # Substituir texto no documento
     substituir_texto_documento(doc, replacements)
     logger.error("Substituições realizadas com sucesso!")
