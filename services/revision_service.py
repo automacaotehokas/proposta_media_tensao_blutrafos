@@ -9,6 +9,8 @@ import pandas as pd
 import streamlit as st
 from requests.exceptions import RequestException
 from decimal import Decimal
+import logging
+logger = logging.getLogger(__name__)
 
 class ApiError(Exception):
     """Custom exception for API-related errors"""
@@ -82,14 +84,20 @@ class DataConverter:
 class StreamlitApiService:
     def __init__(self, base_url=None):
         self.base_url = base_url or os.getenv('API_BASE_URL', 'http://localhost:8000')
-        self.token = 'token=eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ1c2VyX2lkIjoiMyIsInVzZXJuYW1lIjoicHJvY2Vzc29zQGJsdXRyYWZvcy5jb20uYnIiLCJleHAiOjE3Mzg1MDU5NTV9.BClc7QQ9AI_gp3GQ7oiyTYs0czaJ35j6F4yqRvz_Wyw'
+        # Add token validation
+        token = st.session_state.get('token')
+        self.token = token if token else None
         self.logger = configure_logger('StreamlitApiService')
         self.converter = DataConverter()
         self._update_itens_totais()
         
-        self.logger.info(f"StreamlitApiService inicializado com base_url: {self.base_url}")
+        if not self.token:
+            logger.warning("Inicializando serviço sem token de autenticação")
+        else:
+            self.logger.info(f"StreamlitApiService inicializado com base_url: {self.base_url}")
             
     def _update_itens_totais(self) -> None:
+            logger.info("Atualizando itens totais...")
             """Updates the combined items from both MT and BT session states"""
             self.itens_totais = (
                 st.session_state.get('itens', {}).get('itens_configurados_mt', []) + 
@@ -99,13 +107,26 @@ class StreamlitApiService:
 
     def _prepare_headers(self) -> Dict[str, str]:
         """Prepara os cabeçalhos para requisição"""
-        headers = {
-            'Content-Type': 'application/json; charset=utf-8',
-            'Authorization': f'Token {self.token.split("=")[-1]}'  # Extrai o token JWT
-        }
-        return headers
+        logger.info("Preparando cabeçalhos...")
+        
+        # Verificar se o token existe
+        if not self.token:
+            logger.warning("Token não encontrado no session_state")
+            return {'Content-Type': 'application/json; charset=utf-8'}
+        
+        try:
+            token_value = self.token.split("=")[-1]
+            headers = {
+                'Content-Type': 'application/json; charset=utf-8',
+                'Authorization': f'Token {token_value}'
+            }
+            return headers
+        except (AttributeError, IndexError) as e:
+            logger.error(f"Erro ao processar token: {e}")
+            return {'Content-Type': 'application/json; charset=utf-8'}
 
     def _convert_to_serializable(self, obj: Any) -> Any:
+        logger.info("Convertendo para serializável...")
         """Converte objetos para tipos serializáveis JSON"""
         if obj is None or isinstance(obj, (str, int, float, bool)):
             return obj
@@ -142,6 +163,7 @@ class StreamlitApiService:
             return None
 
     def _make_request(self, method: str, endpoint: str, data: Dict) -> Dict:
+        logger.info(f"Realizando requisição para {endpoint}...")
         """
         Realiza requisição HTTP para a API
         
@@ -195,6 +217,7 @@ class StreamlitApiService:
             raise ApiError(f"Erro inesperado: {str(e)}")
 
     def verificar_dados_completos(self) -> bool:
+        logger.info("Verificando dados completos...")
         """
         Verifica se todos os campos obrigatórios estão preenchidos nos dados iniciais
         e se há usinas configuradas corretamente
@@ -202,7 +225,7 @@ class StreamlitApiService:
         :return: True se todos os campos obrigatórios estiverem preenchidos, False caso contrário
         """
         dados_iniciais = st.session_state.get('dados_iniciais', {})
-        itens = int(st.session_state.get('valor_totalizado'))
+        itens = len(st.session_state.get('itens').get('itens_configurados_mt', [])) or len(st.session_state.get('itens').get('itens_configurados_bt', [])) > 0
 
         campos_obrigatorios = [
             'cliente', 'bt', 'dia', 'mes', 'ano', 'rev'
@@ -219,27 +242,54 @@ class StreamlitApiService:
 
         return True
 
-    def somar_potencias_transformadores(self,itens_configurados_bt, itens_configurados_mt):
+    def somar_potencias_transformadores(self, itens_configurados_bt, itens_configurados_mt):
+        """
+        Soma as potências dos transformadores MT e BT
+        
+        Args:
+            itens_configurados_bt (list): Lista de itens BT
+            itens_configurados_mt (list): Lista de itens MT
+        
+        Returns:
+            str: Potência total formatada em MVA
+        """
         soma_potencia = 0
+        logger.info("Somando potências dos transformadores...")
         
         # Soma potências BT
-        for item in itens_configurados_bt:
-            if "potencia_numerica" in item:
-                soma_potencia += item["potencia_numerica"]
-      
-        
-        # Soma potências MT
-        for item in itens_configurados_mt:
-            if "Potência" in item:
-                # Remove 'Decimal(' and ')' and convert to float
-                potencia_str = str(item["Potência"]).replace("Decimal('", "").replace("')", "")
+        if itens_configurados_bt and isinstance(itens_configurados_bt, list):
+            for item in itens_configurados_bt:
                 try:
-                    potencia = float(potencia_str)
-                    soma_potencia += potencia
-                except ValueError:
+                    if isinstance(item, dict) and "potencia_numerica" in item:
+                        potencia = float(item["potencia_numerica"])
+                        soma_potencia += potencia
+                except (ValueError, TypeError) as e:
+                    logger.warning(f"Erro ao converter potência BT: {e}")
                     continue
         
-        return f"{soma_potencia/1000:.3f} mVA"
+        # Soma potências MT
+        if itens_configurados_mt and isinstance(itens_configurados_mt, list):
+            for item in itens_configurados_mt:
+                try:
+                    if isinstance(item, dict) and "Potência" in item:
+                        potencia_str = str(item["Potência"])
+                        # Remove caracteres não numéricos exceto ponto
+                        potencia_str = ''.join(c for c in potencia_str if c.isdigit() or c == '.')
+                        potencia = float(potencia_str)
+                        soma_potencia += potencia
+                except (ValueError, TypeError, AttributeError) as e:
+                    logger.warning(f"Erro ao converter potência MT: {e}")
+                    continue
+
+        try:
+            # Converte para MVA (dividindo por 1000) e formata o número
+            soma_potencia_mva = soma_potencia / 1000
+            soma_potencia_formatada = "{:.2f}".format(soma_potencia_mva).replace(".", ",")
+            logger.info(f"Potência total calculada: {soma_potencia_formatada} MVA")
+            return f"{soma_potencia_formatada} MVA"
+        except Exception as e:
+            logger.error(f"Erro ao formatar potência total: {e}")
+            return "0,00 MVA"
 
     def inserir_revisao(self, 
                        comentario: str,
@@ -259,6 +309,7 @@ class StreamlitApiService:
         :param dados: Dicionário com dados da revisão
         :return: Resposta da API
         """
+        logger.info("Inserindo revisão...")
         itens_mt = st.session_state.get('itens', {}).get('itens_configurados_mt', [])
         itens_bt = st.session_state.get('itens', {}).get('itens_configurados_bt', [])
 
@@ -282,6 +333,7 @@ class StreamlitApiService:
 
         dados_serializaveis = self._convert_to_serializable(dados)
         
+
         payload = {
             'id_proposta': str(id_proposta),
             'escopo': str(escopo),
@@ -301,7 +353,7 @@ class StreamlitApiService:
                           usuario: str,
                           id_proposta: str, 
                           id_revisao: str, 
-                          escopo: str, 
+                          escopo_mt: str, 
                           valor: float, 
                           dados: Dict) -> Dict:
         """
@@ -314,6 +366,7 @@ class StreamlitApiService:
         :param dados: Dicionário com dados da revisão
         :return: Resposta da API
         """
+        logger.info("Atualizando revisão...")
         itens_mt = st.session_state.get('itens', {}).get('itens_configurados_mt', [])
         itens_bt = st.session_state.get('itens', {}).get('itens_configurados_bt', [])
 
@@ -339,7 +392,7 @@ class StreamlitApiService:
         payload = {
             'id_proposta': str(id_proposta),
             'id_revisao': str(id_revisao),
-            'escopo': str(escopo),
+            'escopo_mt': str(escopo_mt),
             'valor': round(valor, 2),
             'valor_mt': round(valor_mt, 2),
             'valor_bt': round(valor_bt, 2),
@@ -351,6 +404,7 @@ class StreamlitApiService:
         return self._make_request('POST', '/api/streamlit/atualizar_revisao/', payload)
 
     def salvar_revisao_banco(self) -> bool:
+        logger.info("Salvando revisão no banco de dados...")
         """
         Salva ou atualiza a revisão no banco de dados
         
@@ -373,18 +427,20 @@ class StreamlitApiService:
                 'itens_configurados_bt': st.session_state.get('itens', {}).get('itens_configurados_bt', []),
                 'dados_iniciais': st.session_state.get('dados_iniciais', {}),
                 'impostos': st.session_state.get('impostos', {}),
-                'eventos_mt': st.session_state.get('eventos_mt', {}),
-                'eventos_bt': st.session_state.get('eventos_bt', {}),
+                'eventos_pagamento': st.session_state.get('eventos_pagamento', {}),
+            
                 'prazo_entrega': st.session_state.get('prazo_entrega', {}),
                 'desvios': st.session_state.get('desvios', {})
             }
-
+            logger.info(f"Dados da revisão: {dados_revisao}")
             self._update_itens_totais()
 
             valor_total = sum(
                 float(item.get('Preço Total', 0.0))
                 for item in self.itens_totais
             )
+
+            logger.info(f"Valor total: {valor_total}")
 
             escopo = self.somar_potencias_transformadores(st.session_state.get('itens', {}).get('itens_configurados_bt', []),
                                                           st.session_state.get('itens', {}).get('itens_configurados_mt', []))

@@ -112,9 +112,24 @@ def create_custom_table(doc, itens_configurados, observacao):
     return table
 
 
+def get_ip_text(ip: str, flange: int) -> tuple[str, bool]:
+    """
+    Retorna o texto do IP formatado com ou sem flanges
+    Args:
+        ip: valor do IP
+        flange: valor do flange
+    Returns:
+        Tupla com (texto_ip, is_bold)
+    """
+    ip_text = f"IP-{ip}"
+    if flange and flange > 0:
+        ip_text += " com flanges"
+    return (ip_text, True)
+
 def gerar_escopo_texto(item):
     """
-    Gera o texto do escopo com base no tipo de produto.
+    Gera o texto do escopo com base no tipo de produto, retornando uma lista de tuplas
+    onde cada tupla contém (texto, deve_ser_negrito).
     """
     logger = logging.getLogger(__name__)
     logger.debug(f"Iniciando geração de escopo para item: {item}")
@@ -122,82 +137,102 @@ def gerar_escopo_texto(item):
     try:
         # Extrair valores com tratamento especial para cada campo
         produto = item.get('Produto', '').upper()
-        
-        # Tratar a potência que já vem com unidade
         potencia = item.get('Potência', 'N/A')
-        
-        # Tratar tensões primária e secundária
         tensao_primaria = item.get('Tensão Primária', 'N/A')
-        
-        # Tratar derivações/taps
         derivacoes_dict = item.get('derivacoes', {})
         taps = derivacoes_dict.get('taps', 'nenhum')
         tensoes_primarias = derivacoes_dict.get('tensoes_primarias', 'nenhum')
         derivacoes = f"{taps}" if taps != "nenhum" else "N/A"
-        
         tensao_secundaria = item.get('Tensão Secundária', 'N/A')
         ip = item.get('IP', 'N/A')
         fator_k = item.get('Fator K', 'N/A')
-        
-        # Tratar material
-        material_st = item.get('material', 'N/A')  # Note que o campo é 'material' em minúsculo
+        material_st = item.get('material', 'N/A')
         material = 'Cobre' if material_st == 'Cu' else 'Alumínio' if material_st == 'Al' else 'N/A'
-
-        logger.debug(f"""
-            Valores extraídos:
-            Produto: {produto}
-            Potência: {potencia}
-            Tensão Primária: {tensao_primaria}
-            Derivações: {derivacoes}
-            Tensão Secundária: {tensao_secundaria}
-            IP: {ip}
-            Fator K: {fator_k}
-            Material: {material}
-        """)
-
+        
         # Configurações de escopo para diferentes produtos
         if 'ATT' in produto:
-            escopo_text = (
-                f"Autotransformador trifásico a seco, classe de tensão 1,1kV, Marca e Fabricação Blutrafos, "
-                f"Potência {potencia}, Fator K={fator_k}, Tensão Primária: {tensao_primaria}V, Derivações: {derivacoes}, "
-                f"Tensão Secundária: {tensao_secundaria}V, NBI: N/A, Grupo de Ligação: Yn0, Frequência: 60Hz, "
-                f"Enrolamentos impregnados em verniz a vácuo, com resfriamento tipo: AN, Classe de Temperatura materiais isolantes "
-                f"AT/BT: F (155ºC), Elevação Temperatura média dos enrolamentos: 100°C, Materiais dos enrolamentos: {material}, "
-                f"Regime de Serviço: Contínuo, Temperatura Ambiente máxima: 40°C, Altitude de Instalação: ≤1000m e grau de proteção IP-{ip}. "
-                f"Demais características conforme norma ABNT-NBR 5356/11 e acessórios abaixo."
-            )
+            ip_text = f"IP-{item.get('IP', 'N/A')}"
+            if item.get('flange', 0) > 0:  # Verifica se tem flange
+                ip_text += " com flanges"
+            escopo_parts = [
+                ("Autotransformador trifásico a seco, classe de tensão 1,1kV, Marca e Fabricação Blutrafos, Potência ", False),
+                (potencia, True),
+                (", Fator K=", False),
+                (str(fator_k), False),
+                (", Tensão Primária: ", False),
+                (f"{tensao_primaria}V", True),
+                (", Derivações: ", False),
+                (derivacoes, False),
+                (", Tensão Secundária: ", False),
+                (f"{tensao_secundaria}V", True),
+                (", NBI: N/A, Grupo de Ligação: Yn0, Frequência: 60Hz, Enrolamentos impregnados em verniz a vácuo, "
+                 "com resfriamento tipo: AN, Classe de Temperatura materiais isolantes AT/BT: F (155ºC), "
+                 f"Elevação Temperatura média dos enrolamentos: 100°C, Materiais dos enrolamentos: {material}, "
+                 "Regime de Serviço: Contínuo, Temperatura Ambiente máxima: 40°C, Altitude de Instalação: ≤1000m e grau de proteção ", False),
+                (ip_text, True),
+                (". Demais características conforme norma ABNT-NBR 5356/11 e acessórios abaixo.", False)
+            ]
         elif 'TT' in produto:
-            escopo_text = (
-                f"Transformador isolador trifásico a seco, classe de tensão 1,1kV, Marca e Fabricação Blutrafos, "
-                f"Potência {potencia}, Fator K={fator_k}, Tensão Primária: {tensao_primaria}V, Derivações: {derivacoes}, "
-                f"Tensão Secundária: {tensao_secundaria}V, NBI: N/A, Grupo de Ligação: Dyn1, Frequência: 60Hz, "
-                f"Enrolamentos impregnados em verniz a vácuo, com resfriamento tipo: AN, Classe de Temperatura materiais isolantes "
-                f"AT/BT: F (155ºC), Elevação Temperatura média dos enrolamentos: 100°C, Materiais dos enrolamentos: {material}, "
-                f"Regime de Serviço: Contínuo, Temperatura Ambiente máxima: 40°C, Altitude de Instalação: ≤1000m e grau de proteção IP-{ip}. "
-                f"Demais características conforme norma ABNT-NBR 5356/11 e acessórios abaixo."
-            )
+            ip_text = f"IP-{item.get('IP', 'N/A')}"
+            if item.get('flange', 0) > 0:  # Verifica se tem flange
+                ip_text += " com flanges"
+            escopo_parts = [
+                ("Transformador isolador trifásico a seco, classe de tensão 1,1kV, Marca e Fabricação Blutrafos, Potência ", False),
+                (potencia, True),
+                (", Fator ", False),
+                ("K=1", True),
+                (", Tensão Primária: ", False),
+                ("380V", True),
+                (", Derivações: ", False),
+                ("N/A", True),
+                (", Tensão Secundária: ", False),
+                ("220/127V", True),
+                (", NBI: N/A, Grupo de Ligação: Dyn1, Frequência: 60Hz, Enrolamentos impregnados em verniz a vácuo, "
+                 "com resfriamento tipo: AN, Classe de Temperatura materiais isolantes AT/BT: F (155ºC), "
+                 f"Elevação Temperatura média dos enrolamentos: 100°C, Materiais dos enrolamentos: {material}, "
+                 "Regime de Serviço: Contínuo, Temperatura Ambiente máxima: 40°C, Altitude de Instalação: ≤1000m e grau de proteção ", False),
+                (ip_text, True),
+                (". Demais características conforme norma ", False),
+                ("ABNT-NBR 5356/11", True),
+                (" e acessórios abaixo.", False)
+            ]
         elif 'TM' in produto:
-            escopo_text = (
-                f"Transformador isolador monofásico a seco, classe de tensão 1,1kV, Marca e Fabricação Blutrafos, "
-                f"Potência {potencia}, Tensão Primária: {tensao_primaria}V, Tensão Secundária: {tensao_secundaria}V, "
-                f"NBI: N/A, Polaridade: Subtrativa, Frequência: 60Hz, Enrolamentos impregnados em verniz a vácuo, "
-                f"com resfriamento tipo: AN, Classe de Temperatura materiais isolantes AT/BT: F (155ºC), "
-                f"Elevação Temperatura média dos enrolamentos: 100°C, Materiais dos enrolamentos: {material}, "
-                f"Regime de Serviço: Contínuo, Temperatura Ambiente máxima: 40°C, Altitude de Instalação: <1000m, "
-                f"grau de proteção IP-{ip}, Fator K={fator_k}. Demais características conforme norma ABNT-NBR 5356/11 e acessórios abaixo."
-            )
+            ip_text = f"IP-{item.get('IP', 'N/A')}"
+            if item.get('flange', 0) > 0:  # Verifica se tem flange
+                ip_text += " com flanges"
+            escopo_parts = [
+                ("Transformador isolador monofásico a seco, classe de tensão 1,1kV, Marca e Fabricação Blutrafos, Potência ", False),
+                (potencia, True),
+                (", Tensão Primária: ", False),
+                (f"{tensao_primaria}V", False),
+                (", Tensão Secundária: ", False),
+                (f"{tensao_secundaria}V", True),
+                (", NBI: N/A, Polaridade: Subtrativa, Frequência: 60Hz, Enrolamentos impregnados em verniz a vácuo, "
+                 "com resfriamento tipo: AN, Classe de Temperatura materiais isolantes AT/BT: F (155ºC), "
+                 f"Elevação Temperatura média dos enrolamentos: 100°C, Materiais dos enrolamentos: {material}, "
+                 "Regime de Serviço: Contínuo, Temperatura Ambiente máxima: 40°C, Altitude de Instalação: <1000m, grau de proteção ", False),
+                (ip_text, True),
+                (", Fator ", False),
+                (f"K={fator_k}", True),
+                (". Demais características conforme norma ", False),
+                ("ABNT-NBR 5356/11", True),
+                (" e acessórios abaixo.", False)
+            ]
         else:
             logger.error(f"Produto não identificado: {produto}")
-            escopo_text = "Produto não identificado. Verifique o item e os dados fornecidos."
+            escopo_parts = [("Produto não identificado. Verifique o item e os dados fornecidos.", False)]
         
-        logger.debug(f"Escopo gerado com sucesso: {escopo_text[:100]}...")
-        return escopo_text
+        return escopo_parts
         
     except Exception as e:
         logger.error(f"Erro ao gerar escopo: {str(e)}", exc_info=True)
-        return "Erro ao gerar escopo do produto. Verifique os dados fornecidos."
+        return [("Erro ao gerar escopo do produto. Verifique os dados fornecidos.", False)]
 
 def create_custom_table_escopo(doc, itens_configurados):
+    """
+    Cria uma tabela de escopo no documento Word com formatação apropriada,
+    incluindo texto em negrito onde especificado.
+    """
     logger = logging.getLogger(__name__)
     logger.debug(f"Iniciando criação da tabela de escopo com {len(itens_configurados)} itens")
     
@@ -207,13 +242,14 @@ def create_custom_table_escopo(doc, itens_configurados):
     table.left_indent = Cm(0)
     table.autofit = False
 
+    # Configurar larguras das colunas
     col_widths = [Cm(1.5), Cm(15.0)]
     set_column_widths(table, col_widths)
 
-    # Cabeçalho
+    # Configurar cabeçalho
     header_row = table.rows[0]
     header_data = ["Item", "Escopo do Fornecimento:"]
-
+    
     for idx, cell in enumerate(header_row.cells):
         cell.text = header_data[idx]
         paragraph = cell.paragraphs[0]
@@ -227,43 +263,41 @@ def create_custom_table_escopo(doc, itens_configurados):
         set_cell_shading(cell, '00543C')
         add_double_borders(cell)
 
-    # Preenchendo a tabela com os itens configurados
+    # Preencher a tabela com os itens configurados
     for idx, item in enumerate(itens_configurados, start=1):
         try:
             logger.debug(f"Processando item {idx}: {item}")
             row = table.rows[idx]
 
-            # Coluna "Item"
+            # Configurar coluna "Item"
             row.cells[0].text = str(idx)
             apply_paragraph_formatting(row.cells[0].paragraphs[0], alignment='center')
             add_double_borders(row.cells[0])
 
-            # Gerar texto do escopo - Agora passando o item individual
-            escopo_text = gerar_escopo_texto(item)  # <- AQUI: Passando o item individual
-            if escopo_text is None:
-                logger.error(f"Escopo text é None para o item {idx}")
-                escopo_text = "Erro ao gerar escopo. Verifique os dados do item."
-
-            # Configurar o parágrafo
+            # Gerar e aplicar o texto do escopo com formatação
+            escopo_parts = gerar_escopo_texto(item)
+            
+            # Configurar o parágrafo para o escopo
             escopo_paragraph = row.cells[1].paragraphs[0]
-            escopo_paragraph.text = ""  # Limpar o texto padrão
-
-            # Adicionar o texto como um único run
-            run = escopo_paragraph.add_run(escopo_text)
-            run.font.name = 'Calibri Light (Título)'
-            run.font.size = Pt(10)
+            escopo_paragraph.text = ""  # Limpar o texto existente
+            
+            # Adicionar cada parte do texto com sua formatação apropriada
+            for text, is_bold in escopo_parts:
+                run = escopo_paragraph.add_run(text)
+                run.font.name = 'Calibri Light (Título)'
+                run.font.size = Pt(10)
+                run.bold = is_bold
 
             # Aplicar formatação no parágrafo
             escopo_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
             paragraph_format = escopo_paragraph.paragraph_format
             paragraph_format.space_after = Pt(2)
 
-            # Bordas para a célula de escopo
+            # Adicionar bordas para a célula de escopo
             add_double_borders(row.cells[1])
 
         except Exception as e:
             logger.error(f"Erro ao processar item {idx}: {str(e)}", exc_info=True)
-            # Adicionar texto de erro na célula
             row.cells[1].text = "Erro ao gerar escopo. Verifique os dados do item."
 
     logger.debug("Tabela de escopo criada com sucesso")

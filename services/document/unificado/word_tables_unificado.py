@@ -7,6 +7,11 @@ from services.document.mt import word_tables_mt
 from services.document.bt import word_tables_bt
 from services.document.mt.word_tables_mt import substituir_texto_documento
 import streamlit as st
+from ..utils.document_functions import inserir_desvios,inserir_eventos_pagamento,inserir_prazo_entrega
+from pages.pagamento_entrega.components import ComponentsPagamentoEntrega
+from ..mt.test import formatar_numero_inteiro_ou_decimal
+
+
 
 logger = logging.getLogger(__name__)
 
@@ -232,45 +237,71 @@ def substituir_texto_documento_1(doc, replacements):
     return doc
                             
 def gerar_documento(template_path, dados_iniciais, impostos, itens_mt, itens_bt):
-    logger.info("Iniciando geração de documento unificado")
-    
-    doc = Document(template_path)
-    if not doc:
-        raise ValueError("Falha ao carregar template")
+    try:
+        logger.info("Iniciando geração de documento unificado")
+        
+        # Garantir que o template_path existe e está correto
+        if not template_path:
+            raise ValueError("Template path não pode ser vazio")
 
-    # Criar replacements
-    replacements = {
-        '{{CLIENTE}}': str(dados_iniciais.get('cliente', '')),
-        '{{NOMECLIENTE}}': str(dados_iniciais.get('nomeCliente', '')),
-        '{{FONE}}': str(dados_iniciais.get('fone', '')),
-        '{{EMAIL}}': str(dados_iniciais.get('email', '')),
-        '{{BT}}': str(dados_iniciais.get('bt', '')),
-        '{{OBRA}}': str(dados_iniciais.get('obra', ' ')),
-        '{{DIA}}': str(dados_iniciais.get('dia', '')),
-        '{{MES}}': str(dados_iniciais.get('mes', '')),
-        '{{ANO}}': str(dados_iniciais.get('ano', '')),
-        '{{REV}}': str(dados_iniciais.get('rev', '')),
-        '{{LOCAL}}': str(dados_iniciais.get('local_frete', '')),
-        '{{LOCALFRETE}}': str(impostos.get('local_entrega', '')),
-        '{{ICMS}}': f"{impostos.get('icms', 0):.1f}",
-        '{{IP}}': '',  # Será preenchido depois com valores de MT e BT
-        '{obra}': '' if not dados_iniciais.get('obra', '').strip() else 'Obra',
-        ##################################### novas variaveis
-        '{{VALOR_TOTAL}}': formatar_numero_brasileiro(st.session_state.get('valor_totalizado', 0)),
-        '{{TRANSPORTE}}': 'O transporte de equipamentos será realizado no formato CIF.' if impostos.get('tipo_frete', '') == 'CIF' else 'O transporte de equipamentos será realizado no formato FOB.',
-        '{{RESPONSAVEL}}': st.session_state.get('usuario', '')
-    }
+        # Carregar o documento
+        try:
+            doc = Document(template_path)
+        except Exception as e:
+            logger.error(f"Erro ao carregar template: {str(e)}")
+            raise ValueError(f"Falha ao carregar template: {str(e)}")
 
-    logger.info("Aplicando substituições de texto")
-    doc = substituir_texto_documento(doc, replacements)
-    logger.info(f"Após substituições. Primeiro parágrafo: {doc.paragraphs[0].text if doc.paragraphs else 'Vazio'}")
-    logger.info("Inserindo tabelas")
-    doc = inserir_tabelas_separadas(doc, itens_mt, itens_bt, "", replacements)
-    logger.info(f"Após tabelas. Primeiro parágrafo: {doc.paragraphs[0].text if doc.paragraphs else 'Vazio'}")
-    buffer = BytesIO()
-    doc.save(buffer)
-    logger.info("Verificando conteúdo do buffer antes de retornar")
-    buffer.seek(0)
-    doc_final = Document(BytesIO(buffer.getvalue()))
-    logger.info(f"Documento final. Primeiro parágrafo: {doc_final.paragraphs[0].text if doc_final.paragraphs else 'Vazio'}")
-    return buffer
+        # Criar replacements
+        replacements = {
+            '{{CLIENTE}}': str(dados_iniciais.get('cliente', '')),
+            '{{NOMECLIENTE}}': str(dados_iniciais.get('nomeCliente', '')),
+            '{{FONE}}': str(dados_iniciais.get('fone', '')),
+            '{{EMAIL}}': str(dados_iniciais.get('email', '')),
+            '{{BT}}': str(dados_iniciais.get('bt', '')),
+            '{{OBRA}}': str(dados_iniciais.get('obra', ' ')),
+            '{{DIA}}': str(dados_iniciais.get('dia', '')),
+            '{{MES}}': str(dados_iniciais.get('mes', '')),
+            '{{ANO}}': str(dados_iniciais.get('ano', '')),
+            '{{REV}}': str(dados_iniciais.get('rev', '')),
+            '{{LOCAL}}': str(dados_iniciais.get('local_frete', '')),
+            '{{LOCALFRETE}}': str(impostos.get('local_entrega', '')),
+            '{{ICMS}}': f"{formatar_numero_inteiro_ou_decimal(impostos.get('icms', 0)):}",
+            '{{DIFAL}}': f"{impostos.get('difal', 0):.1f}" if impostos.get('difal', 0) > 0 else '',
+            '{{IP}}': '',
+            '{obra}': '' if not dados_iniciais.get('obra', '').strip() else 'Obra',
+            '{{VALOR_TOTAL}}': formatar_numero_brasileiro(st.session_state.get('valor_totalizado', 0)),
+            '{{TRANSPORTE}}': f'CIP - {str(dados_iniciais.get('local_frete', ''))}, sobre o veículo transportador (descarga não inclusa)' if impostos.get('tipo_frete', '') == 'CIP' else f'FOB - {str(dados_iniciais.get('local_frete', ''))}, sobre o veículo transportador (descarga não inclusa)',
+            '{{RESPONSAVEL}}': st.session_state.get('usuario', '')
+        }
+
+        # Carregar itens e produtos configurados
+        itens = st.session_state.get('itens', {})
+        produtos_configurados = ComponentsPagamentoEntrega.carregar_tipo_produto(itens)
+
+        # Aplicar substituições
+        logger.info("Aplicando substituições de texto")
+        doc = substituir_texto_documento(doc, replacements)
+
+        # Inserir tabelas
+        logger.info("Inserindo tabelas")
+        doc = inserir_tabelas_separadas(doc, itens_mt, itens_bt, "", replacements)
+
+        # Inserir eventos e desvios
+        inserir_eventos_pagamento(doc, st.session_state, produtos_configurados)
+        inserir_desvios(doc)
+        inserir_prazo_entrega(doc)
+
+        # Salvar o documento em um buffer
+        buffer = BytesIO()
+        doc.save(buffer)
+        buffer.seek(0)
+
+        # Verificar o documento final
+        logger.info("Verificando documento final")
+        Document(BytesIO(buffer.getvalue()))  # Verificação final
+
+        return buffer
+
+    except Exception as e:
+        logger.error(f"Erro na geração do documento: {str(e)}", exc_info=True)
+        raise Exception(f"Erro ao gerar documentos: {str(e)}")

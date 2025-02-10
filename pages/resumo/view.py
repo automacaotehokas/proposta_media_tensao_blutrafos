@@ -85,7 +85,7 @@ def pagina_resumo():
                     dados_iniciais = st.session_state['dados_iniciais']
                     itens = st.session_state['itens']
                     impostos = st.session_state['impostos']
-                    output_path = doc_manager.gerar_documentos(
+                    output_path = DocumentManager.gerar_documentos(
                         itens=st.session_state['itens'],
                         observacao=st.session_state['dados_iniciais'].get('comentario', ''),
                     )

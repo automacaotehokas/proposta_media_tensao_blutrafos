@@ -6,19 +6,26 @@ import pandas as pd
 class ComponentsPagamentoEntrega:
     EVENTOS_PADRAO = [
         "Pedido",
-        "Faturamento",
-        "Contraembarque",
+        "Faturamento (Mediante aprovação financeira)",
+        "Contra aviso de pronto p/ embarque",
         "Aprovação dos Desenhos",
         "TAF",
         "Entrega do Equipamento"
     ]
 
     EVENTOS_PREDEFINIDOS = [
-        {"percentual": 25, "dias": 20, "evento": "Aprovação dos Desenhos"},
-        {"percentual": 25, "dias": 30, "evento": "Aprovação dos Desenhos"},
-        {"percentual": 25, "dias": 60, "evento": "Aprovação dos Desenhos"},
-        {"percentual": 25, "dias": 0, "evento": "Entrega do Equipamento"}
+        {"percentual": 40, "dias": 0, "evento": "Aprovação dos Desenhos"},
+        {"percentual": 30, "dias": 0, "evento": "Contra aviso de pronto p/ embarque"},
+        {"percentual": 30, "dias": 28, "evento": "Faturamento (Mediante aprovação financeira)"}
     ]
+
+
+
+    EVENTOS_PREDEFINIDOS_BT = [
+        {"percentual": 50, "dias": 0, "evento": "Aprovação dos Desenhos"},
+        {"percentual": 50, "dias": 28, "evento": "Contra aviso de pronto p/ embarque"},
+    ]
+
 
 # Em components.py, adicione/modifique:
     @staticmethod
@@ -118,52 +125,78 @@ class ComponentsPagamentoEntrega:
     @staticmethod
     def inicializar_session_state():
         """Inicializa todas as variáveis necessárias no session_state"""
+
+        
         if 'eventos_pagamento' not in st.session_state:
             st.session_state['eventos_pagamento'] = {}
             
         if 'prazo_entrega' not in st.session_state:
             st.session_state['prazo_entrega'] = {
-                'prazo_desenho': 0,
-                'prazo_cliente': 0,
+                'prazo_desenho': 5,
+                'prazo_cliente': 2,
                 'prazo': {}
             }
         
         # Inicializa eventos MT e BT se não existirem
-        if 'eventos_mt' not in st.session_state:
-            st.session_state['eventos_mt'] = ComponentsPagamentoEntrega.EVENTOS_PREDEFINIDOS.copy()
+        if 'eventos_pagamento' not in st.session_state:
+            st.session_state['eventos_pagamento'] = ComponentsPagamentoEntrega.EVENTOS_PREDEFINIDOS.copy()
         
-        if 'eventos_bt' not in st.session_state:
-            st.session_state['eventos_bt'] = ComponentsPagamentoEntrega.EVENTOS_PREDEFINIDOS.copy()
-        
+
         # Inicializa os checkboxes "A combinar"
-        if 'a_combinar_mt' not in st.session_state:
-            st.session_state['a_combinar_mt'] = False
+        if 'a_combinar' not in st.session_state:
+            st.session_state['a_combinar'] = False
         
-        if 'a_combinar_bt' not in st.session_state:
-            st.session_state['a_combinar_bt'] = False
+
 
     @staticmethod
 
-    def configurar_eventos_pagamento(tipo_produto: str) -> Dict:
-        """Configura eventos de pagamento para um tipo específico de produto"""
-        eventos_key = f'eventos_{tipo_produto.lower()}'
-        a_combinar_key = f'a_combinar_{tipo_produto.lower()}'
+    def configurar_eventos_pagamento():
+        """
+        Configura eventos de pagamento de forma unificada para todos os produtos.
+        """
+        produtos = ComponentsPagamentoEntrega.carregar_tipo_produto(st.session_state['itens'])
+        # Garantir que a lista de eventos existe e está inicializada
+        if 'eventos_pagamento' not in st.session_state:
+            # Se tiver apenas BT, usa os eventos predefinidos de BT
+            if produtos['bt'] and not produtos['mt']:
+                st.session_state['eventos_pagamento'] = ComponentsPagamentoEntrega.EVENTOS_PREDEFINIDOS_BT.copy()
+            # Se tiver MT ou ambos, usa os eventos predefinidos padrão (MT)
+            else:
+                st.session_state['eventos_pagamento'] = ComponentsPagamentoEntrega.EVENTOS_PREDEFINIDOS.copy()
+        # Se a lista estiver vazia, inicializa com os eventos predefinidos
+        if len(st.session_state['eventos_pagamento']) == 0:
+            if produtos['bt'] and not produtos['mt']:
+                st.session_state['eventos_pagamento'] = ComponentsPagamentoEntrega.EVENTOS_PREDEFINIDOS_BT.copy()
+            else:
+                st.session_state['eventos_pagamento'] = ComponentsPagamentoEntrega.EVENTOS_PREDEFINIDOS.copy()
+
         
-        # Inicializa o valor no session_state se não existir
-        if a_combinar_key not in st.session_state:
-            st.session_state[a_combinar_key] = False
+        # Garantir que a flag a_combinar existe
+        if 'a_combinar_pagamento' not in st.session_state:
+            st.session_state['a_combinar_pagamento'] = False
         
-        # Agora usamos o valor do session_state como valor inicial do checkbox
         a_combinar = st.checkbox(
             "A combinar",
-            key=a_combinar_key
+            key='a_combinar_pagamento'
         )
         
         if not a_combinar:
-            eventos = st.session_state[eventos_key]
-            eventos_mutaveis = list(eventos)
+            # Criar um botão de adicionar evento no início
+            if st.button("Adicionar Evento"):
+                # Criar uma cópia da lista atual
+                eventos_atuais = list(st.session_state['eventos_pagamento'])
+                # Adicionar novo evento à cópia
+                eventos_atuais.append({
+                    "percentual": 0,
+                    "dias": 0,
+                    "evento": ComponentsPagamentoEntrega.EVENTOS_PADRAO[0]
+                })
+                # Atualizar a lista no session_state
+                st.session_state['eventos_pagamento'] = eventos_atuais
+                st.rerun()
             
-            for i, evento in enumerate(eventos):
+            # Mostrar os eventos existentes
+            for i, evento in enumerate(st.session_state['eventos_pagamento']):
                 col1, col2, col3, col4 = st.columns([2, 2, 2, 1])
                 
                 with col1:
@@ -172,15 +205,14 @@ class ComponentsPagamentoEntrega:
                         min_value=0.0,
                         max_value=100.0,
                         value=float(evento["percentual"]),
-                        key=f"percentual_{tipo_produto.lower()}_{i}"
+                        key=f"percentual_evento_{i}"
                     )
                 
                 with col2:
-                    evento["dias"] = st.number_input(
+                    evento["dias"] = st.text_input(
                         f"Dias do evento {i+1}",
-                        min_value=0,
-                        value=int(evento["dias"]),
-                        key=f"dias_{tipo_produto.lower()}_{i}"
+                        value=evento["dias"],
+                        key=f"dias_evento_{i}"
                     )
                 
                 with col3:
@@ -188,60 +220,77 @@ class ComponentsPagamentoEntrega:
                         f"Evento base {i+1}",
                         ComponentsPagamentoEntrega.EVENTOS_PADRAO,
                         index=ComponentsPagamentoEntrega.EVENTOS_PADRAO.index(evento["evento"]),
-                        key=f"evento_{tipo_produto.lower()}_{i}"
+                        key=f"evento_base_{i}"
                     )
                 
                 with col4:
-                    # Usar um botão com chave única e explícita
-                    if st.button("❌", key=f"remove_evento_{tipo_produto}_{i}"):
-                        # Remover o evento específico
-                        del eventos_mutaveis[i]
-                        # Atualizar o session state
-                        st.session_state[eventos_key] = eventos_mutaveis
+                    if st.button("❌", key=f"remove_evento_{i}"):
+                        eventos_atuais = list(st.session_state['eventos_pagamento'])
+                        eventos_atuais.pop(i)
+                        st.session_state['eventos_pagamento'] = eventos_atuais
                         st.rerun()
-                        
-            st.session_state[eventos_key] = eventos_mutaveis
-
-            if st.button("Adicionar Evento", key=f"add_{tipo_produto.lower()}"):
-                eventos.append({
-                    "percentual": 0,
-                    "dias": 0,
-                    "evento": ComponentsPagamentoEntrega.EVENTOS_PADRAO[0]
-                })
-                st.rerun()
 
             # Validação do total de percentuais
-            total_percentual = sum(e["percentual"] for e in eventos)
+            total_percentual = sum(e["percentual"] for e in st.session_state['eventos_pagamento'])
             if total_percentual != 100:
                 st.warning(f"O total dos percentuais deve ser 100%. Atual: {total_percentual}%")
+
+
+    
     @staticmethod
-    def configurar_prazo_entrega(tipo_produto: str):
-        """Configura o prazo de entrega para um tipo específico de produto"""
-        prazo_key = f'prazo_{tipo_produto.lower()}'
+    def configurar_prazo_entrega():
+        """
+        Configura os prazos de entrega para a proposta, incluindo prazos gerais 
+        (desenho e cliente) e prazo de fabricação. A função gerencia três tipos
+        diferentes de prazos que serão usados na proposta.
+        """
         
-        if prazo_key not in st.session_state['prazo_entrega']:
-            st.session_state['prazo_entrega'][prazo_key] = {
-                'valor': 0,
-                'evento': 'Entrega do Equipamento'
+        # Inicialização dos estados para prazos gerais com valores padrão
+        if 'prazo_entrega' not in st.session_state:
+            st.session_state['prazo_entrega'] = {
+                'prazo_desenho': 5,
+                'prazo_cliente': 2
             }
         
-        prazo = st.number_input(
-            "Prazo de entrega (em dias):",
-            min_value=0,
-            value=st.session_state['prazo_entrega'][prazo_key]['valor'],
-            key=f"prazo_{tipo_produto.lower()}"
+        # Inicialização do estado para prazo de fabricação com texto padrão
+        if 'prazo_entrega_global' not in st.session_state:
+            st.session_state['prazo_entrega_global'] = {
+                'prazo_fabricacao': "Prazo de fabricação: Até 60 dias úteis contados a partir da data da aprovação definitiva dos desenhos + transporte."
+            }
+
+        # Seção de Prazos Gerais - Organizada em duas colunas para melhor visualização
+        st.subheader("Prazos Gerais")
+        col1, col2 = st.columns(2)
+        
+        # Coluna 1: Input para Prazo de Desenho
+        with col1:
+            prazo_desenho = st.number_input(
+                "Prazo de desenho (em dias):",
+                min_value=0,
+                value=st.session_state['prazo_entrega']['prazo_desenho'],
+                key="prazo_desenho_input"
+            )
+            st.session_state['prazo_entrega']['prazo_desenho'] = prazo_desenho
+        
+        # Coluna 2: Input para Prazo de Cliente
+        with col2:
+            prazo_cliente = st.number_input(
+                "Prazo de cliente (em dias):",
+                min_value=0,
+                value=st.session_state['prazo_entrega']['prazo_cliente'],
+                key="prazo_cliente_input"
+            )
+            st.session_state['prazo_entrega']['prazo_cliente'] = prazo_cliente
+
+        # Seção de Prazo de Fabricação - Usando text_input para permitir descrição detalhada
+        st.subheader("Prazo de Fabricação do(s) Produto(s)")
+        st.info("Este prazo será aplicado a todos os itens da proposta")
+        
+        prazo_fabricacao = st.text_input(
+            "Prazo de fabricação: ",
+            value=st.session_state['prazo_entrega_global']['prazo_fabricacao'],
+            key="prazo_fabricacao_global"
         )
         
-        evento = st.selectbox(
-            "Evento base para prazo:",
-            ComponentsPagamentoEntrega.EVENTOS_PADRAO,
-            index=ComponentsPagamentoEntrega.EVENTOS_PADRAO.index(
-                st.session_state['prazo_entrega'][prazo_key]['evento']
-            ),
-            key=f"evento_prazo_{tipo_produto.lower()}"
-        )
-        
-        st.session_state['prazo_entrega'][prazo_key] = {
-            'valor': prazo,
-            'evento': evento
-        }
+        # Atualiza o prazo de fabricação no session_state
+        st.session_state['prazo_entrega_global']['prazo_fabricacao'] = prazo_fabricacao

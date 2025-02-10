@@ -14,14 +14,23 @@ from datetime import datetime
 import dotenv
 from streamlit.components.v1 import html as components_html
 from decimal import Decimal
+from services.document.mt.test import formatar_numero_inteiro_ou_decimal
+from utils.formatters import formatar_numero_brasileiro
 
 dotenv.load_dotenv()
+
+def converter_para_float(valor):
+    """Converte um valor monetário formatado para float"""
+    if isinstance(valor, str):
+        # Remove R$, pontos dos milhares e troca vírgula por ponto
+        valor = valor.replace('R$ ', '').replace('.', '').replace(',', '.')
+    return float(valor)
 
 def selecionar_tipo_proposta():
     """Função para selecionar se é nova revisão ou atualização"""
     params = st.query_params
     # revisao_id = params.get("id_revisao")
-    revisao_id = params.get("id_revisao")
+    revisao_id = os.getenv('ID_REVISAO_TESTE')
     
     # Se não tem id_revisao, define automaticamente como nova revisão
     if not revisao_id:
@@ -52,92 +61,136 @@ def selecionar_tipo_proposta():
 def exibir_tabela_unificada():
     """Exibe uma tabela unificada com itens MT e BT."""
     if 'itens' not in st.session_state:
-        st.session_state.itens = {'itens_configurados_mt': [], 'itens_configurados_bt': []}
-    
-    # Criar DataFrames para MT e BT
-    df_mt = pd.DataFrame(st.session_state['itens']['itens_configurados_mt'])
-    df_bt = pd.DataFrame(st.session_state['itens']['itens_configurados_bt'])
- 
-    # Verificar se há itens configurados
-    if df_mt.empty and df_bt.empty:
+        st.session_state.itens = {
+            'itens_configurados_mt': [],
+            'itens_configurados_bt': []
+        }
+
+    # Criar DataFrames
+    df_mt = pd.DataFrame(st.session_state.itens['itens_configurados_mt'])
+    df_bt = pd.DataFrame(st.session_state.itens['itens_configurados_bt'])
+
+    # Preparar dados para exibição
+    dfs = []
+    if not df_mt.empty:
+        # Formatar descrição para MT
+        df_mt['Descrição Completa'] = df_mt.apply(
+            lambda row: f"{row['Descrição']} | IP: {row['IP']} | Tensão Primária: {row['Tensão Primária']}V | Tensão Secundária: {row['Tensão Secundária']}V", 
+            axis=1
+        )
+        df_mt['tipo'] = 'MT'
+        df_mt['origem_index'] = df_mt.index
+        # Formatar valores monetários usando formatar_numero_brasileiro
+        df_mt['Preço Unitário'] = df_mt['Preço Unitário'].apply(lambda x: f"R$ {formatar_numero_brasileiro(float(x))}")
+        df_mt['Preço Total'] = df_mt['Preço Total'].apply(lambda x: f"R$ {formatar_numero_brasileiro(float(x))}")
+        dfs.append(df_mt)
+
+    if not df_bt.empty:
+        # Formatar descrição para BT
+        df_bt['Descrição Completa'] = df_bt.apply(
+            lambda row: f"{row['Descrição']} | IP: {row['IP']} | Tensão Primária: {row['Tensão Primária']}V | Tensão Secundária: {row['Tensão Secundária']}V", 
+            axis=1
+        )
+        df_bt['tipo'] = 'BT'
+        df_bt['origem_index'] = df_bt.index
+        # Formatar valores monetários usando formatar_numero_brasileiro
+        df_bt['Preço Unitário'] = df_bt['Preço Unitário'].apply(lambda x: f"R$ {formatar_numero_brasileiro(float(x))}")
+        df_bt['Preço Total'] = df_bt['Preço Total'].apply(lambda x: f"R$ {formatar_numero_brasileiro(float(x))}")
+        dfs.append(df_bt)
+
+    if not dfs:
         st.info("Nenhum item configurado ainda.")
         return
- 
-    # Preparar os DataFrames
-    if not df_mt.empty:
-        df_mt['tipo'] = 'MT'
-        df_mt['origem_index'] = range(len(df_mt))
-        df_mt = df_mt.rename(columns={
-            'Descrição': 'descricao',
-            'Quantidade': 'quantidade',
-            'Preço Unitário': 'valor_unit',
-            'Preço Total': 'valor_total'
-        })
- 
-    if not df_bt.empty:
-        df_bt['tipo'] = 'BT'
-        df_bt['origem_index'] = range(len(df_bt))
-        df_bt = df_bt.rename(columns={
-            'Descrição': 'descricao',
-            'Quantidade': 'quantidade',
-            'Preço Unitário': 'valor_unit',
-            'Preço Total': 'valor_total'
-        })
- 
-    # Concatenar os DataFrames
-    df_unified = pd.concat([df_mt, df_bt], ignore_index=True)
-    df_unified['index_exibicao'] = range(1, len(df_unified) + 1)
 
-    # Criar colunas para exibição
-    df_display = pd.DataFrame({
-        'Item': df_unified['index_exibicao'],
-        'Tipo': df_unified['tipo'],
-        'Descrição': df_unified['descricao'],
-        'Quantidade': df_unified['quantidade'],
-        'Valor Unitário': df_unified['valor_unit'].apply(lambda x: f"R$ {x:,.2f}"),
-        'Valor Total': df_unified['valor_total'].apply(lambda x: f"R$ {x:,.2f}"),
-    })
+    df_unified = pd.concat(dfs, ignore_index=True)
+    df_unified['index_exibicao'] = df_unified.index + 1
 
-    # Criar coluna de botões usando st.columns
-    cols = st.columns([7, 1])  # 7 para a tabela, 1 para os botões
-    
+    # Exibir tabela
+    cols = st.columns([6, 1, 1, 1])
     with cols[0]:
         st.dataframe(
-            df_display,
-            hide_index=True,
+            df_unified[[
+                'index_exibicao', 'tipo', 'Descrição Completa',
+                'Quantidade', 'Preço Unitário', 'Preço Total'
+            ]].rename(columns={
+                'index_exibicao': 'Item',
+                'tipo': 'Tipo',
+                'Descrição Completa': 'Descrição',
+                'Quantidade': 'Quantidade',
+                'Preço Unitário': 'Valor Unitário',
+                'Preço Total': 'Valor Total'
+            }),
             height=400,
             use_container_width=True
         )
-    
+
+    # Botões de Edição/Exclusão
     with cols[1]:
-        st.write("")  # Espaço para alinhar com o cabeçalho da tabela
+        st.write("")
         for idx, row in df_unified.iterrows():
-            if st.button("🗑️", key=f"delete_{row['tipo']}_{row['origem_index']}"):
+            if st.button(
+                "✏️", 
+                key=f"edit_{row['tipo']}_{row['origem_index']}",
+                help="Editar item"
+            ):
                 if row['tipo'] == 'MT':
-                    st.session_state['itens']['itens_configurados_mt'].pop(int(row['origem_index']))
+                    st.session_state.editando_item_mt = {
+                        'index': row['origem_index'],
+                        'dados': st.session_state.itens['itens_configurados_mt'][row['origem_index']]
+                    }
                 else:
-                    st.session_state['itens']['itens_configurados_bt'].pop(int(row['origem_index']))
+                    st.session_state.editando_item_bt = {
+                        'index': row['origem_index'],
+                        'dados': st.session_state.itens['itens_configurados_bt'][row['origem_index']]
+                    }
+                st.session_state['pagina_atual'] = 'configuracao'
+                st.rerun()
+
+    with cols[2]:
+        st.write("")
+        for idx, row in df_unified.iterrows():
+            if st.button(
+                "🗑️", 
+                key=f"del_{row['tipo']}_{row['origem_index']}",
+                help="Excluir item"
+            ):
+                if row['tipo'] == 'MT':
+                    st.session_state.itens['itens_configurados_mt'].pop(row['origem_index'])
+                else:
+                    st.session_state.itens['itens_configurados_bt'].pop(row['origem_index'])
                 st.rerun()
 
     # Exibir totais
-    st.markdown("---")
+    total_mt = formatar_numero_brasileiro(float(df_mt['Preço Total'].iloc[0].replace('R$ ', '').replace('.', '').replace(',', '.'))) if not df_mt.empty else "0"
+    total_bt = formatar_numero_brasileiro(float(df_bt['Preço Total'].iloc[0].replace('R$ ', '').replace('.', '').replace(',', '.'))) if not df_bt.empty else "0"
+
+
+    st.divider()
     col1, col2, col3 = st.columns(3)
     with col1:
-        # Convert valor_total to float before summing
-        total_mt = df_mt['valor_total'].apply(float).sum() if not df_mt.empty else 0
-        st.metric("Total MT", f"R$ {total_mt:,.2f}")
-        st.session_state['valor_mt'] = total_mt
+        st.metric("Total MT", f"R$ {total_mt}")
     with col2:
-        # Convert valor_total to float before summing
-        total_bt = df_bt['valor_total'].apply(float).sum() if not df_bt.empty else 0
-        st.metric("Total BT", f"R$ {total_bt:,.2f}")
-        st.session_state['valor_bt'] = total_bt
+        st.metric("Total BT", f"R$ {total_bt}")
     with col3:
-        total_geral = Decimal(total_mt) + Decimal(total_bt)
-        st.metric("Total Geral", f"R$ {total_geral:,.2f}")
-        st.session_state['valor_totalizado'] = float(total_geral)
+        # Convertendo strings para float para soma correta
+        total_mt_float = float(total_mt.replace('.', '').replace(',', '.'))
+        total_bt_float = float(total_bt.replace('.', '').replace(',', '.'))
+        total_geral = total_mt_float + total_bt_float
+        # Formatando o total geral usando formatar_numero_brasileiro
+        st.metric("Total Geral", f"R$ {formatar_numero_brasileiro(total_geral)}")
 
 
+
+
+    
+    # st.divider()
+
+        
+        
+        
+    # total_mt = df_mt['Preço Total'].sum() if not df_mt.empty else 0
+    # total_bt = df_bt['Preço Total'].sum() if not df_bt.empty else 0
+    
 import logging
 
 # Configuração do logger
@@ -239,11 +292,12 @@ def carregar_dados_revisao(revisao_id: str):
                     # Carrega outros dados
                     chaves_para_carregar = [
                         'impostos', 
-                        'eventos_mt',
-                        'eventos_bt',
+                        'eventos_pagamento',
                         'prazo_entrega',
                         'desvios'
                     ]
+
+                    
                     
                     logger.info("Carregando outras configurações")
                     for chave in chaves_para_carregar:
@@ -306,64 +360,45 @@ def verificar_carregamento(id_revisao):
             return None
     return None
 
+
 def inicializar_dados():
-    """Inicia os dados da proposta com base nos parâmetros da URL"""
     try:
+        print("Iniciando função inicializar_dados()")
+        
         if not selecionar_tipo_proposta():
+            print("Tipo de proposta não selecionado, retornando")
             return
             
         params = st.query_params
-
-        st.session_state['usuario'] = params.get('usuario').replace("+", " ")
+        usuario = params.get('usuario')
+        print(f"Parâmetros URL: {params}")
+        print(f"Usuário encontrado: {usuario}")
         
-        # Se já foi inicializado, mantém os dados existentes
+        if usuario:
+            st.session_state['usuario'] = usuario.replace("+", " ")
+        else:
+            st.session_state['usuario'] = ""
+        print(f"Usuário definido na session_state: {st.session_state['usuario']}")
+
         if st.session_state.get('app_initialized'):
+            print("App já inicializado, retornando")
             return
 
-        # id_revisao = params.get('id_revisao')
-        id_revisao = params.get('id_revisao')
-        st.session_state['id_revisao'] = id_revisao
-
-        # id_proposta = params.get('id_proposta')   
-        id_proposta = params.get('id_proposta')   
+        id_proposta = os.getenv('ID_PROPOSTA_TESTE')
+        print(f"ID Proposta carregado: {id_proposta}")
         st.session_state['id_proposta'] = id_proposta
 
         token = params.get('token')
+        print(f"Token encontrado: {token}")
         st.session_state['token'] = token
 
-        if id_revisao:
-            # Carrega dados da revisão existente
-            carregar_dados_revisao(id_revisao)
-            
-            # Calcula próxima revisão APENAS se for nova revisão e primeira inicialização
-            if (st.session_state.get('tipo_proposta') == "Nova revisão" and 
-                not st.session_state.get('revisao_numero_definido')):
-                conn = DatabaseConfig.get_connection()
-                try:
-                    with conn.cursor() as cur:
-                        cur.execute("""
-                            SELECT MAX(CAST(revisao AS INTEGER))
-                            FROM revisoes 
-                            WHERE id_proposta_id = (
-                                SELECT id_proposta_id 
-                                FROM revisoes 
-                                WHERE id_revisao = %s
-                            )
-                        """, (id_revisao,))
-                        
-                        ultima_revisao = cur.fetchone()[0]
-                        proxima_revisao = str(ultima_revisao + 1 if ultima_revisao is not None else 0).zfill(2)
-                        st.session_state['dados_iniciais']['rev'] = proxima_revisao
-                        st.session_state['revisao_numero_definido'] = True
-                finally:
-                    conn.close()
-            
-        elif id_proposta and not st.session_state.get('proposta_loaded'):
+        if id_proposta and not st.session_state.get('proposta_loaded'):
+            print("Iniciando carregamento da proposta do banco")
             conn = DatabaseConfig.get_connection()
             try:
                 with conn.cursor() as cur:
-                    # Busca a última revisão se ainda não foi definida
                     if not st.session_state.get('revisao_numero_definido'):
+                        print("Buscando última revisão")
                         cur.execute("""
                             SELECT MAX(CAST(revisao AS INTEGER))
                             FROM revisoes 
@@ -371,24 +406,23 @@ def inicializar_dados():
                         """, (id_proposta,))
                         
                         ultima_revisao = cur.fetchone()[0]
+                        print(f"Última revisão encontrada: {ultima_revisao}")
                         proxima_revisao = str(ultima_revisao + 1 if ultima_revisao is not None else 0).zfill(2)
+                        print(f"Próxima revisão definida: {proxima_revisao}")
                         
-                        # Busca dados da proposta
+                        print("Buscando dados da proposta")
                         cur.execute("""
-                            SELECT 
-                                proposta,
-                                cliente,
-                                obra,
-                                contato
+                            SELECT proposta, cliente, obra, contato
                             FROM propostas 
                             WHERE id_proposta = %s
                         """, (id_proposta,))
                         
                         resultado = cur.fetchone()
+                        print(f"Resultado da busca: {resultado}")
                         if resultado:
                             proposta, cliente, obra, contato = resultado
                             
-                            st.session_state['dados_iniciais'] = {
+                            dados_iniciais = {
                                 'cliente': cliente,
                                 'bt': proposta,
                                 'obra': obra,
@@ -402,23 +436,26 @@ def inicializar_dados():
                                 'fone': '',
                                 'local_frete': 'São Paulo/SP'
                             }
+                            print(f"Dados iniciais montados: {dados_iniciais}")
                             
+                            st.session_state['dados_iniciais'] = dados_iniciais
                             st.session_state['revisao_numero_definido'] = True
                             st.session_state['proposta_loaded'] = True
             finally:
                 conn.close()
+                print("Conexão com banco fechada")
         
         st.session_state['app_initialized'] = True
+        print("Inicialização concluída com sucesso")
             
     except Exception as e:
+        print(f"Erro detalhado na inicialização: {str(e)}")
         st.error(f"Erro ao inicializar dados: {str(e)}")
-        print(f"Erro detalhado: {str(e)}")
 
 
 def configurar_dados_iniciais():
     """Configura os dados iniciais necessários"""
     dados = st.session_state['dados_iniciais']
-    
     st.subheader("Configure os dados iniciais")
     col1, col2 = st.columns(2)
     
@@ -452,7 +489,7 @@ def configurar_dados_iniciais():
     
     if st.button("Continuar", type="primary"):
         # Verifica campos obrigatórios
-        campos_vazios = [k for k, v in dados.items() if not v and k not in ['id_proposta', 'dia', 'mes', 'ano','comentario']]
+        campos_vazios = [k for k, v in dados.items() if not v and k not in ['id_proposta', 'dia', 'mes', 'ano','comentario','obra']]
         if campos_vazios:
             st.error("Por favor, preencha todos os campos obrigatórios:")
             for campo in campos_vazios:
@@ -462,8 +499,6 @@ def configurar_dados_iniciais():
         st.session_state['configuracao_inicial_completa'] = True
         st.rerun()
     return False
-    
-    return True
 
 def main():
     """Função principal da aplicação"""

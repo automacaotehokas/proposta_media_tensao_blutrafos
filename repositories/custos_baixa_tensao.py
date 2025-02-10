@@ -32,6 +32,7 @@ class CustoBaixaTensaoRepository:
                 ORDER BY 
                     c.potencia_numerica ASC;
             """
+            
             df = pd.read_sql(query, conn)
             # Renomeia as colunas para minúsculo
             df.columns = df.columns.str.lower()

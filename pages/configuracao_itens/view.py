@@ -105,6 +105,13 @@ def pagina_configuracao_BT():
         ComponenteBT.render_bt_components()
     
 
+def format_bt_values(item):
+    """Formata valores numéricos do item BT"""
+    numeric_fields = ['preco_unitario', 'preco_total', 'quantidade']
+    for field in numeric_fields:
+        if field in item:
+            item[field] = float(str(item[field]).replace('R$', '').replace('.', '').replace(',', '.').strip())
+    return item
 
 def pagina_configuracao():
     """Página principal de configuração de itens"""
@@ -112,24 +119,56 @@ def pagina_configuracao():
     
     # Inicializa o session state se necessário
     initialize_session_state()
-    n_itens_mt = len(st.session_state['itens']['itens_configurados_mt'])
-    n_itens_bt = len(st.session_state['itens']['itens_configurados_bt'])
-    n_item_atual = n_itens_mt + n_itens_bt 
-    st.subheader(f'Adicionar item {n_item_atual + 1}' )
     
+    # Verifica se há um item em edição
+    if 'editando_item_mt' in st.session_state:
+        item_em_edicao = st.session_state.editando_item_mt
+        st.info(f"Editando item MT (ID: {item_em_edicao['index']})")
+        # Carrega os dados do item nos campos de configuração
+        with st.expander("Editar Item MT", expanded=True):
+            df = CustoMediaTensaoRepository().buscar_todos()
+            componentsMT.render_item_config(item_em_edicao['index'], df, item_em_edicao['dados'])
+    
+    elif 'editando_item_bt' in st.session_state:
+        item_em_edicao = st.session_state.editando_item_bt
+        st.info(f"Editando item BT (ID: {item_em_edicao['index']})")
+        with st.expander("Editar Item BT", expanded=True):
+            ComponenteBT.render_bt_components(
+                modo_edicao=True,
+                item_edicao=item_em_edicao['dados']
+            )
+            
+            # Adicionar um botão de salvar específico para edição
+        # if st.button("💾 Salvar Alterações"):
+        #         updated_item = format_bt_values(st.session_state['current_bt_item'])
+        #         st.session_state['itens']['itens_configurados_bt'][item_em_edicao['index']] = updated_item
+        #         del st.session_state.editando_item_bt
+        #         st.success("Item atualizado com sucesso!")
+        #         st.rerun()
+    else:
+        # Se não houver item em edição, exibe a interface normal
+        n_itens_mt = len(st.session_state['itens']['itens_configurados_mt'])
+        n_itens_bt = len(st.session_state['itens']['itens_configurados_bt'])
+        n_item_atual = n_itens_mt + n_itens_bt 
+        st.subheader(f'Adicionar item {n_item_atual + 1}' )
         
-
+        # Cria as abas para MT e BT
+        tab_mt, tab_bt = st.tabs(["Média Tensão Seco", "Baixa Tensão"])
+        
+        # Conteúdo da aba MT
+        with tab_mt:
+            pagina_configuracao_MT()
+        
+        # Conteúdo da aba BT
+        with tab_bt:
+            pagina_configuracao_BT()
     
-    # Cria as abas para MT e BT
-    tab_mt, tab_bt = st.tabs(["Média Tensão", "Baixa Tensão"])
-    
-    # Conteúdo da aba MT
-    with tab_mt:
-        pagina_configuracao_MT()
-    
-    # Conteúdo da aba BT
-    with tab_bt:
-        pagina_configuracao_BT()
+    # # Inicializa o session state se necessário
+    # initialize_session_state()
+    # n_itens_mt = len(st.session_state['itens']['itens_configurados_mt'])
+    # n_itens_bt = len(st.session_state['itens']['itens_configurados_bt'])
+    # n_item_atual = n_itens_mt + n_itens_bt 
+    # st.subheader(f'Adicionar item {n_item_atual + 1}' )
     
         
 
@@ -175,7 +214,7 @@ def initialize_session_state():
             'difal': 0.0,
             'f_pobreza': 0.0,
             'local_entrega': st.session_state['dados_iniciais'].get('local_frete', ''),
-            'tipo_frete': "CIF"
+            'tipo_frete': "CIP"
         }
     
     if 'configuracao' not in st.session_state:
@@ -249,7 +288,7 @@ def render_impostos(dados_impostos: Dict[str, Any]) -> None:
             'comissao': dados_impostos.get('comissao', 5.0),
             'difal': dados_impostos.get('difal', 0.0),
             'f_pobreza': dados_impostos.get('f_pobreza', 0.0),
-            'tipo_frete': dados_impostos.get('tipo_frete', "CIF")
+            'tipo_frete': dados_impostos.get('tipo_frete', "CIP")
         }
 
     # Valores básicos
@@ -279,12 +318,12 @@ def render_impostos(dados_impostos: Dict[str, Any]) -> None:
             st.session_state['impostos']['frete'] = 0.0
             st.session_state['impostos']['tipo_frete'] = "FOB"
         else:
-            st.session_state['impostos']['tipo_frete'] = "CIF"
+            st.session_state['impostos']['tipo_frete'] = "CIP"
 
     # Usar session_state para manter o tipo de frete
     tipo_frete = st.sidebar.selectbox(
         'Tipo de Frete:', 
-        ["FOB","CIF"],
+        ["FOB","CIP"],
         key='select_tipo_frete',
         on_change=on_tipo_frete_change,
         index=0 if st.session_state['impostos']['tipo_frete'] == "FOB" else 1

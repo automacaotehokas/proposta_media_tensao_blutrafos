@@ -2,6 +2,7 @@ from docx import Document
 from typing import Dict, List
 from io import BytesIO
 from .word_tables_mt import inserir_tabelas_word, substituir_texto_documento
+from .test import formatar_numero_inteiro_ou_decimal
 import os
 import streamlit as st
 
@@ -33,15 +34,17 @@ def gerar_documento(template_path: str, dados_iniciais: Dict,
         '{{REV}}': str(dados_iniciais.get('rev', '')),
         '{{LOCAL}}': str(dados_iniciais.get('local_frete', '')),
         '{{LOCALFRETE}}': str(impostos.get('local_frete_itens', '')),
-        '{{ICMS}}': f"{impostos.get('icms', 0):.1f}%",
+        '{{ICMS}}': f"{formatar_numero_inteiro_ou_decimal(impostos.get('icms', 0))}%",
         '{{IP}}': ', '.join(set(str(item['IP']) for item in itens_configurados 
                               if item['IP'] != '00')),
+        '{{DIFAL}}': f"{formatar_numero_inteiro_ou_decimal(impostos.get('difal', 0))}" if impostos.get('difal', 0) > 0 else '',
         '{obra}': '' if not dados_iniciais.get('obra', '').strip() else 'Obra:',
         '{{RESPONSAVEL}}': st.session_state.get('usuario', ''),
         '{{GARANTIA}}': '12',
         '{{VALIDADE}}': '07',
         
     }
+
     buffer = BytesIO()
     doc = Document(template_path)
     doc = inserir_tabelas_word(doc, itens_configurados, '', replacements)

@@ -20,11 +20,17 @@ class componentsMT:
         render_impostos(dados_impostos)
         return st.session_state['impostos']
 
-    def render_item_config(item_index: int, df: pd.DataFrame, item_data: Dict[str, Any]
-                        ) -> Dict[str, Any]:
-        
+    def render_item_config(item_index: int, df: pd.DataFrame, item_data: Dict[str, Any]) -> Dict[str, Any]:
+        """Renderiza a configuração de um item MT, permitindo edição ou criação de novos itens."""
+        # Verifica se há um item em edição no session_state
+        editando_item = 'editando_item_mt' in st.session_state
 
-        # Converte df em um Dataframe
+        # Se estiver editando, carrega os dados do item em edição
+        if editando_item:
+            item_data = st.session_state.editando_item_mt['dados']
+            st.info(f"Editando item MT (ID: {st.session_state.editando_item_mt['index']})")
+
+        # Converte df em um DataFrame
         df = pd.DataFrame(df)
 
         # Seleção da descrição
@@ -32,7 +38,7 @@ class componentsMT:
         descricao_escolhida = st.selectbox(
             f'Digite ou Selecione a Descrição do Item {item_index + 1}:',
             descricao_opcoes,
-            key=f'descricao_{item_index}',
+            key=f'descricao_{item_index}',  # Chave única baseada no item_index
             index=0 if item_data['Descrição'] == "" else descricao_opcoes.index(item_data['Descrição'])
         )
         
@@ -67,7 +73,7 @@ class componentsMT:
         fator_k = st.selectbox(
             f'Selecione o Fator K do Item:',
             fator_k_opcoes,
-            key=f'fator_k_{item_index}',
+            key=f'fator_k_{item_index}',  # Chave única baseada no item_index
             index=fator_k_opcoes.index(item_data['Fator K'])
         )
         item_data['Fator K'] = fator_k
@@ -75,7 +81,7 @@ class componentsMT:
         ip = st.selectbox(
             f'Selecione o IP do Item:',
             opcoes_ip,
-            key=f'ip_{item_index}',
+            key=f'ip_{item_index}',  # Chave única baseada no item_index
             index=opcoes_ip.index(item_data['IP'])
         )
         item_data['IP'] = ip
@@ -84,37 +90,43 @@ class componentsMT:
         tensao_primaria = st.text_input(
             f'Tensão Primária do Item {item_index + 1}:',
             value=get_default_voltage_values(detalhes_item['classe_tensao'])['tensao_primaria'],
-            key=f'tensao_primaria_{item_index}'
+            key=f'tensao_primaria_{item_index}'  # Chave única baseada no item_index
         )
         item_data['Tensão Primária'] = tensao_primaria
         
         tensao_secundaria = st.text_input(
             f'Tensão Secundária do Item {item_index + 1}:',
             value=item_data['Tensão Secundária'] if item_data['Tensão Secundária'] else "",
-            key=f'tensao_secundaria_{item_index}'
+            key=f'tensao_secundaria_{item_index}'  # Chave única baseada no item_index
         )
         item_data['Tensão Secundária'] = tensao_secundaria
         
         derivacoes = st.text_input(
             f'Derivações do Item {item_index + 1}:',
             value=get_default_voltage_values(detalhes_item['classe_tensao'])['derivacoes'],
-            key=f'derivacoes_{item_index}'
+            key=f'derivacoes_{item_index}'  # Chave única baseada no item_index
         )
         item_data['Derivações'] = derivacoes
+
+        nbi = st.text_input(
+            f'NBI do Item {item_index + 1}:',
+            value=get_default_voltage_values(detalhes_item['classe_tensao'])['nbi'],
+            key=f'nbi_{item_index}'  # Chave única baseada no item_index
+        )
+        item_data['nbi'] = nbi
         
         quantidade = st.number_input(
             f'Quantidade para o Item {item_index + 1}:',
             min_value=1,
             value=item_data['Quantidade'],
             step=1,
-            key=f'qtd_{item_index}'
+            key=f'qtd_{item_index}'  # Chave única baseada no item_index
         )
         item_data['Quantidade'] = quantidade
 
         st.markdown("---")
         
-        
-        
+        # Acessórios
         acessorios_selecionados = []
         potencia = detalhes_item.get('potencia', 0)
 
@@ -127,7 +139,6 @@ class componentsMT:
         with col1:
             st.write("#### 🔧 Acessórios - Valores Fixos")
             for acessorio in ACESSORIOS_FIXOS[:len(ACESSORIOS_FIXOS)//2]:
-                # Verifica regras de potência se existirem
                 if "regra" in acessorio:
                     if "≥" in acessorio["regra"]:
                         min_val = float(acessorio["regra"].replace("≥", "").replace("kVA", ""))
@@ -138,7 +149,6 @@ class componentsMT:
                         if potencia > max_val:
                             continue
 
-                # Verificar se este acessório estava selecionado anteriormente
                 checkbox_key = f"acessorio_fixo_{item_index}_{acessorio['descricao']}"
                 default_value = any(
                     ac['tipo'] == 'VALOR_FIXO' and ac['descricao'] == acessorio['descricao']
@@ -150,7 +160,7 @@ class componentsMT:
                 
                 if st.checkbox(
                     f"{acessorio['descricao']} (+R$ {acessorio['valor']:,.2f})",
-                    key=checkbox_key,
+                    key=checkbox_key,  # Chave única baseada no item_index e descrição
                     value=st.session_state[checkbox_key]
                 ):
                     acessorios_selecionados.append({
@@ -163,7 +173,6 @@ class componentsMT:
         with col2:
             st.write("#### 🔧 Acessórios - Valores Fixos")
             for acessorio in ACESSORIOS_FIXOS[len(ACESSORIOS_FIXOS)//2:]:
-                # Mesma lógica da coluna anterior
                 if "regra" in acessorio:
                     if "≥" in acessorio["regra"]:
                         min_val = float(acessorio["regra"].replace("≥", "").replace("kVA", ""))
@@ -174,7 +183,6 @@ class componentsMT:
                         if potencia > max_val:
                             continue
 
-                # Verificar se este acessório estava selecionado anteriormente
                 checkbox_key = f"acessorio_fixo_{item_index}_{acessorio['descricao']}"
                 default_value = any(
                     ac['tipo'] == 'VALOR_FIXO' and ac['descricao'] == acessorio['descricao']
@@ -186,7 +194,7 @@ class componentsMT:
                 
                 if st.checkbox(
                     f"{acessorio['descricao']} (+R$ {acessorio['valor']:,.2f})",
-                    key=checkbox_key,
+                    key=checkbox_key,  # Chave única baseada no item_index e descrição
                     value=st.session_state[checkbox_key]
                 ):
                     acessorios_selecionados.append({
@@ -201,7 +209,6 @@ class componentsMT:
             for acessorio in ACESSORIOS_PERCENTUAIS:
                 base = "preço total" if acessorio["base_calculo"] == "PRECO_TOTAL" else "preço base"
                 
-                # Verificar se este acessório estava selecionado anteriormente
                 checkbox_key = f"acessorio_perc_{item_index}_{acessorio['descricao']}"
                 default_value = any(
                     ac['tipo'] == 'PERCENTUAL' and ac['descricao'] == acessorio['descricao']
@@ -213,7 +220,7 @@ class componentsMT:
                 
                 if st.checkbox(
                     f"{acessorio['descricao']} (+{acessorio['percentual']}% sobre {base})",
-                    key=checkbox_key,
+                    key=checkbox_key,  # Chave única baseada no item_index e descrição
                     value=st.session_state[checkbox_key]
                 ):
                     acessorios_selecionados.append({
@@ -226,6 +233,7 @@ class componentsMT:
         # Atualiza os acessórios no item_data
         item_data['acessorios'] = acessorios_selecionados
 
+        # Cálculo do preço
         calculo = CalculoItemMT(
             item_data=item_data, 
             acessorios=acessorios_selecionados
@@ -239,51 +247,32 @@ class componentsMT:
         # Exibe os preços calculados
         st.markdown("---")
 
-
-
-        if st.button("Adicionar Item MT"):
-            campos_vazios = verificar_campos_preenchidos(item_data, campos_obrigatorios=[
-                'descricao',  # Note as maiúsculas, conforme usado no item_data
-                'tensao_primaria',
-                'tensao_secundaria',
-                'derivacoes'
-            ])
-            if campos_vazios:
-                st.error(f"Por favor, preencha os seguintes campos: {', '.join(campos_vazios)}")
-            else:
-                if 'itens' not in st.session_state:
-                    st.session_state['itens'] = {
-                        'itens_configurados_mt': [],
-                        'itens_configurados_bt': []
-                    }
-                
-                # Adiciona o item_data que já contém todos os valores calculados
-                st.session_state['itens']['itens_configurados_mt'].append(item_data.copy())
-                st.success("Item MT adicionado com sucesso!")
-                
-                # Reseta o item atual
-                st.session_state['current_mt_item'] = {
-                    'Descrição': "",
-                    'Fator K': 1,
-                    'IP': '00',
-                    'Tensão Primária': None,
-                    'Tensão Secundária': None,
-                    'Derivações': None,
-                    'Quantidade': 1,
-                    'classe_tensao': None,
-                    'Perdas': None,
-                    'Potência': None,
-                    'cod_proj_custo': None,
-                    'cod_proj_caixa': None,
-                    'preco': 0.0,
-                    'p_trafo': 0.0,
-                    'valor_ip_baixo': 0.0,
-                    'valor_ip_alto': 0.0,
-                    'p_caixa': 0.0,
-                    'acessorios': [],
-                    'Preço Unitário': 0.0,
-                    'Preço Total': 0.0
-                }
+        # Botão de Salvar (apenas para edição)
+        if editando_item:
+            if st.button("Salvar Alterações", key=f"salvar_{item_index}"):  # Chave única baseada no item_index
+                # Atualiza o item no session_state
+                st.session_state.itens['itens_configurados_mt'][st.session_state.editando_item_mt['index']] = item_data.copy()
+                st.success("Item MT atualizado com sucesso!")
+                del st.session_state.editando_item_mt  # Remove o item em edição
                 st.rerun()
+        else:
+            # Botão de Adicionar (apenas para adição de novos itens)
+            if st.button("Adicionar Item MT", key=f"adicionar_{item_index}"):  # Chave única baseada no item_index
+                campos_vazios = verificar_campos_preenchidos(item_data, campos_obrigatorios=[
+                    'descricao', 'tensao_primaria', 'tensao_secundaria', 'derivacoes'
+                ])
+                if campos_vazios:
+                    st.error(f"Por favor, preencha os seguintes campos: {', '.join(campos_vazios)}")
+                else:
+                    if 'itens' not in st.session_state:
+                        st.session_state['itens'] = {
+                            'itens_configurados_mt': [],
+                            'itens_configurados_bt': []
+                        }
+                    
+                    # Adiciona o item_data que já contém todos os valores calculados
+                    st.session_state['itens']['itens_configurados_mt'].append(item_data.copy())
+                    st.success("Item MT adicionado com sucesso!")
+                    st.rerun()
 
         return item_data

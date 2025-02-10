@@ -71,7 +71,7 @@ def _render_right_column():
         st.session_state['cidades'],
         index=st.session_state['cidades'].index(st.session_state['dados_iniciais']['local_frete']) 
         if st.session_state['dados_iniciais']['local_frete'] in st.session_state['cidades'] 
-        else 0
+        else 3829
     )
     st.session_state['dados_iniciais']['local_frete'] = local_frete
 

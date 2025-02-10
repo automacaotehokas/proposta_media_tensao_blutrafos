@@ -3,6 +3,7 @@ from docx import Document
 from docx.shared import Pt, RGBColor, Cm
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.enum.table import WD_TABLE_ALIGNMENT
+from .test import formatar_numero_inteiro_ou_decimal
 from typing import Dict, List, Any
 from .word_formatter_mt import (
     set_row_height, set_column_widths, apply_paragraph_formatting,
@@ -82,6 +83,16 @@ def substituir_texto_documento(doc, replacements):
                 p.getparent().remove(p)
             except Exception as e:
                 logger.error(f"Erro ao remover parágrafo: {str(e)}")
+ 
+    # Processa cabeçalhos
+        if "{{DIFAL}}" in original_text and (
+    replacements.get("{{DIFAL}}", "").strip() in ['0.0', '0', '', '0,0']):
+            try:
+                p = paragraph._element
+                p.getparent().remove(p)
+            except Exception as e:
+                logger.error(f"Erro ao remover parágrafo: {str(e)}")
+
  
     # Processa cabeçalhos
     for section in doc.sections:
@@ -255,7 +266,7 @@ def create_custom_table_escopo(doc: Document, itens_configurados: List[Dict]) ->
         classe_tensao = item.get('classe_tensao', '').replace('kV', '').strip()
         tensao_secundaria = item.get('Tensão Secundária', 'N/A').replace('kV', '').strip()
         eficiencia = determinar_eficiencia(item['Perdas'])
-        NBI = item.get('NBI', 'N/A')
+        NBI = item.get('nbi', 'N/A')
         
         # Formatar potência
         potencia = item.get('Potência', 'N/A')
@@ -273,18 +284,27 @@ def create_custom_table_escopo(doc: Document, itens_configurados: List[Dict]) ->
         except ValueError:
             tensao_secundaria_texto = f"{tensao_secundaria_str}V"
 
-        
+        ip_text = f"IP-{item.get('IP', 'N/A')}"
 
+        # Verificar os flanges selecionados baseado nos acessórios
+        flange_at_selecionado = next((acessorio for acessorio in item.get('acessorios', [])
+                                    if acessorio['descricao'] == "Flange AT até 15KV (s/ Barramento)"), None)
+        flange_bt_selecionado = next((acessorio for acessorio in item.get('acessorios', [])
+                                    if acessorio['descricao'] == "Flange BT até 800V (s/ Barramento)"), None)
+
+        if flange_at_selecionado or flange_bt_selecionado:
+            ip_text += " com flanges"
+        
         escopo_text = (
             f"Transformador Trifásico **isolado a seco**, Classe de tensão **{classe_tensao}/1,1kV**, "
-            f"Marca e Fabricação Blutrafos, Potência: **{int(potencia_formatada)} kVA**, Fator: **K={item.get('Fator K', 'N/A')}**, "
+            f"Marca e Fabricação Blutrafos, Potência: **{(potencia_formatada)} kVA**, Fator: **K={item.get('Fator K', 'N/A')}**, "
             f"Tensão **Primária**: **{item.get('Tensão Primária', 'N/A')}kV**, Derivações: **{item.get('Derivações', 'N/A')}**, "
             f"Tensão **Secundária**: **{tensao_secundaria_texto}**, Grupo de Ligação: **Dyn-1**, "
             f"Frequência: **60Hz**, NBI: **{NBI}**, Classe de Temperatura: F (155ºC), "
             f"Elevação Temperatura média dos enrolamentos: **100ºC**, Materiais dos enrolamentos: **Alumínio**, "
             f"Altitude de Instalação: **≤1000m**, Temperatura ambiente máxima: 40°C, "
             f"Alta tensão Encapsulado em Resina Epóxi à Vácuo, Regime de Serviço: Contínuo, "
-            f"Tipo de Refrigeração: **AN** e Grau de Proteção: **IP-{item.get('IP', 'N/A')}**, "
+            f"Tipo de Refrigeração: **AN** e Grau de Proteção: **{ip_text}**, "
             f"Demais características cfe. Norma ABNT-NBR 5356/11 - Eficiência **“{eficiencia}”** e acessórios abaixo."
         )
 
@@ -313,6 +333,7 @@ def inserir_tabelas_word(doc: Document, itens_configurados: List[Dict],
     dados_iniciais = st.session_state.get('dados_iniciais', {})
     impostos = st.session_state.get('impostos', {})
 
+    logger.error("Iniciando rreplaces no documento...")
     # If no replacements provided, create default dictionary
     if replacements is None:
         replacements = {
@@ -328,22 +349,25 @@ def inserir_tabelas_word(doc: Document, itens_configurados: List[Dict],
             '{{REV}}': str(dados_iniciais.get('rev', '')),
             '{{LOCAL}}': str(dados_iniciais.get('local_frete', '')),
             '{{LOCALFRETE}}': str(impostos.get('local_frete', '')),
-            '{{ICMS}}': f"{impostos.get('icms', 0):.1f}%",
+            '{{ICMS}}': f"{formatar_numero_inteiro_ou_decimal(impostos.get('icms', 0))}",
+            '{{DIFAL}}': f"{formatar_numero_inteiro_ou_decimal(impostos.get('difal', 0))}" if impostos.get('difal', 0) > 0 else '',
             '{{IP}}': ', '.join(set(str(item['IP']) for item in itens_configurados 
                                   if item['IP'] != '00')),
             '{obra}': 'Obra:' if dados_iniciais.get('obra', '').strip() else '',
             '{{RESPONSAVEL}}': st.session_state.get('usuario', ''),
             '{{GARANTIA}}': '12',
             '{{VALIDADE}}': '07',
-            '{{TRANSPORTE}}': 'O transporte de equipamentos será realizado no formato CIF.' 
-                               if impostos.get('tipo_frete', '') == 'CIF' 
-                               else 'O transporte de equipamentos será realizado no formato FOB.',
+            '{{TRANSPORTE}}': f'CIP - {str(dados_iniciais.get('local_frete', ''))}, sobre o veículo transportador (descarga não inclusa)'
+                               if impostos.get('tipo_frete', '') == 'CIP' 
+                               else f'FOB - {str(dados_iniciais.get('local_frete', ''))}, sobre o veículo transportador (descarga não inclusa)'
         }
-
+    logger.error(f'{replacements}')
     # Substituir texto no documento
     substituir_texto_documento(doc, replacements)
+    logger.error("Substituições realizadas com sucesso!")
 
     # Inserir tabela de preços
+    logger.error("Inserindo tabela de preços...")
     for i, paragraph in enumerate(doc.paragraphs):
         if "Quadro de Preços" in paragraph.text:
             table = create_custom_table(doc, itens_configurados, observacao)
@@ -351,6 +375,7 @@ def inserir_tabelas_word(doc: Document, itens_configurados: List[Dict],
             break
 
    # Inserir tabela de escopo
+    logger.error("Inserindo tabela de escopo...")
     for i, paragraph in enumerate(doc.paragraphs):
         if "Escopo de Fornecimento" in paragraph.text:
             table_escopo = create_custom_table_escopo(doc, itens_configurados)
@@ -358,6 +383,8 @@ def inserir_tabelas_word(doc: Document, itens_configurados: List[Dict],
             break
 
     return doc
+
+    
 
 
 
@@ -390,26 +417,26 @@ def calcular_tensao_secundaria(tensao_str: str) -> str:
     except (ValueError, TypeError):
         return f"{tensao_str}V"
 
-def formatar_numero_inteiro_ou_decimal(valor):
-    """
-    Converte um número para inteiro se for um número inteiro,
-    ou mantém uma casa decimal substituindo . por , se tiver casa decimal.
+# def formatar_numero_inteiro_ou_decimal(valor):
+#     """
+#     Converte um número para inteiro se for um número inteiro,
+#     ou mantém uma casa decimal substituindo . por , se tiver casa decimal.
     
-    Exemplos:
-    1000.00 -> 1000
-    125.5 -> 125,5
-    125.50 -> 125
-    """
-    try:
-        # Converte para float para garantir formato correto
-        valor_float = float(valor)
+#     Exemplos:
+#     1000.00 -> 1000
+#     125.5 -> 125,5
+#     125.50 -> 125
+#     """
+#     try:
+#         # Converte para float para garantir formato correto
+#         valor_float = float(valor)
         
-        # Se for um número inteiro
-        if valor_float.is_integer():
-            return str(int(valor_float))
+#         # Se for um número inteiro
+#         if valor_float.is_integer():
+#             return str(int(valor_float))
         
-        # Se tiver casa decimal
-        return f"{valor_float:.1f}".replace('.', ',')
+#         # Se tiver casa decimal
+#         return f"{valor_float:.1f}".replace('.', ',')
     
-    except (ValueError, TypeError):
-        return str(valor)
+#     except (ValueError, TypeError):
+#         return str(valor)

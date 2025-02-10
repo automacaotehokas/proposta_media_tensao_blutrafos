@@ -5,6 +5,7 @@ import os
 from docx.shared import Inches
 import logging
 import streamlit as st
+from ..mt.test import formatar_numero_inteiro_ou_decimal
 
 logger=logging.getLogger(__name__)
 
@@ -174,6 +175,7 @@ def inserir_titulo_e_imagem(doc, itens_configurados):
 
 def substituir_texto_documento(doc, replacements):
     def remove_paragraph(paragraph):
+
         p = paragraph._element
         p.getparent().remove(p)
         paragraph._p = paragraph._element = None
@@ -226,6 +228,19 @@ def substituir_texto_documento(doc, replacements):
                             if old_text in run.text:
                                 run.text = run.text.replace(old_text, new_text)
 
+                        
+                if "{{DIFAL}}" in old_text and (
+                    replacements.get("{{DIFAL}}", "").strip() in ['0.0', '0', '','0,0'] 
+                ):
+                    try:
+                        p = paragraph._element
+                        p.getparent().remove(p)
+                    except Exception as e:
+                        logger.error(f"Erro ao remover parágrafo: {str(e)}")      
+
+
+ 
+
 
 def inserir_tabelas_word(doc, itens_configurados, observacao):
     inserir_titulo_e_imagem(doc, itens_configurados)
@@ -246,14 +261,15 @@ def inserir_tabelas_word(doc, itens_configurados, observacao):
         '{{REV}}': str(dados_iniciais.get('rev', '')),
         '{{LOCAL}}': str(dados_iniciais.get('local_frete', '')),
         '{{LOCALFRETE}}': str(impostos.get('local_frete', '')),
-        '{{ICMS}}': f"{impostos.get('icms', 0):.1f}%",
+        '{{ICMS}}': f"{formatar_numero_inteiro_ou_decimal(impostos.get('icms', 0))}%",
+        '{{DIFAL}}': f"{formatar_numero_inteiro_ou_decimal(impostos.get('difal', 0))}" if impostos.get('difal', 0) > 0 else '',
         '{{IP}}': ', '.join(set(str(item['IP']) for item in itens_configurados 
                               if item['IP'] != '00')),
         '{obra}': '' if not dados_iniciais.get('obra', '').strip() else 'Obra:',
         '{{RESPONSAVEL}}': st.session_state.get('usuario', ''),
         '{{GARANTIA}}': '12',
         '{{VALIDADE}}': '07',
-        '{{TRANSPORTE}}': 'O transporte de equipamentos será realizado no formato CIF.' if impostos.get('tipo_frete', '') == 'CIF' else 'O transporte de equipamentos será realizado no formato FOB.',
+        '{{TRANSPORTE}}': f'CIP - {str(dados_iniciais.get('local_frete', ''))}, sobre o veículo transportador (descarga não inclusa)' if impostos.get('tipo_frete', '') == 'CIP' else f'FOB - {str(dados_iniciais.get('local_frete', ''))}, sobre o veículo transportador (descarga não inclusa)',
     }
     import logging
     logging.debug("Iniciando a função 'inserir_tabelas_word'.")
