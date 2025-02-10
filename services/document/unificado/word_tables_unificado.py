@@ -270,7 +270,9 @@ def gerar_documento(template_path, dados_iniciais, impostos, itens_mt, itens_bt)
             '{{IP}}': '',
             '{obra}': '' if not dados_iniciais.get('obra', '').strip() else 'Obra',
             '{{VALOR_TOTAL}}': formatar_numero_brasileiro(st.session_state.get('valor_totalizado', 0)),
-            '{{TRANSPORTE}}': f'CIP - {str(dados_iniciais.get('local_frete', ''))}, sobre o veículo transportador (descarga não inclusa)' if impostos.get('tipo_frete', '') == 'CIP' else f'FOB - {str(dados_iniciais.get('local_frete', ''))}, sobre o veículo transportador (descarga não inclusa)',
+            '{{TRANSPORTE}}': f"CIP - {str(dados_iniciais.get('local_frete', ''))}" 
+                               if impostos.get('tipo_frete', '') == 'CIP'
+                               else f"FOB - {str(dados_iniciais.get('local_frete', ''))}",       
             '{{RESPONSAVEL}}': st.session_state.get('usuario', '')
         }
 
