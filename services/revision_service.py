@@ -297,7 +297,7 @@ class StreamlitApiService:
                        id_proposta: str, 
                        escopo: str, 
                        valor: float, 
-                       numero_revisao: int, 
+                       revisao: int, 
                        dados: Dict) -> Dict:
         """
         Insere uma nova revisão via API do Django
@@ -340,7 +340,7 @@ class StreamlitApiService:
             'valor': round(valor, 2),
             'valor_mt': round(valor_mt, 2),
             'valor_bt': round(valor_bt, 2),
-            'numero_revisao': int(numero_revisao),
+            'revisao': int(revisao),
             'conteudo': dados_serializaveis,
             'comentario': comentario,
             'usuario': usuario
@@ -473,7 +473,7 @@ class StreamlitApiService:
                         id_proposta=st.session_state['id_proposta'],
                         escopo=escopo,
                         valor=valor_total,
-                        numero_revisao=int(st.session_state['dados_iniciais']['rev']),
+                        revisao=int(st.session_state['dados_iniciais']['rev']),
                         dados=dados_serializados
                     )
                     st.session_state['id_revisao'] = resultado.get('id')
