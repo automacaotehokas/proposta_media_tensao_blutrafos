@@ -242,53 +242,51 @@ class StreamlitApiService:
 
         return True
 
-    def somar_potencias_transformadores(self, itens_configurados_bt, itens_configurados_mt):
-        """
-        Soma as potências dos transformadores MT e BT
-        
-        Args:
-            itens_configurados_bt (list): Lista de itens BT
-            itens_configurados_mt (list): Lista de itens MT
-        
-        Returns:
-            str: Potência total formatada em MVA
-        """
-        soma_potencia = 0
-        logger.info("Somando potências dos transformadores...")
-        
-        # Soma potências BT
+    def calcular_potencia_bt(self, itens_configurados_bt):
+        """Calcula a potência total dos transformadores BT"""
+        soma = 0
         if itens_configurados_bt and isinstance(itens_configurados_bt, list):
             for item in itens_configurados_bt:
                 try:
                     if isinstance(item, dict) and "potencia_numerica" in item:
-                        potencia = float(item["potencia_numerica"])
-                        soma_potencia += potencia
+                        soma += float(item["potencia_numerica"])
                 except (ValueError, TypeError) as e:
-                    logger.warning(f"Erro ao converter potência BT: {e}")
-                    continue
-        
-        # Soma potências MT
+                    self.logger.warning(f"Erro ao converter potência BT: {e}")
+        return soma
+
+    def calcular_potencia_mt(self, itens_configurados_mt):
+        """Calcula a potência total dos transformadores MT"""
+        soma = 0
         if itens_configurados_mt and isinstance(itens_configurados_mt, list):
             for item in itens_configurados_mt:
                 try:
                     if isinstance(item, dict) and "Potência" in item:
-                        potencia_str = str(item["Potência"])
-                        # Remove caracteres não numéricos exceto ponto
-                        potencia_str = ''.join(c for c in potencia_str if c.isdigit() or c == '.')
-                        potencia = float(potencia_str)
-                        soma_potencia += potencia
+                        potencia_str = ''.join(c for c in str(item["Potência"]) if c.isdigit() or c == '.')
+                        soma += float(potencia_str)
                 except (ValueError, TypeError, AttributeError) as e:
-                    logger.warning(f"Erro ao converter potência MT: {e}")
-                    continue
+                    self.logger.warning(f"Erro ao converter potência MT: {e}")
+        return soma
+
+    def somar_potencias_transformadores(self, itens_configurados_bt, itens_configurados_mt, tipo='ambos'):
+        """
+        Calcula a potência total de acordo com o tipo especificado
+        
+        Parâmetros:
+        tipo (str): 'bt', 'mt' ou 'ambos' (padrão)
+        """
+        soma_total = 0
+        
+        if tipo in ('bt', 'ambos'):
+            soma_total += self.calcular_potencia_bt(itens_configurados_bt)
+            
+        if tipo in ('mt', 'ambos'):
+            soma_total += self.calcular_potencia_mt(itens_configurados_mt)
 
         try:
-            # Converte para MVA (dividindo por 1000) e formata o número
-            soma_potencia_mva = soma_potencia / 1000
-            soma_potencia_formatada = "{:.2f}".format(soma_potencia_mva).replace(".", ",")
-            logger.info(f"Potência total calculada: {soma_potencia_formatada} MVA")
-            return f"{soma_potencia_formatada} MVA"
+            soma_mva = soma_total / 1000
+            return f"{soma_mva:,.2f}".replace(".", ",").replace(",", ".", 1) + " MVA"
         except Exception as e:
-            logger.error(f"Erro ao formatar potência total: {e}")
+            self.logger.error(f"Erro ao formatar potência: {e}")
             return "0,00 MVA"
 
     def inserir_revisao(self, 
@@ -354,6 +352,7 @@ class StreamlitApiService:
                           id_proposta: str, 
                           id_revisao: str, 
                           escopo_mt: str, 
+                          escopo_bt: str, 
                           valor: float, 
                           dados: Dict) -> Dict:
         """
@@ -393,6 +392,7 @@ class StreamlitApiService:
             'id_proposta': str(id_proposta),
             'id_revisao': str(id_revisao),
             'escopo_mt': str(escopo_mt),
+            'escopo_bt': str(escopo_bt),
             'valor': round(valor, 2),
             'valor_mt': round(valor_mt, 2),
             'valor_bt': round(valor_bt, 2),
@@ -444,6 +444,10 @@ class StreamlitApiService:
 
             escopo = self.somar_potencias_transformadores(st.session_state.get('itens', {}).get('itens_configurados_bt', []),
                                                           st.session_state.get('itens', {}).get('itens_configurados_mt', []))
+            
+            escopo_mt = object.somar_potencias_transformadores(itens_bt, itens_mt, tipo='mt')
+
+            escopo_bt = object.somar_potencias_transformadores(itens_bt, itens_mt, tipo='bt')
 
             is_nova_revisao = st.session_state.get('tipo_proposta') == "Nova revisão"
             
@@ -472,6 +476,8 @@ class StreamlitApiService:
                         usuario=st.session_state.get('usuario', ''),
                         id_proposta=st.session_state['id_proposta'],
                         escopo=escopo,
+                        escopo_mt=escopo_mt,
+                        escopo_bt=escopo_bt,
                         valor=valor_total,
                         revisao=int(st.session_state['dados_iniciais']['rev']),
                         dados=dados_serializados
@@ -485,6 +491,8 @@ class StreamlitApiService:
                         id_proposta=st.session_state['id_proposta'],
                         id_revisao=st.session_state.get('id_revisao') or os.getenv('ID_REVISAO_TESTE'),
                         escopo=escopo,
+                        escopo_mt=escopo_mt,
+                        escopo_bt=escopo_bt,
                         valor=valor_total,
                         dados=dados_serializados
                     )

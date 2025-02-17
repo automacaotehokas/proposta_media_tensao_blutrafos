@@ -30,7 +30,7 @@ def pagina_configuracao_eventos():
         st.markdown("---")
         st.header('Configuração de Desvios')
         ComponentsPagamentoEntrega.criar_input_desvios()
-        st.write(st.session_state)
+
     else:
         st.warning("Nenhum item configurado encontrado. Configure os itens primeiro.")
 
