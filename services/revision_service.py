@@ -346,7 +346,7 @@ class StreamlitApiService:
             'usuario': usuario
         }
         
-        return self._make_request('POST', '/api/streamlit/inserir_revisao/', payload)
+        return self._make_request('POST', 'api/streamlit/inserir_revisao/', payload)
 
     def atualizar_revisao(self, 
                           comentario: str,
@@ -401,7 +401,7 @@ class StreamlitApiService:
             'usuario': usuario
         }
         
-        return self._make_request('POST', '/api/streamlit/atualizar_revisao/', payload)
+        return self._make_request('POST', 'api/streamlit/atualizar_revisao/', payload)
 
     def salvar_revisao_banco(self) -> bool:
         logger.info("Salvando revisão no banco de dados...")

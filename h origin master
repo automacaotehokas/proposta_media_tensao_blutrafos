@@ -1,0 +1,568 @@
+[33mcommit 9d0fb0e8bebdcee3edc25d8eb435195f17daebc5[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m)[m
+Author: automacaotehokas <eric.martins@tehokas.com.br>
+Date:   Fri Feb 14 18:07:29 2025 -0300
+
+    correcao url
+
+[33mcommit 2936e6710a05948e5c0306e9398d3b0e37a90229[m
+Author: automacaotehokas <eric.martins@tehokas.com.br>
+Date:   Mon Feb 10 09:06:53 2025 -0300
+
+    correção tambem no transporte unificado
+
+[33mcommit 43248698014ecbd8d160c21bbb4dfd8796a53b65[m
+Author: automacaotehokas <eric.martins@tehokas.com.br>
+Date:   Mon Feb 10 09:01:00 2025 -0300
+
+    correção no transporte replace do BT também
+
+[33mcommit 3f5ed4c16000cc790dbb7ff4850a6781d53bae98[m
+Author: automacaotehokas <eric.martins@tehokas.com.br>
+Date:   Mon Feb 10 08:57:04 2025 -0300
+
+    correção novamente no replace de transporte
+
+[33mcommit 81775794258203efbeee58347101f833608174c0[m
+Author: automacaotehokas <eric.martins@tehokas.com.br>
+Date:   Mon Feb 10 08:51:39 2025 -0300
+
+    correção do replace de transporte MT
+
+[33mcommit db5acfe6515f4d1c881644a4341e57e39f8675be[m
+Author: automacaoblutrafos <eduardo.poli@blutrafos.com.br>
+Date:   Mon Feb 10 07:58:43 2025 -0300
+
+    alteracoes
+
+[33mcommit 1df880bf939177a43e30d2971ce28864fb9bbfb3[m
+Author: automacaoblutrafos <eduardo.poli@blutrafos.com.br>
+Date:   Mon Feb 10 07:57:15 2025 -0300
+
+    edição feita
+
+[33mcommit 88daad143d82a36073d567cbed067c6cd5fed384[m
+Author: automacaotehokas <eric.martins@tehokas.com.br>
+Date:   Sun Feb 2 23:06:09 2025 -0300
+
+    1
+
+[33mcommit 8c311ba2052864b186ce4d9c5955aa6d5fb0b862[m
+Author: automacaotehokas <eric.martins@tehokas.com.br>
+Date:   Sun Feb 2 22:49:33 2025 -0300
+
+    1
+
+[33mcommit c00986d333d460d4d2cc3d5d88f465cdcd33b77f[m[33m ([m[1;31morigin/branc_de_eric[m[33m)[m
+Author: automacaotehokas <eric.martins@tehokas.com.br>
+Date:   Sun Feb 2 21:33:34 2025 -0300
+
+    correção nas importações
+
+[33mcommit 8dfc748815736f8de56fdbf11c131a1c71dd2d5b[m
+Author: automacaotehokas <eric.martins@tehokas.com.br>
+Date:   Sun Feb 2 21:10:50 2025 -0300
+
+    correção nas importações
+
+[33mcommit d14945ed27c3bc33f02ef1895b70837ffb2b2228[m
+Author: automacaotehokas <eric.martins@tehokas.com.br>
+Date:   Sun Feb 2 20:58:07 2025 -0300
+
+    correção nas importações
+
+[33mcommit 50977e275d74a4a38c4ae9fed9a25fc32bbf2e65[m
+Author: automacaotehokas <eric.martins@tehokas.com.br>
+Date:   Sun Feb 2 20:52:36 2025 -0300
+
+    correção nas importações
+
+[33mcommit 5a4b4048bc3f0a9032615b10f5850385c621929a[m
+Author: automacaotehokas <eric.martins@tehokas.com.br>
+Date:   Sun Feb 2 20:36:02 2025 -0300
+
+    correção nas importações
+
+[33mcommit cccc61ec17a2b271496fa482601467ba26f0d3b6[m
+Merge: c84a3f2 cff68f1
+Author: automacaotehokas <eric.martins@tehokas.com.br>
+Date:   Sun Feb 2 19:21:41 2025 -0300
+
+    versao implantação
+
+[33mcommit cff68f15ce1dfb697461b579fa8454aa0f38449e[m
+Merge: a170b0c 8ebd7a2
+Author: automacaotehokas <eric.martins@tehokas.com.br>
+Date:   Sat Feb 1 15:56:12 2025 -0300
+
+    Resolvendo conflitos de __pycache__
+
+[33mcommit 8ebd7a20b1d532205a8c8cb3839b4e9ca4be3f0f[m
+Author: automacaoblutrafos <eduardo.poli@blutrafos.com.br>
+Date:   Sat Feb 1 10:31:53 2025 -0300
+
+    arrumando a função de inserir tabelas separadas
+
+[33mcommit c84a3f202428b6d58a2e2ec3c9b68de0459246b1[m
+Author: automacaotehokas <eric.martins@tehokas.com.br>
+Date:   Fri Jan 31 19:00:17 2025 -0300
+
+    versao
+
+[33mcommit 2a3f3e2d2dd9596f43087358dc1a9567b9cb7709[m
+Author: automacaoblutrafos <eduardo.poli@blutrafos.com.br>
+Date:   Fri Jan 31 18:02:25 2025 -0300
+
+    alteracoes
+
+[33mcommit 871d2e016c7bf0dbf75477859e96bea08179b3af[m
+Author: automacaoblutrafos <eduardo.poli@blutrafos.com.br>
+Date:   Fri Jan 31 09:48:41 2025 -0300
+
+    alteracoes
+
+[33mcommit a170b0c94cd4122125dbbeff68315dfa6fe0036f[m
+Merge: 3f3d4a4 f3c30af
+Author: automacaotehokas <eric.martins@tehokas.com.br>
+Date:   Thu Jan 30 19:03:16 2025 -0300
+
+    Merge branch 'master' of https://github.com/automacaotehokas/proposta_media_tensao_blutrafos
+
+[33mcommit 3f3d4a4fb8f92773093f977845872be6adfa276c[m
+Author: automacaotehokas <eric.martins@tehokas.com.br>
+Date:   Thu Jan 30 18:41:30 2025 -0300
+
+    alteração no revision service
+
+[33mcommit f3c30afe5478f4279955ded078f3f6d859a66128[m
+Author: automacaoblutrafos <eduardo.poli@blutrafos.com.br>
+Date:   Thu Jan 30 18:01:53 2025 -0300
+
+    alteracoes
+
+[33mcommit a1fcd96bbe614944864fad6385410179f38529b8[m
+Author: automacaotehokas <eric.martins@tehokas.com.br>
+Date:   Wed Jan 29 17:58:27 2025 -0300
+
+    Merge branch 'master' of https://github.com/automacaotehokas/proposta_media_tensao_blutrafos
+
+[33mcommit 37907c7633e44757cda243f4ff7eee1ae857dc89[m
+Author: automacaotehokas <eric.martins@tehokas.com.br>
+Date:   Wed Jan 29 14:21:13 2025 -0300
+
+    Atualizando Home.py
+
+[33mcommit 2e51c53b67aa9d8521ee5fbbba7e072faefa9041[m
+Author: automacaoblutrafos <eduardo.poli@blutrafos.com.br>
+Date:   Wed Jan 29 12:06:49 2025 -0300
+
+    alteracoes
+
+[33mcommit 2310155bec83a9698c96901804b56014e76666e9[m
+Author: automacaoblutrafos <eduardo.poli@blutrafos.com.br>
+Date:   Wed Jan 29 11:42:54 2025 -0300
+
+    alteracoes
+
+[33mcommit 45d20ef899a68fbfe7c0098b55f1bae57002f6d0[m
+Author: automacaotehokas <eric.martins@tehokas.com.br>
+Date:   Wed Jan 29 10:01:41 2025 -0300
+
+    1
+
+[33mcommit 07c3c89f299eb23825ff4d6e6b7e3ac95ce7aed6[m
+Author: automacaoblutrafos <eduardo.poli@blutrafos.com.br>
+Date:   Wed Jan 29 09:21:36 2025 -0300
+
+    alteracoes
+
+[33mcommit 06ff60d6a5355c629ee1bf5b08a15d899c4e4180[m
+Merge: 0064711 63f55fd
+Author: automacaotehokas <eric.martins@tehokas.com.br>
+Date:   Wed Jan 29 08:04:01 2025 -0300
+
+    1
+
+[33mcommit 63f55fd6e46cb92cf2efa0a67e7da89ce0c1b079[m
+Author: automacaoblutrafos <eduardo.poli@blutrafos.com.br>
+Date:   Tue Jan 28 16:29:07 2025 -0300
+
+    blah3
+
+[33mcommit 0064711d8399b45e3e86b1040824f651163ed7ab[m
+Author: automacaotehokas <eric.martins@tehokas.com.br>
+Date:   Tue Jan 28 16:14:08 2025 -0300
+
+    versao
+
+[33mcommit 8ee156dea4a7d30fceca6584c0fa438314b533c0[m
+Author: automacaotehokas <eric.martins@tehokas.com.br>
+Date:   Fri Jan 24 08:38:22 2025 -0300
+
+    versao pre-pronta
+
+[33mcommit 235b107072fe8488137b5cab27c27bbb91ca5464[m[33m ([m[1;31morigin/corrigir_eventos_pagamento[m[33m)[m
+Author: automacaotehokas <eric.martins@tehokas.com.br>
+Date:   Tue Jan 21 17:09:58 2025 -0300
+
+    versao para producao
+
+[33mcommit df4a8da0f728fd7813b30a3737af294ce2193aa0[m
+Author: automacaotehokas <eric.martins@tehokas.com.br>
+Date:   Tue Dec 10 10:32:15 2024 -0300
+
+    retirar locale,pois nao tinha suporte p/ o python atual e adicionar babel
+
+[33mcommit 023651a23ef977e6f5733140d51d2c7edca98893[m
+Author: automacaotehokas <eric.martins@tehokas.com.br>
+Date:   Tue Dec 10 10:23:05 2024 -0300
+
+    adição do locale
+
+[33mcommit eee8119416385f0f22671e410f882dddcf445893[m
+Author: automacaotehokas <eric.martins@tehokas.com.br>
+Date:   Mon Dec 9 15:41:54 2024 -0300
+
+    adição do cod_custo no EXTRATO
+
+[33mcommit d4b2bc658f16aeb748cc82a58e18cfb555045e66[m
+Author: automacaotehokas <eric.martins@tehokas.com.br>
+Date:   Mon Dec 9 14:11:21 2024 -0300
+
+    correção da área adm
+
+[33mcommit 535cbc0e0938670a2f9ff94d42cac7b19413cd25[m
+Author: automacaotehokas <eric.martins@tehokas.com.br>
+Date:   Tue Nov 26 11:14:35 2024 -0300
+
+    NBI ERRADO
+
+[33mcommit e36016ccd8c0b6ba6bfc559845cc97295193df0e[m
+Merge: 1422b39 dba93e7
+Author: automacaotehokas <eric.martins@tehokas.com.br>
+Date:   Fri Nov 22 14:59:36 2024 -0300
+
+    1
+
+[33mcommit 1422b39e708f01debdb866524a82a844a9c54a43[m
+Author: automacaotehokas <eric.martins@tehokas.com.br>
+Date:   Fri Nov 22 14:56:58 2024 -0300
+
+    NBI
+
+[33mcommit dba93e70d5018ac26624720dbfbe502bab030cfb[m
+Author: Tehokas Soluções <eric.martins@tehokas.com.br>
+Date:   Fri Nov 22 08:34:34 2024 -0300
+
+    Added Dev Container Folder
+
+[33mcommit 36a9227c95694fa85229526207a12c246b79aece[m
+Author: automacaotehokas <eric.martins@tehokas.com.br>
+Date:   Thu Nov 14 10:08:27 2024 -0300
+
+    telefone
+
+[33mcommit acff16e48164f6b5f1b6d321c33b486aac57613c[m
+Author: automacaotehokas <eric.martins@tehokas.com.br>
+Date:   Thu Nov 14 09:36:34 2024 -0300
+
+    erro 2 itens
+
+[33mcommit b5311251a2b6b8a9f9a1bce467ea7ff7eb65411a[m
+Author: automacaotehokas <eric.martins@tehokas.com.br>
+Date:   Fri Nov 8 15:43:02 2024 -0300
+
+    Alteração no % da caixa, difal, f_pobreza e exclusão de replacs que não foram preenchidos
+
+[33mcommit ed30567dd2ab7854b3e1b918ddd64690739e109c[m
+Author: automacaotehokas <eric.martins@tehokas.com.br>
+Date:   Fri Nov 8 15:09:32 2024 -0300
+
+    Mensagem descritiva sobre suas alterações
+
+[33mcommit b012a6b9648355b490ca040d1184dbe46bcb3fbe[m
+Author: Tehokas Soluções <eric.martins@tehokas.com.br>
+Date:   Thu Nov 7 10:58:18 2024 -0300
+
+    a
+
+[33mcommit 930696b7215bffd4682f311cb2cd0c8da9dfb820[m
+Author: Tehokas Soluções <eric.martins@tehokas.com.br>
+Date:   Thu Nov 7 10:42:11 2024 -0300
+
+    correcao tensao secundaria
+
+[33mcommit 29e6fdd88a9a7c363478ee486e96f617d4d6bef0[m
+Author: Tehokas Soluções <eric.martins@tehokas.com.br>
+Date:   Thu Nov 7 10:37:14 2024 -0300
+
+    numpy
+
+[33mcommit bd68ee62c8ce3bfef36939338d37ee660db999fb[m
+Author: Tehokas Soluções <eric.martins@tehokas.com.br>
+Date:   Mon Oct 21 17:58:44 2024 -0300
+
+    1
+
+[33mcommit 60f1fc0872ccd83dffd34ba302e322a0257c2d44[m
+Author: Tehokas Soluções <eric.martins@tehokas.com.br>
+Date:   Mon Oct 21 17:44:16 2024 -0300
+
+    tabela
+
+[33mcommit 132b6f120ae2ff9b0fb15cb8b76ee0887f4c478a[m
+Author: Tehokas Soluções <eric.martins@tehokas.com.br>
+Date:   Mon Oct 21 17:37:14 2024 -0300
+
+    perda
+
+[33mcommit 602c149861d3f0eafcc228873390286816803a3d[m
+Author: Tehokas Soluções <eric.martins@tehokas.com.br>
+Date:   Mon Oct 21 11:49:13 2024 -0300
+
+    virgulas
+
+[33mcommit 53c972cd0242522314f08f507ce48f83008d9b66[m
+Author: Tehokas Soluções <eric.martins@tehokas.com.br>
+Date:   Mon Oct 21 11:43:37 2024 -0300
+
+    1
+
+[33mcommit 20af41f69fbbeeb614e8fd57ac188e96f0dc40ef[m
+Author: Tehokas Soluções <eric.martins@tehokas.com.br>
+Date:   Mon Oct 21 11:35:40 2024 -0300
+
+    formato potencia
+
+[33mcommit 082e266e90bac785796f714c31985d910c3e2b99[m
+Author: Tehokas Soluções <eric.martins@tehokas.com.br>
+Date:   Mon Oct 21 11:09:44 2024 -0300
+
+    int preco unitario
+
+[33mcommit 453a02e83513257820ae9ccb85bea4b7d00d1d2c[m
+Author: Tehokas Soluções <eric.martins@tehokas.com.br>
+Date:   Mon Oct 21 11:08:56 2024 -0300
+
+    comissao
+
+[33mcommit 401ee8b9ae954905b20b9889f9250caa5c153a57[m
+Author: Tehokas Soluções <eric.martins@tehokas.com.br>
+Date:   Thu Oct 17 10:51:49 2024 -0300
+
+    1
+
+[33mcommit 94f43029b8a7471d595c302aaf7bcae48d89fdb8[m
+Author: Tehokas Soluções <eric.martins@tehokas.com.br>
+Date:   Thu Oct 17 10:42:57 2024 -0300
+
+    1
+
+[33mcommit 561faa31be011575a39b547c242b7aa488b07153[m
+Author: Tehokas Soluções <eric.martins@tehokas.com.br>
+Date:   Thu Oct 17 10:35:18 2024 -0300
+
+    1
+
+[33mcommit 6144717d14212781442df60e70bdbbc2849bf15a[m
+Author: Tehokas Soluções <eric.martins@tehokas.com.br>
+Date:   Thu Oct 17 10:24:13 2024 -0300
+
+    agr vai
+
+[33mcommit 731b69f3f746eae3418b35c50499c05e0253630b[m
+Author: Tehokas Soluções <eric.martins@tehokas.com.br>
+Date:   Thu Oct 17 10:14:57 2024 -0300
+
+    1
+
+[33mcommit 6c088a7b5df08a33edbc661a8f5b0c72a6e83b6c[m
+Author: Tehokas Soluções <eric.martins@tehokas.com.br>
+Date:   Thu Oct 17 10:04:26 2024 -0300
+
+    1
+
+[33mcommit a65def5d38501ed53ec3bc2ac93623bc316b841a[m
+Author: Tehokas Soluções <eric.martins@tehokas.com.br>
+Date:   Thu Oct 17 10:00:09 2024 -0300
+
+    1
+
+[33mcommit 6d7d27597e01dd9218b8746d93add11ea6d5c1fc[m
+Author: Tehokas Soluções <eric.martins@tehokas.com.br>
+Date:   Thu Oct 17 09:48:53 2024 -0300
+
+    1
+
+[33mcommit 32f34c3b7c2c81434eaff5e321072286caf6d8d2[m
+Author: Tehokas Soluções <eric.martins@tehokas.com.br>
+Date:   Thu Oct 17 09:46:03 2024 -0300
+
+    1
+
+[33mcommit 1ffa28f3371037420ca271fe023cc5703a47e694[m
+Author: Tehokas Soluções <eric.martins@tehokas.com.br>
+Date:   Thu Oct 17 09:23:32 2024 -0300
+
+    1
+
+[33mcommit 33a60349a73f3cd74bea38da15c5316fcefd0c85[m
+Author: Tehokas Soluções <eric.martins@tehokas.com.br>
+Date:   Thu Oct 17 09:16:37 2024 -0300
+
+    1
+
+[33mcommit 069cdb9e3567b9e2b66c3733457a0a9fc63a8221[m
+Author: Tehokas Soluções <eric.martins@tehokas.com.br>
+Date:   Thu Oct 17 09:07:59 2024 -0300
+
+    1
+
+[33mcommit 5fc88fe238294d0ec775199a84ec512dfcd7805e[m
+Author: Tehokas Soluções <eric.martins@tehokas.com.br>
+Date:   Thu Oct 17 09:01:21 2024 -0300
+
+    1
+
+[33mcommit 5b65eb2630037b90d111dd2de729c2a22a3c4e75[m
+Author: Tehokas Soluções <eric.martins@tehokas.com.br>
+Date:   Thu Oct 17 08:47:50 2024 -0300
+
+    1
+
+[33mcommit 3c8579f8cb8c5603d0855efc2adbcb0cee383884[m
+Author: Tehokas Soluções <eric.martins@tehokas.com.br>
+Date:   Thu Oct 17 08:42:37 2024 -0300
+
+    1
+
+[33mcommit a3c4a13fab64b774537aaddbd2bbe78c82558b82[m
+Author: Tehokas Soluções <eric.martins@tehokas.com.br>
+Date:   Thu Oct 17 08:37:12 2024 -0300
+
+    1
+
+[33mcommit 81e816b1a6388af96d31bec4a29d4bf5f3416702[m
+Author: Tehokas Soluções <eric.martins@tehokas.com.br>
+Date:   Thu Oct 17 08:35:44 2024 -0300
+
+    1
+
+[33mcommit 3f9c71f12abed8a98506c458bf9b1810abc7103d[m
+Author: Tehokas Soluções <eric.martins@tehokas.com.br>
+Date:   Thu Oct 17 08:24:01 2024 -0300
+
+    111
+
+[33mcommit 02a0a20d6eb4e0f699f6eddfbd9547839eaa7607[m
+Author: Tehokas Soluções <eric.martins@tehokas.com.br>
+Date:   Thu Oct 17 08:00:32 2024 -0300
+
+    1
+
+[33mcommit e11c5cbcb324456cbcbf45b272755547b12cf77e[m
+Author: Tehokas Soluções <eric.martins@tehokas.com.br>
+Date:   Wed Oct 16 17:14:34 2024 -0300
+
+    final
+
+[33mcommit 3e76b492aebc012941af09be2350130501377227[m
+Author: Tehokas Soluções <eric.martins@tehokas.com.br>
+Date:   Wed Oct 16 16:52:59 2024 -0300
+
+    1
+
+[33mcommit 87c3bbc4dd6895715259cc3d94df3681474d6556[m
+Author: Tehokas Soluções <eric.martins@tehokas.com.br>
+Date:   Wed Oct 16 16:03:00 2024 -0300
+
+    aaa
+
+[33mcommit 74018d940288ce6d26af04f088f5244ddd69421c[m
+Author: Tehokas Soluções <eric.martins@tehokas.com.br>
+Date:   Wed Oct 16 15:34:11 2024 -0300
+
+    111
+
+[33mcommit b6f366da34a666ef67b2093b12e08c7f36c9a66b[m
+Author: Tehokas Soluções <eric.martins@tehokas.com.br>
+Date:   Wed Oct 16 15:31:17 2024 -0300
+
+    1
+
+[33mcommit 071624b8429995af5ee48477d6eb743bee6a5594[m
+Author: Tehokas Soluções <eric.martins@tehokas.com.br>
+Date:   Wed Oct 16 15:23:55 2024 -0300
+
+    1
+
+[33mcommit e1b1048e5171ed8262c0e0e68551777fd8d16169[m
+Author: Tehokas Soluções <eric.martins@tehokas.com.br>
+Date:   Wed Oct 16 15:19:55 2024 -0300
+
+    aaa
+
+[33mcommit 8acfe14e6d4b2eb20cba8e061669e8fc3aaa5cfb[m
+Author: Tehokas Soluções <eric.martins@tehokas.com.br>
+Date:   Wed Oct 16 15:12:41 2024 -0300
+
+    1
+
+[33mcommit 79a4358eac7d1b428a636306b48e2ce4cbe5b37d[m
+Author: Tehokas Soluções <eric.martins@tehokas.com.br>
+Date:   Wed Oct 16 15:03:41 2024 -0300
+
+    n aguento mais
+
+[33mcommit f626b119914df4a385077e7b8a6dca65f13ba53c[m
+Author: Tehokas Soluções <eric.martins@tehokas.com.br>
+Date:   Wed Oct 16 14:56:12 2024 -0300
+
+    1
+
+[33mcommit cad10f38b6519f0305b49e11693b22078ae8a39a[m
+Author: Tehokas Soluções <eric.martins@tehokas.com.br>
+Date:   Wed Oct 16 14:49:15 2024 -0300
+
+    SENHA
+
+[33mcommit 9d4164845bbacb5b2d4efd48776e2072d91033a6[m
+Author: Tehokas Soluções <eric.martins@tehokas.com.br>
+Date:   Wed Oct 16 14:45:33 2024 -0300
+
+    agr vai
+
+[33mcommit cb164e2b04af47422962108dc6e6fb3ed3be8306[m
+Author: Tehokas Soluções <eric.martins@tehokas.com.br>
+Date:   Wed Oct 16 14:42:16 2024 -0300
+
+    top
+
+[33mcommit 434d999231bc201a1c30e109a687af95196d6bec[m
+Author: Tehokas Soluções <eric.martins@tehokas.com.br>
+Date:   Wed Oct 16 14:39:18 2024 -0300
+
+    adm
+
+[33mcommit 563d516566bcc841d98b264b4f0940b1dcced7f1[m
+Author: Tehokas Soluções <eric.martins@tehokas.com.br>
+Date:   Wed Oct 16 14:32:45 2024 -0300
+
+    agr vai
+
+[33mcommit b5cb3f3715d13c553969050328e7c87f2da9fc10[m
+Author: Tehokas Soluções <eric.martins@tehokas.com.br>
+Date:   Wed Oct 16 14:27:45 2024 -0300
+
+    ADM
+
+[33mcommit 3ce63453758044776fdf432d4fbef9d9ca58ea54[m
+Author: Tehokas Soluções <eric.martins@tehokas.com.br>
+Date:   Wed Oct 16 14:16:34 2024 -0300
+
+    adm
+
+[33mcommit 8ee5216852a66c9478b1dc09c4577cbac8381673[m
+Author: Tehokas Soluções <eric.martins@tehokas.com.br>
+Date:   Wed Oct 16 14:12:52 2024 -0300
+
+    adm
