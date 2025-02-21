@@ -30,14 +30,18 @@ def selecionar_tipo_proposta():
     """Função para selecionar se é nova revisão ou atualização"""
     params = st.query_params
     
-    # Verifica se está rodando no localhost:8501
-    if st.get_option('server.port') == 8501:
-        revisao_id = os.getenv("ID_REVISAO_TESTE")
+    if os.getenv('ENVIRONMENT') == 'production':
+        id_proposta = params.get('id_proposta')
+        id_revisao = params.get('id_revisao')
+        token = params.get('token')
     else:
-        revisao_id = params.get("id_revisao")
+        # Ambiente de desenvolvimento ou local
+        id_proposta = os.getenv("ID_PROPOSTA_TESTE")
+        id_revisao = os.getenv("ID_REVISAO_TESTE")
+        token = os.getenv("TOKEN_TESTE")
     
     # Se não tem id_revisao, define automaticamente como nova revisão
-    if not revisao_id:
+    if not id_revisao:
         if 'tipo_proposta' not in st.session_state:
             st.session_state['tipo_proposta'] = "Nova revisão"
             st.session_state['tipo_proposta_selecionado'] = True
@@ -404,15 +408,16 @@ def inicializar_dados():
             print("App já inicializado, retornando")
             return
 
-        # Verifica se está rodando no localhost:8501
-        if st.get_option('server.port') == 8501:
-            id_proposta = os.getenv("ID_PROPOSTA_TESTE")
-            id_revisao = os.getenv("ID_REVISAO_TESTE")
-            token = os.getenv("TOKEN_TESTE")
-        else:
+        # Verifica se está rodando em produção
+        if os.getenv('ENVIRONMENT') == 'production':
             id_proposta = params.get('id_proposta')
             id_revisao = params.get('id_revisao')
             token = params.get('token')
+        else:
+            # Ambiente de desenvolvimento ou local
+            id_proposta = os.getenv("ID_PROPOSTA_TESTE")
+            id_revisao = os.getenv("ID_REVISAO_TESTE")
+            token = os.getenv("TOKEN_TESTE")
             
         print(f"ID Proposta carregado: {id_proposta}")
         print(f"ID Revisão carregado: {id_revisao}")
@@ -422,17 +427,15 @@ def inicializar_dados():
         st.session_state['token'] = token
 
         # Se tiver id_revisao, tenta carregar os dados da revisão
-        if id_revisao:
-            print(f"Tentando carregar dados da revisão: {id_revisao}")
-            status = verificar_carregamento(id_revisao)
-            if status:
-                print(f"Dados da revisão carregados com sucesso: {status}")
-                st.session_state['proposta_loaded'] = True
-                st.session_state['revisao_loaded'] = True
-                st.session_state['app_initialized'] = True
-                return
-            else:
-                print("Falha ao carregar dados da revisão")
+        if os.getenv('ENVIRONMENT') == 'production':
+            id_proposta = params.get('id_proposta')
+            id_revisao = params.get('id_revisao')
+            token = params.get('token')
+        else:
+            # Ambiente de desenvolvimento ou local
+            id_proposta = os.getenv("ID_PROPOSTA_TESTE")
+            id_revisao = os.getenv("ID_REVISAO_TESTE")
+            token = os.getenv("TOKEN_TESTE")
 
         # Se não tiver id_revisao ou falhar o carregamento, carrega dados da proposta
         if id_proposta and not st.session_state.get('proposta_loaded'):
@@ -548,11 +551,7 @@ def main():
     st.set_page_config(layout="wide")
     st.title("Proposta Automatizada - Transformadores")
     st.markdown("---")
-    
-    # Verifica se está rodando no localhost:8501
-    if st.get_option('server.port') == 8501:
-        st.session_state['id_proposta'] = os.getenv("ID_PROPOSTA_TESTE")
-        st.session_state['id_revisao'] = os.getenv("ID_REVISAO_TESTE")
+
     
     if selecionar_tipo_proposta():
         carregar_cidades()
