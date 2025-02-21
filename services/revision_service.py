@@ -385,13 +385,16 @@ class StreamlitApiService:
             raise ValueError("ID da proposta é obrigatório")
 
 
-            url = f"{self.base_url}/api/streamlit/atualizar_revisao/"
+        url = f"{self.base_url}/api/streamlit/atualizar_revisao/"
+        
+        if not dados:
+            dados = {}
             
-            if not dados:
-                dados = {}
-                
-            if not isinstance(dados, dict):
-                raise ValueError("Dados devem estar em formato dict")
+        if not isinstance(dados, dict):
+            raise ValueError("Dados devem estar em formato dict")
+        
+        valor_mt = sum(get_preco_total(item) for item in itens_mt)
+        valor_bt = sum(get_preco_total(item) for item in itens_bt)
         
         payload = {
             'id_proposta': str(id_proposta),
