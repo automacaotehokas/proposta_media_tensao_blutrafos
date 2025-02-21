@@ -533,6 +533,7 @@ def main():
     st.markdown("---")
         # Verifica se está rodando em produção
     if os.getenv('ENVIRONMENT') == 'PRODUCTION':
+        params = st.query_params
         print("Estamos em produção")
         id_proposta = params.get('id_proposta')
         print(f"ID Proposta: {id_proposta}")
