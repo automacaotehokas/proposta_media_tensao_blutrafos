@@ -30,7 +30,7 @@ def selecionar_tipo_proposta():
     """Função para selecionar se é nova revisão ou atualização"""
     params = st.query_params
     
-    if os.getenv('ENVIRONMENT') == 'production':
+    if os.getenv('ENVIRONMENT') == 'PRODUCTION':
         id_proposta = params.get('id_proposta')
         id_revisao = params.get('id_revisao')
         token = params.get('token')
@@ -534,7 +534,7 @@ def main():
     st.title("Proposta Automatizada - Transformadores")
     st.markdown("---")
         # Verifica se está rodando em produção
-    if os.getenv('ENVIRONMENT') == 'production':
+    if os.getenv('ENVIRONMENT') == 'PRODUCTION':
         id_proposta = params.get('id_proposta')
         id_revisao = params.get('id_revisao')
         token = params.get('token')
