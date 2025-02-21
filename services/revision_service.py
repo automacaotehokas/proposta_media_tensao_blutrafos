@@ -378,6 +378,8 @@ class StreamlitApiService:
         :param dados: Dados atualizados da revisão
         :return: Resposta da API em formato dict
         """
+
+
         if not id_revisao:
             raise ValueError("ID da revisão é obrigatório")
 
@@ -392,10 +394,31 @@ class StreamlitApiService:
             
         if not isinstance(dados, dict):
             raise ValueError("Dados devem estar em formato dict")
-        
+
+        itens_mt = st.session_state.get('itens', {}).get('itens_configurados_mt', [])
+        itens_bt = st.session_state.get('itens', {}).get('itens_configurados_bt', [])
+
+        def get_preco_total(item):
+            preco_total_keys = ['Preço Total', 'Preço_Total', 'preco_total', 'valor_total']
+            for key in preco_total_keys:
+                if key in item:
+                    try:
+                        # Convert Decimal to float
+                        value = item[key]
+                        if isinstance(value, Decimal):
+                            return float(value)
+                        return float(value)
+                    except (TypeError, ValueError):
+                        continue
+            return 0.0
+        print("Calculando valores...")
+        # Corrigindo a chamada da função
         valor_mt = sum(get_preco_total(item) for item in itens_mt)
         valor_bt = sum(get_preco_total(item) for item in itens_bt)
-        
+
+        dados_serializaveis = self._convert_to_serializable(dados)
+
+
         payload = {
             'id_proposta': str(id_proposta),
             'id_revisao': str(id_revisao),
@@ -428,6 +451,8 @@ class StreamlitApiService:
             
             itens_mt = st.session_state.get('itens', {}).get('itens_configurados_mt', [])
             itens_bt = st.session_state.get('itens', {}).get('itens_configurados_bt', [])
+
+
             if not self.verificar_dados_completos():
                 return False
 
