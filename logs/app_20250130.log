@@ -1,0 +1,227 @@
+2025-01-30 19:22:15,268 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-30 19:22:42,107 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-30 19:23:30,864 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-30 19:27:39,058 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-30 19:30:32,360 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-30 19:35:37,217 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-30 19:37:55,068 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-30 19:40:47,823 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-30 19:44:09,571 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-30 19:47:14,498 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-30 19:49:17,730 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-30 19:50:25,109 - root - INFO - Tipo de produto identificado: MT
+2025-01-30 19:50:27,345 - root - INFO - Tentando acessar pasta: Documentos Compartilhados/None
+2025-01-30 19:50:27,574 - root - INFO - Conectado com sucesso à pasta: Documentos Compartilhados/None
+2025-01-30 19:50:27,688 - root - INFO - Listando arquivos da pasta None:
+2025-01-30 19:50:27,689 - root - INFO - Procurando template MT: None
+2025-01-30 19:50:27,690 - root - INFO - Tentando baixar arquivo: None
+2025-01-30 19:50:27,690 - root - INFO - Da pasta: None
+2025-01-30 19:50:29,334 - root - INFO - Tentando acessar pasta: Documentos Compartilhados/None
+2025-01-30 19:50:29,518 - root - INFO - Conectado com sucesso à pasta: Documentos Compartilhados/None
+2025-01-30 19:50:29,619 - root - ERROR - Erro ao baixar arquivo None: Shareplum HTTP Get Failed : 404 Client Error: Not Found for url: https://solucoestehokas.sharepoint.com/sites/PortalGestaoComercialBlutrafos/_api/web/GetFileByServerRelativeUrl('/sites/PortalGestaoComercialBlutrafos/Documentos%20Compartilhados/None/None')/$value
+2025-01-30 19:50:29,620 - root - ERROR - Arquivo None não encontrado. Arquivos disponíveis na pasta:
+2025-01-30 19:50:29,620 - root - ERROR - Erro ao obter template: Template None não encontrado na pasta None
+2025-01-30 19:50:29,620 - root - ERROR - Erro ao gerar documentos: Template None não encontrado na pasta None
+2025-01-30 19:52:49,856 - root - INFO - Tipo de produto identificado: MT
+2025-01-30 19:52:53,430 - root - INFO - Tentando acessar pasta: Documentos Compartilhados/04 - Propostas Automatizadas Média Tensão
+2025-01-30 19:52:53,611 - root - INFO - Conectado com sucesso à pasta: Documentos Compartilhados/04 - Propostas Automatizadas Média Tensão
+2025-01-30 19:52:53,709 - root - INFO - Listando arquivos da pasta 04 - Propostas Automatizadas Média Tensão:
+2025-01-30 19:52:53,710 - root - INFO - - Template_Proposta_Comercial.docx
+2025-01-30 19:52:53,710 - root - INFO - Procurando template MT: None
+2025-01-30 19:52:53,710 - root - INFO - Tentando baixar arquivo: None
+2025-01-30 19:52:53,711 - root - INFO - Da pasta: 04 - Propostas Automatizadas Média Tensão
+2025-01-30 19:52:55,999 - root - INFO - Tentando acessar pasta: Documentos Compartilhados/04 - Propostas Automatizadas Média Tensão
+2025-01-30 19:52:56,192 - root - INFO - Conectado com sucesso à pasta: Documentos Compartilhados/04 - Propostas Automatizadas Média Tensão
+2025-01-30 19:52:56,292 - root - ERROR - Erro ao baixar arquivo None: Shareplum HTTP Get Failed : 404 Client Error: Not Found for url: https://solucoestehokas.sharepoint.com/sites/PortalGestaoComercialBlutrafos/_api/web/GetFileByServerRelativeUrl('/sites/PortalGestaoComercialBlutrafos/Documentos%20Compartilhados/04%20-%20Propostas%20Automatizadas%20M%C3%A9dia%20Tens%C3%A3o/None')/$value
+2025-01-30 19:52:56,293 - root - ERROR - Arquivo None não encontrado. Arquivos disponíveis na pasta:
+2025-01-30 19:52:56,293 - root - INFO - - Template_Proposta_Comercial.docx
+2025-01-30 19:52:56,293 - root - ERROR - Erro ao obter template: Template None não encontrado na pasta 04 - Propostas Automatizadas Média Tensão
+2025-01-30 19:52:56,294 - root - ERROR - Erro ao gerar documentos: Template None não encontrado na pasta 04 - Propostas Automatizadas Média Tensão
+2025-01-30 19:59:14,241 - root - INFO - Tipo de produto identificado: MT
+2025-01-30 19:59:16,510 - root - INFO - Tentando acessar pasta: Documentos Compartilhados/04 - Propostas Automatizadas Média Tensão
+2025-01-30 19:59:16,685 - root - INFO - Conectado com sucesso à pasta: Documentos Compartilhados/04 - Propostas Automatizadas Média Tensão
+2025-01-30 19:59:16,771 - root - INFO - Listando arquivos da pasta 04 - Propostas Automatizadas Média Tensão:
+2025-01-30 19:59:16,771 - root - INFO - - Template_Proposta_Comercial.docx
+2025-01-30 19:59:16,771 - root - INFO - Procurando template MT: Template_Proposta_Comercial.docx
+2025-01-30 19:59:16,771 - root - INFO - Tentando baixar arquivo: Template_Proposta_Comercial.docx
+2025-01-30 19:59:16,772 - root - INFO - Da pasta: 04 - Propostas Automatizadas Média Tensão
+2025-01-30 19:59:18,299 - root - INFO - Tentando acessar pasta: Documentos Compartilhados/04 - Propostas Automatizadas Média Tensão
+2025-01-30 19:59:18,490 - root - INFO - Conectado com sucesso à pasta: Documentos Compartilhados/04 - Propostas Automatizadas Média Tensão
+2025-01-30 19:59:19,129 - root - INFO - Arquivo baixado com sucesso para: C:\Users\Erick\AppData\Local\Temp\Template_Proposta_Comercial.docx
+2025-01-30 19:59:19,129 - root - INFO - Template carregado: C:\Users\Erick\AppData\Local\Temp\Template_Proposta_Comercial.docx
+2025-01-30 19:59:19,286 - root - INFO - Documento base carregado com sucesso
+2025-01-30 19:59:19,286 - root - INFO - Iniciando substituição de texto...
+2025-01-30 19:59:19,288 - root - INFO - Substituição de texto concluída
+2025-01-30 19:59:19,288 - root - INFO - Iniciando inserção de tabelas...
+2025-01-30 19:59:19,568 - services.document.master.manager - INFO - Iniciando inserção de texto de pagamento
+2025-01-30 19:59:19,573 - services.document.master.manager - INFO - Parágrafo 'Condições de Pagamento' encontrado no índice: 54
+2025-01-30 19:59:19,573 - services.document.master.manager - INFO - Transformadores encontrados - MT: True, BT: False
+2025-01-30 19:59:19,573 - services.document.master.manager - INFO - Processando eventos de média tensão
+2025-01-30 19:59:19,576 - services.document.master.manager - ERROR - Erro durante a inserção de texto de pagamento: 'st.session_state has no key "eventos_mt". Did you forget to initialize it? More info: https://docs.streamlit.io/develop/concepts/architecture/session-state#initialization'
+Traceback (most recent call last):
+  File "C:\Users\Erick\AppData\Local\Programs\Python\Python312\Lib\site-packages\streamlit\runtime\state\session_state.py", line 455, in __getitem__
+    return self._getitem(widget_id, key)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Erick\AppData\Local\Programs\Python\Python312\Lib\site-packages\streamlit\runtime\state\session_state.py", line 500, in _getitem
+    raise KeyError
+KeyError
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Erick\Desktop\Arquivos Base Media Tensao\deploy\proposta_media_tensao_blutrafos\services\document\master\manager.py", line 365, in inserir_eventos_pagamento
+    index_atual = processar_eventos(eventos_pagamento['eventos_mt'], index_atual)
+                                    ~~~~~~~~~~~~~~~~~^^^^^^^^^^^^^^
+  File "C:\Users\Erick\AppData\Local\Programs\Python\Python312\Lib\site-packages\streamlit\runtime\state\session_state_proxy.py", line 100, in __getitem__
+    return get_session_state()[key]
+           ~~~~~~~~~~~~~~~~~~~^^^^^
+  File "C:\Users\Erick\AppData\Local\Programs\Python\Python312\Lib\site-packages\streamlit\runtime\state\safe_session_state.py", line 94, in __getitem__
+    return self._state[key]
+           ~~~~~~~~~~~^^^^^
+  File "C:\Users\Erick\AppData\Local\Programs\Python\Python312\Lib\site-packages\streamlit\runtime\state\session_state.py", line 457, in __getitem__
+    raise KeyError(_missing_key_error_message(key))
+KeyError: 'st.session_state has no key "eventos_mt". Did you forget to initialize it? More info: https://docs.streamlit.io/develop/concepts/architecture/session-state#initialization'
+2025-01-30 19:59:19,582 - root - ERROR - Erro durante o processamento do documento: 'st.session_state has no key "eventos_mt". Did you forget to initialize it? More info: https://docs.streamlit.io/develop/concepts/architecture/session-state#initialization'
+2025-01-30 19:59:19,586 - root - ERROR - Erro ao gerar documentos: 'st.session_state has no key "eventos_mt". Did you forget to initialize it? More info: https://docs.streamlit.io/develop/concepts/architecture/session-state#initialization'
+2025-01-30 19:59:34,354 - root - INFO - Tipo de produto identificado: MT
+2025-01-30 19:59:35,824 - root - INFO - Tentando acessar pasta: Documentos Compartilhados/04 - Propostas Automatizadas Média Tensão
+2025-01-30 19:59:36,707 - root - INFO - Conectado com sucesso à pasta: Documentos Compartilhados/04 - Propostas Automatizadas Média Tensão
+2025-01-30 19:59:36,799 - root - INFO - Listando arquivos da pasta 04 - Propostas Automatizadas Média Tensão:
+2025-01-30 19:59:36,799 - root - INFO - - Template_Proposta_Comercial.docx
+2025-01-30 19:59:36,799 - root - INFO - Procurando template MT: Template_Proposta_Comercial.docx
+2025-01-30 19:59:36,799 - root - INFO - Tentando baixar arquivo: Template_Proposta_Comercial.docx
+2025-01-30 19:59:36,799 - root - INFO - Da pasta: 04 - Propostas Automatizadas Média Tensão
+2025-01-30 19:59:38,879 - root - INFO - Tentando acessar pasta: Documentos Compartilhados/04 - Propostas Automatizadas Média Tensão
+2025-01-30 19:59:39,064 - root - INFO - Conectado com sucesso à pasta: Documentos Compartilhados/04 - Propostas Automatizadas Média Tensão
+2025-01-30 19:59:39,954 - root - INFO - Arquivo baixado com sucesso para: C:\Users\Erick\AppData\Local\Temp\Template_Proposta_Comercial.docx
+2025-01-30 19:59:39,954 - root - INFO - Template carregado: C:\Users\Erick\AppData\Local\Temp\Template_Proposta_Comercial.docx
+2025-01-30 19:59:40,069 - root - INFO - Documento base carregado com sucesso
+2025-01-30 19:59:40,069 - root - INFO - Iniciando substituição de texto...
+2025-01-30 19:59:40,069 - root - INFO - Substituição de texto concluída
+2025-01-30 19:59:40,069 - root - INFO - Iniciando inserção de tabelas...
+2025-01-30 19:59:40,340 - services.document.master.manager - INFO - Iniciando inserção de texto de pagamento
+2025-01-30 19:59:40,341 - services.document.master.manager - INFO - Parágrafo 'Condições de Pagamento' encontrado no índice: 54
+2025-01-30 19:59:40,345 - services.document.master.manager - INFO - Transformadores encontrados - MT: True, BT: False
+2025-01-30 19:59:40,345 - services.document.master.manager - INFO - Processando eventos de média tensão
+2025-01-30 19:59:40,347 - services.document.master.manager - INFO - Iniciando processamento de eventos
+2025-01-30 19:59:40,347 - services.document.master.manager - INFO - A combinar: False
+2025-01-30 19:59:40,349 - services.document.master.manager - INFO - Número de eventos a processar: 4
+2025-01-30 19:59:40,352 - services.document.master.manager - INFO - Eventos MT processados com sucesso
+2025-01-30 19:59:40,352 - services.document.master.manager - INFO - Inserção de texto de pagamento concluída com sucesso
+2025-01-30 19:59:40,368 - root - INFO - Inserção de tabelas concluída
+2025-01-30 19:59:40,368 - root - INFO - Iniciando processamento de imagens...
+2025-01-30 19:59:40,368 - root - INFO - Processando imagens para MT...
+2025-01-30 19:59:40,368 - root - INFO - Processamento de imagens concluído
+2025-01-30 19:59:40,568 - root - INFO - Documento gerado com sucesso: output\proposta_mt.docx
+2025-01-30 21:50:48,800 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-30 21:57:15,194 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-30 21:59:15,534 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-30 22:03:26,412 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-30 22:04:44,414 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-30 22:06:02,673 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-30 22:12:11,585 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-30 22:15:53,040 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-30 22:17:40,934 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-30 22:19:07,115 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-30 22:19:24,056 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-30 22:25:45,711 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-30 22:56:15,921 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-30 22:57:16,040 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-30 22:57:36,284 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-30 23:00:43,075 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-30 23:01:41,755 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-30 23:02:52,782 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-30 23:03:48,498 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-30 23:07:50,204 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-30 23:08:49,846 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-30 23:10:37,157 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 08:20:19,990 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 08:22:56,187 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 08:23:32,031 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 08:25:22,671 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 09:02:21,890 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 10:02:55,331 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 10:03:17,737 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 10:08:34,918 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 10:19:49,419 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 10:23:43,248 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 10:31:02,502 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 10:33:22,163 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 10:38:37,878 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 10:39:18,144 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 10:39:32,352 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 10:40:26,693 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 10:41:01,531 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 10:44:29,315 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 11:14:07,271 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 11:14:39,375 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 11:15:02,904 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 11:15:23,904 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 11:16:17,390 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 11:17:21,205 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 11:17:43,628 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 11:19:15,224 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 11:24:25,981 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 11:25:06,126 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 11:25:45,633 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 11:26:21,641 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 11:34:23,254 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 11:54:00,721 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 12:02:48,030 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 12:07:21,604 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 12:11:46,164 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 13:59:21,044 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 14:00:21,456 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 14:06:21,105 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 14:11:19,516 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 14:12:38,216 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 14:14:00,967 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 14:19:59,981 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 14:21:47,458 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 14:23:24,887 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 14:24:01,916 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 14:24:16,561 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 14:25:39,700 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 14:38:37,148 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 14:40:41,048 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 14:51:26,819 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 14:54:21,026 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 14:54:52,276 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 14:56:11,828 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 14:59:58,996 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 15:02:20,801 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 15:07:09,001 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 15:11:49,202 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 15:13:50,757 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 15:17:46,736 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 15:19:19,976 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 15:21:14,459 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 15:36:18,381 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 15:38:20,527 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 15:38:48,001 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 15:39:01,885 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 15:40:11,090 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 15:40:42,246 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 15:40:52,109 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 15:42:14,401 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 15:43:16,166 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 15:49:28,366 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 15:51:48,751 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 15:52:33,998 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 15:53:45,631 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 16:20:05,606 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 16:20:31,144 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 16:21:15,970 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-31 16:42:36,298 - root - INFO - Tipo de produto identificado: BT
+2025-01-31 16:42:37,870 - root - INFO - Tentando acessar pasta: Documentos Compartilhados/06 - Propostas Automatizadas Baixa Tensão
+2025-01-31 16:42:38,037 - root - INFO - Conectado com sucesso à pasta: Documentos Compartilhados/06 - Propostas Automatizadas Baixa Tensão
+2025-01-31 16:42:38,119 - root - INFO - Listando arquivos da pasta 06 - Propostas Automatizadas Baixa Tensão:
+2025-01-31 16:42:38,119 - root - INFO - Procurando template BT: template_baixa_tensao.docx
+2025-01-31 16:42:38,119 - root - INFO - Tentando baixar arquivo: template_baixa_tensao.docx
+2025-01-31 16:42:38,119 - root - INFO - Da pasta: 06 - Propostas Automatizadas Baixa Tensão
+2025-01-31 16:42:39,519 - root - INFO - Tentando acessar pasta: Documentos Compartilhados/06 - Propostas Automatizadas Baixa Tensão
+2025-01-31 16:42:40,431 - root - INFO - Conectado com sucesso à pasta: Documentos Compartilhados/06 - Propostas Automatizadas Baixa Tensão
+2025-01-31 16:42:40,507 - root - ERROR - Erro ao baixar arquivo template_baixa_tensao.docx: Shareplum HTTP Get Failed : 404 Client Error: Not Found for url: https://solucoestehokas.sharepoint.com/sites/PortalGestaoComercialBlutrafos/_api/web/GetFileByServerRelativeUrl('/sites/PortalGestaoComercialBlutrafos/Documentos%20Compartilhados/06%20-%20Propostas%20Automatizadas%20Baixa%20Tens%C3%A3o/template_baixa_tensao.docx')/$value
+2025-01-31 16:42:40,507 - root - ERROR - Arquivo template_baixa_tensao.docx não encontrado. Arquivos disponíveis na pasta:
+2025-01-31 16:42:40,507 - root - ERROR - Erro ao obter template: Template template_baixa_tensao.docx não encontrado na pasta 06 - Propostas Automatizadas Baixa Tensão
+2025-01-31 16:42:40,507 - root - ERROR - Erro ao gerar documentos: Template template_baixa_tensao.docx não encontrado na pasta 06 - Propostas Automatizadas Baixa Tensão

@@ -1,0 +1,112 @@
+[33m2936e67[m[33m ([m[1;36mHEAD[m[33m -> [m[1;32mmaster[m[33m, [m[1;31morigin/master[m[33m)[m correção tambem no transporte unificado
+[33m4324869[m correção no transporte replace do BT também
+[33m3f5ed4c[m correção novamente no replace de transporte
+[33m8177579[m correção do replace de transporte MT
+[33mdb5acfe[m alteracoes
+[33m1df880b[m edição feita
+[33m88daad1[m 1
+[33m8c311ba[m 1
+[33mc00986d[m[33m ([m[1;31morigin/branc_de_eric[m[33m)[m correção nas importações
+[33m8dfc748[m correção nas importações
+[33md14945e[m correção nas importações
+[33m50977e2[m correção nas importações
+[33m5a4b404[m correção nas importações
+[33mcccc61e[m versao implantação
+[33mcff68f1[m Resolvendo conflitos de __pycache__
+[33m8ebd7a2[m arrumando a função de inserir tabelas separadas
+[33mc84a3f2[m versao
+[33m2a3f3e2[m alteracoes
+[33m871d2e0[m alteracoes
+[33ma170b0c[m Merge branch 'master' of https://github.com/automacaotehokas/proposta_media_tensao_blutrafos
+[33m3f3d4a4[m alteração no revision service
+[33mf3c30af[m alteracoes
+[33ma1fcd96[m Merge branch 'master' of https://github.com/automacaotehokas/proposta_media_tensao_blutrafos
+[33m37907c7[m Atualizando Home.py
+[33m2e51c53[m alteracoes
+[33m2310155[m alteracoes
+[33m45d20ef[m 1
+[33m07c3c89[m alteracoes
+[33m06ff60d[m 1
+[33m63f55fd[m blah3
+[33m0064711[m versao
+[33m8ee156d[m versao pre-pronta
+[33m235b107[m[33m ([m[1;31morigin/corrigir_eventos_pagamento[m[33m)[m versao para producao
+[33mdf4a8da[m retirar locale,pois nao tinha suporte p/ o python atual e adicionar babel
+[33m023651a[m adição do locale
+[33meee8119[m adição do cod_custo no EXTRATO
+[33md4b2bc6[m correção da área adm
+[33m535cbc0[m NBI ERRADO
+[33me36016c[m 1
+[33m1422b39[m NBI
+[33mdba93e7[m Added Dev Container Folder
+[33m36a9227[m telefone
+[33macff16e[m erro 2 itens
+[33mb531125[m Alteração no % da caixa, difal, f_pobreza e exclusão de replacs que não foram preenchidos
+[33med30567[m Mensagem descritiva sobre suas alterações
+[33mb012a6b[m a
+[33m930696b[m correcao tensao secundaria
+[33m29e6fdd[m numpy
+[33mbd68ee6[m 1
+[33m60f1fc0[m tabela
+[33m132b6f1[m perda
+[33m602c149[m virgulas
+[33m53c972c[m 1
+[33m20af41f[m formato potencia
+[33m082e266[m int preco unitario
+[33m453a02e[m comissao
+[33m401ee8b[m 1
+[33m94f4302[m 1
+[33m561faa3[m 1
+[33m6144717[m agr vai
+[33m731b69f[m 1
+[33m6c088a7[m 1
+[33ma65def5[m 1
+[33m6d7d275[m 1
+[33m32f34c3[m 1
+[33m1ffa28f[m 1
+[33m33a6034[m 1
+[33m069cdb9[m 1
+[33m5fc88fe[m 1
+[33m5b65eb2[m 1
+[33m3c8579f[m 1
+[33ma3c4a13[m 1
+[33m81e816b[m 1
+[33m3f9c71f[m 111
+[33m02a0a20[m 1
+[33me11c5cb[m final
+[33m3e76b49[m 1
+[33m87c3bbc[m aaa
+[33m74018d9[m 111
+[33mb6f366d[m 1
+[33m071624b[m 1
+[33me1b1048[m aaa
+[33m8acfe14[m 1
+[33m79a4358[m n aguento mais
+[33mf626b11[m 1
+[33mcad10f3[m SENHA
+[33m9d41648[m agr vai
+[33mcb164e2[m top
+[33m434d999[m adm
+[33m563d516[m agr vai
+[33mb5cb3f3[m ADM
+[33m3ce6345[m adm
+[33m8ee5216[m adm
+[33m49c41e3[m 1
+[33m00d127c[m 1111
+[33m674c909[m 1
+[33m583f030[m 1
+[33m0ad6e4a[m a
+[33m77105f5[m a
+[33mc1aa89e[m a
+[33mda56b6c[m correcao pot equivalente
+[33m0c0b499[m depuraçãp valor adicional da potencia equivalente
+[33ma7852f4[m correcao_id
+[33m71d57fd[m A
+[33mefc562b[m potencia equivalente quando k>5 para calculo do adicional IP
+[33mad4fbf9[m 1
+[33m73b42b0[m 1
+[33mee8d832[m 1
+[33m62f889f[m Add files via upload
+[33m0a366b6[m Delete .env
+[33m1ecf29a[m Update requirements.txt
+[33mf61f5a8[m Add files via upload

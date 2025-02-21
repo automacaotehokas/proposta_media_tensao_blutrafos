@@ -1,0 +1,559 @@
+2025-01-24 08:21:00,465 - services.revision_service - INFO - 
+        Iniciando inserção/atualização de revisão:
+        - ID Proposta: a9806d04-43fa-454a-9234-c36ddec9e6c8
+        - Valor: 91230.0
+        - Número Revisão: 1
+        - Word Path: Proposta Blutrafos nº BT 810000-Rev01.docx
+        - PDF Path: Resumo_Proposta_BT_810000-Rev01_EXTRATO.pdf
+        - Escopo: 0,030 MVA
+        
+2025-01-24 08:21:00,467 - services.revision_service - INFO - Verificando se já existe uma revisão com este número...
+2025-01-24 08:21:00,873 - services.revision_service - INFO - Resultado da busca por revisão existente: ('9ab17130-bfe4-40dc-a415-e7c2ed35d15d',)
+2025-01-24 08:21:00,873 - services.revision_service - INFO - Encontrada revisão existente. Buscando última versão...
+2025-01-24 08:21:01,076 - services.revision_service - INFO - Encontrada revisão 9ab17130-bfe4-40dc-a415-e7c2ed35d15d com número 1, chamando atualização...
+2025-01-24 08:21:01,077 - services.revision_service - INFO - 
+        Iniciando atualização de revisão:
+        - ID Revisão: 9ab17130-bfe4-40dc-a415-e7c2ed35d15d
+        - Valor: 91230.0
+        - Número Revisão: 1
+        - Word Path: Proposta Blutrafos nº BT 810000-Rev01.docx
+        - PDF Path: Resumo_Proposta_BT_810000-Rev01_EXTRATO.pdf
+        - Escopo: 0,030 MVA
+        
+2025-01-24 08:21:01,078 - services.revision_service - INFO - Preparando dados para atualização da revisão...
+2025-01-24 08:21:01,079 - services.revision_service - INFO - Dados JSON preparados com sucesso
+2025-01-24 08:21:01,079 - services.revision_service - INFO - Executando query de UPDATE na tabela revisoes...
+2025-01-24 08:21:01,283 - services.revision_service - INFO - Resultado do UPDATE: ('9ab17130-bfe4-40dc-a415-e7c2ed35d15d', 'a9806d04-43fa-454a-9234-c36ddec9e6c8')
+2025-01-24 08:21:01,283 - services.revision_service - INFO - Revisão atualizada com sucesso. ID: 9ab17130-bfe4-40dc-a415-e7c2ed35d15d, ID Proposta: a9806d04-43fa-454a-9234-c36ddec9e6c8
+2025-01-24 08:21:01,284 - services.revision_service - INFO - Verificando se revisão 1 é a mais recente...
+2025-01-24 08:21:02,977 - services.revision_service - INFO - 
+                Verificando se revisão 1 é a maior:
+                - Maior revisão encontrada: 1
+                - Nova revisão: 1
+                - É a maior? False
+            
+2025-01-24 08:21:02,977 - services.revision_service - INFO - Revisão 9ab17130-bfe4-40dc-a415-e7c2ed35d15d não é a mais recente. Proposta não será atualizada.
+2025-01-24 08:22:47,653 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-24 08:22:57,954 - services.revision_service - INFO - 
+        Iniciando inserção/atualização de revisão:
+        - ID Proposta: a9806d04-43fa-454a-9234-c36ddec9e6c8
+        - Valor: 91230.0
+        - Número Revisão: 1
+        - Word Path: Proposta Blutrafos nº BT 810000-Rev01.docx
+        - PDF Path: Resumo_Proposta_BT_810000-Rev01_EXTRATO.pdf
+        - Escopo: 0,030 MVA
+        
+2025-01-24 08:22:57,958 - services.revision_service - INFO - Verificando se já existe uma revisão com este número...
+2025-01-24 08:22:58,355 - services.revision_service - INFO - Resultado da busca por revisão existente: ('9ab17130-bfe4-40dc-a415-e7c2ed35d15d',)
+2025-01-24 08:22:58,357 - services.revision_service - INFO - Encontrada revisão existente. Buscando última versão...
+2025-01-24 08:22:58,557 - services.revision_service - INFO - Encontrada revisão 9ab17130-bfe4-40dc-a415-e7c2ed35d15d com número 1, chamando atualização...
+2025-01-24 08:22:58,557 - services.revision_service - INFO - 
+        Iniciando atualização de revisão:
+        - ID Revisão: 9ab17130-bfe4-40dc-a415-e7c2ed35d15d
+        - Valor: 91230.0
+        - Número Revisão: 1
+        - Word Path: Proposta Blutrafos nº BT 810000-Rev01.docx
+        - PDF Path: Resumo_Proposta_BT_810000-Rev01_EXTRATO.pdf
+        - Escopo: 0,030 MVA
+        
+2025-01-24 08:22:58,557 - services.revision_service - INFO - Preparando dados para atualização da revisão...
+2025-01-24 08:22:58,557 - services.revision_service - INFO - Dados JSON preparados com sucesso
+2025-01-24 08:22:58,557 - services.revision_service - INFO - Executando query de UPDATE na tabela revisoes...
+2025-01-24 08:22:58,761 - services.revision_service - INFO - Resultado do UPDATE: ('9ab17130-bfe4-40dc-a415-e7c2ed35d15d', 'a9806d04-43fa-454a-9234-c36ddec9e6c8')
+2025-01-24 08:22:58,761 - services.revision_service - INFO - Revisão atualizada com sucesso. ID: 9ab17130-bfe4-40dc-a415-e7c2ed35d15d, ID Proposta: a9806d04-43fa-454a-9234-c36ddec9e6c8
+2025-01-24 08:22:58,761 - services.revision_service - INFO - Verificando se revisão 1 é a mais recente...
+2025-01-24 08:23:00,398 - services.revision_service - INFO - 
+                Verificando se revisão 1 é a maior:
+                - Maior revisão encontrada: 1
+                - Nova revisão: 1
+                - É a maior? True
+            
+2025-01-24 08:23:00,398 - services.revision_service - INFO - Revisão 1 é a mais recente. Atualizando proposta...
+2025-01-24 08:23:00,398 - services.revision_service - INFO - 
+    Iniciando atualização da proposta:
+    - ID: a9806d04-43fa-454a-9234-c36ddec9e6c8
+    - Escopo: 0,030 MVA
+    - Valor: 91230.0
+    - Última Revisão: 1
+    
+2025-01-24 08:23:01,637 - services.revision_service - INFO - Buscando ID da revisão mais recente para proposta a9806d04-43fa-454a-9234-c36ddec9e6c8 e revisão 1
+2025-01-24 08:23:02,045 - services.revision_service - INFO - ID da revisão encontrado: 9ab17130-bfe4-40dc-a415-e7c2ed35d15d
+2025-01-24 08:23:02,276 - services.revision_service - ERROR - Erro ao atualizar proposta: column "id_revisao_atual" does not exist
+LINE 2:             SELECT escopo, valor, ultima_revisao, id_revisao...
+                                                          ^
+
+2025-01-24 08:23:02,276 - services.revision_service - ERROR - Stacktrace completo:
+Traceback (most recent call last):
+  File "C:\Users\Erick\Desktop\Arquivos Base Media Tensao\deploy\proposta_media_tensao_blutrafos\services\revision_service.py", line 81, in atualizar_proposta
+    cur.execute("""
+psycopg2.errors.UndefinedColumn: column "id_revisao_atual" does not exist
+LINE 2:             SELECT escopo, valor, ultima_revisao, id_revisao...
+                                                          ^
+
+2025-01-24 08:23:02,281 - services.revision_service - ERROR - Erro ao atualizar revisão 9ab17130-bfe4-40dc-a415-e7c2ed35d15d: column "id_revisao_atual" does not exist
+LINE 2:             SELECT escopo, valor, ultima_revisao, id_revisao...
+                                                          ^
+
+2025-01-24 08:23:02,281 - services.revision_service - ERROR - Stacktrace completo:
+Traceback (most recent call last):
+  File "C:\Users\Erick\Desktop\Arquivos Base Media Tensao\deploy\proposta_media_tensao_blutrafos\services\revision_service.py", line 290, in _atualizar_revisao
+    atualizar_proposta(
+  File "C:\Users\Erick\Desktop\Arquivos Base Media Tensao\deploy\proposta_media_tensao_blutrafos\services\revision_service.py", line 81, in atualizar_proposta
+    cur.execute("""
+psycopg2.errors.UndefinedColumn: column "id_revisao_atual" does not exist
+LINE 2:             SELECT escopo, valor, ultima_revisao, id_revisao...
+                                                          ^
+
+2025-01-24 08:23:02,281 - services.revision_service - ERROR - Erro ao inserir revisão: Erro ao atualizar revisão: column "id_revisao_atual" does not exist
+LINE 2:             SELECT escopo, valor, ultima_revisao, id_revisao...
+                                                          ^
+
+2025-01-24 08:23:02,285 - services.revision_service - ERROR - Stacktrace completo:
+Traceback (most recent call last):
+  File "C:\Users\Erick\Desktop\Arquivos Base Media Tensao\deploy\proposta_media_tensao_blutrafos\services\revision_service.py", line 290, in _atualizar_revisao
+    atualizar_proposta(
+  File "C:\Users\Erick\Desktop\Arquivos Base Media Tensao\deploy\proposta_media_tensao_blutrafos\services\revision_service.py", line 81, in atualizar_proposta
+    cur.execute("""
+psycopg2.errors.UndefinedColumn: column "id_revisao_atual" does not exist
+LINE 2:             SELECT escopo, valor, ultima_revisao, id_revisao...
+                                                          ^
+
+
+During handling of the above exception, another exception occurred:
+
+Traceback (most recent call last):
+  File "C:\Users\Erick\Desktop\Arquivos Base Media Tensao\deploy\proposta_media_tensao_blutrafos\services\revision_service.py", line 358, in _inserir_revisao
+    return RevisionService._atualizar_revisao(
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "C:\Users\Erick\Desktop\Arquivos Base Media Tensao\deploy\proposta_media_tensao_blutrafos\services\revision_service.py", line 307, in _atualizar_revisao
+    raise Exception(f"Erro ao atualizar revisão: {str(e)}")
+Exception: Erro ao atualizar revisão: column "id_revisao_atual" does not exist
+LINE 2:             SELECT escopo, valor, ultima_revisao, id_revisao...
+                                                          ^
+
+2025-01-24 08:24:13,773 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-24 08:24:17,860 - services.revision_service - INFO - 
+        Iniciando inserção/atualização de revisão:
+        - ID Proposta: a9806d04-43fa-454a-9234-c36ddec9e6c8
+        - Valor: 91230.0
+        - Número Revisão: 1
+        - Word Path: Proposta Blutrafos nº BT 810000-Rev01.docx
+        - PDF Path: Resumo_Proposta_BT_810000-Rev01_EXTRATO.pdf
+        - Escopo: 0,030 MVA
+        
+2025-01-24 08:24:17,861 - services.revision_service - INFO - Verificando se já existe uma revisão com este número...
+2025-01-24 08:24:18,265 - services.revision_service - INFO - Resultado da busca por revisão existente: ('9ab17130-bfe4-40dc-a415-e7c2ed35d15d',)
+2025-01-24 08:24:18,266 - services.revision_service - INFO - Encontrada revisão existente. Buscando última versão...
+2025-01-24 08:24:18,469 - services.revision_service - INFO - Encontrada revisão 9ab17130-bfe4-40dc-a415-e7c2ed35d15d com número 1, chamando atualização...
+2025-01-24 08:24:18,469 - services.revision_service - INFO - 
+        Iniciando atualização de revisão:
+        - ID Revisão: 9ab17130-bfe4-40dc-a415-e7c2ed35d15d
+        - Valor: 91230.0
+        - Número Revisão: 1
+        - Word Path: Proposta Blutrafos nº BT 810000-Rev01.docx
+        - PDF Path: Resumo_Proposta_BT_810000-Rev01_EXTRATO.pdf
+        - Escopo: 0,030 MVA
+        
+2025-01-24 08:24:18,470 - services.revision_service - INFO - Preparando dados para atualização da revisão...
+2025-01-24 08:24:18,470 - services.revision_service - INFO - Dados JSON preparados com sucesso
+2025-01-24 08:24:18,470 - services.revision_service - INFO - Executando query de UPDATE na tabela revisoes...
+2025-01-24 08:24:18,679 - services.revision_service - INFO - Resultado do UPDATE: ('9ab17130-bfe4-40dc-a415-e7c2ed35d15d', 'a9806d04-43fa-454a-9234-c36ddec9e6c8')
+2025-01-24 08:24:18,680 - services.revision_service - INFO - Revisão atualizada com sucesso. ID: 9ab17130-bfe4-40dc-a415-e7c2ed35d15d, ID Proposta: a9806d04-43fa-454a-9234-c36ddec9e6c8
+2025-01-24 08:24:18,680 - services.revision_service - INFO - Verificando se revisão 1 é a mais recente...
+2025-01-24 08:24:20,342 - services.revision_service - INFO - 
+                Verificando se revisão 1 é a maior:
+                - Maior revisão encontrada: 1
+                - Nova revisão: 1
+                - É a maior? True
+            
+2025-01-24 08:24:20,343 - services.revision_service - INFO - Revisão 1 é a mais recente. Atualizando proposta...
+2025-01-24 08:24:20,343 - services.revision_service - INFO - 
+    Iniciando atualização da proposta:
+    - ID: a9806d04-43fa-454a-9234-c36ddec9e6c8
+    - Escopo: 0,030 MVA
+    - Valor: 91230.0
+    - Última Revisão: 1
+    
+2025-01-24 08:24:21,611 - services.revision_service - INFO - Buscando ID da revisão mais recente para proposta a9806d04-43fa-454a-9234-c36ddec9e6c8 e revisão 1
+2025-01-24 08:24:22,015 - services.revision_service - INFO - ID da revisão encontrado: 9ab17130-bfe4-40dc-a415-e7c2ed35d15d
+2025-01-24 08:24:22,219 - services.revision_service - INFO - 
+            Valores atuais da proposta antes da atualização:
+            - Escopo: 0 mVA
+            - Valor: 0.00
+            - Última Revisão: 0
+            
+2025-01-24 08:24:22,220 - services.revision_service - INFO - 
+        Executando query de atualização com parâmetros:
+        - Escopo: 0,030 MVA
+        - Valor: 91230.0
+        - Última Revisão: 1
+        - ID Proposta: a9806d04-43fa-454a-9234-c36ddec9e6c8
+        
+2025-01-24 08:24:22,426 - services.revision_service - INFO - 
+            Proposta atualizada com sucesso:
+            - ID: a9806d04-43fa-454a-9234-c36ddec9e6c8
+            - Novo Escopo: 0,030 MVA
+            - Novo Valor: 91230.00
+            - Nova Última Revisão: 1
+            
+2025-01-24 08:24:22,626 - services.revision_service - INFO - Commit realizado com sucesso
+2025-01-24 08:24:23,031 - services.revision_service - INFO - 
+            Valores finais da proposta após atualização:
+            - Escopo: 0,030 MVA
+            - Valor: 91230.00
+            - Última Revisão: 1
+            
+2025-01-24 08:24:23,031 - services.revision_service - INFO - Conexão fechada com sucesso
+2025-01-24 08:26:12,026 - services.revision_service - INFO - 
+        Iniciando inserção/atualização de revisão:
+        - ID Proposta: a9806d04-43fa-454a-9234-c36ddec9e6c8
+        - Valor: 325025.0
+        - Número Revisão: 2
+        - Word Path: Proposta Blutrafos nº BT 810000-Rev02.docx
+        - PDF Path: Resumo_Proposta_BT_810000-Rev02_EXTRATO.pdf
+        - Escopo: 1,530 MVA
+        
+2025-01-24 08:26:12,026 - services.revision_service - INFO - Verificando se já existe uma revisão com este número...
+2025-01-24 08:26:12,439 - services.revision_service - INFO - Resultado da busca por revisão existente: None
+2025-01-24 08:26:12,440 - services.revision_service - INFO - Verificando se é a próxima revisão válida...
+2025-01-24 08:26:12,645 - services.revision_service - INFO - Última revisão: 1, Próxima revisão: 2
+2025-01-24 08:26:12,647 - services.revision_service - INFO - Preparando dados para nova revisão 2...
+2025-01-24 08:26:12,647 - services.revision_service - INFO - Inserindo nova revisão no banco...
+2025-01-24 08:26:12,854 - services.revision_service - INFO - Nova revisão criada com ID: b21203ec-f60b-4cd6-b372-3ccf97bc00fe
+2025-01-24 08:26:12,854 - services.revision_service - INFO - Verificando necessidade de atualizar proposta (última revisão: 1)
+2025-01-24 08:26:14,514 - services.revision_service - INFO - 
+                Verificando se revisão 2 é a maior:
+                - Maior revisão encontrada: 1
+                - Nova revisão: 2
+                - É a maior? True
+            
+2025-01-24 08:26:14,514 - services.revision_service - INFO - Chamando atualização da proposta...
+2025-01-24 08:26:14,518 - services.revision_service - INFO - 
+    Iniciando atualização da proposta:
+    - ID: a9806d04-43fa-454a-9234-c36ddec9e6c8
+    - Escopo: 1,530 MVA
+    - Valor: 325025.0
+    - Última Revisão: 2
+    
+2025-01-24 08:26:15,770 - services.revision_service - INFO - Buscando ID da revisão mais recente para proposta a9806d04-43fa-454a-9234-c36ddec9e6c8 e revisão 2
+2025-01-24 08:26:16,182 - services.revision_service - ERROR - Nenhuma revisão encontrada para proposta a9806d04-43fa-454a-9234-c36ddec9e6c8 com revisão 2
+2025-01-24 08:29:55,101 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-24 08:29:59,126 - services.revision_service - INFO - 
+        Iniciando inserção/atualização de revisão:
+        - ID Proposta: a9806d04-43fa-454a-9234-c36ddec9e6c8
+        - Valor: 325025.0
+        - Número Revisão: 2
+        - Word Path: Proposta Blutrafos nº BT 810000-Rev02.docx
+        - PDF Path: Resumo_Proposta_BT_810000-Rev02_EXTRATO.pdf
+        - Escopo: 1,530 MVA
+        
+2025-01-24 08:29:59,126 - services.revision_service - INFO - Verificando se já existe uma revisão com este número...
+2025-01-24 08:29:59,545 - services.revision_service - INFO - Resultado da busca por revisão existente: ('b21203ec-f60b-4cd6-b372-3ccf97bc00fe',)
+2025-01-24 08:29:59,546 - services.revision_service - INFO - Encontrada revisão existente. Buscando última versão...
+2025-01-24 08:29:59,748 - services.revision_service - INFO - Encontrada revisão b21203ec-f60b-4cd6-b372-3ccf97bc00fe com número 2, chamando atualização...
+2025-01-24 08:29:59,748 - services.revision_service - INFO - 
+        Iniciando atualização de revisão:
+        - ID Revisão: b21203ec-f60b-4cd6-b372-3ccf97bc00fe
+        - Valor: 325025.0
+        - Número Revisão: 2
+        - Word Path: Proposta Blutrafos nº BT 810000-Rev02.docx
+        - PDF Path: Resumo_Proposta_BT_810000-Rev02_EXTRATO.pdf
+        - Escopo: 1,530 MVA
+        
+2025-01-24 08:29:59,748 - services.revision_service - INFO - Preparando dados para atualização da revisão...
+2025-01-24 08:29:59,748 - services.revision_service - INFO - Dados JSON preparados com sucesso
+2025-01-24 08:29:59,752 - services.revision_service - INFO - Executando query de UPDATE na tabela revisoes...
+2025-01-24 08:29:59,961 - services.revision_service - INFO - Resultado do UPDATE: ('b21203ec-f60b-4cd6-b372-3ccf97bc00fe', 'a9806d04-43fa-454a-9234-c36ddec9e6c8')
+2025-01-24 08:29:59,961 - services.revision_service - INFO - Revisão atualizada com sucesso. ID: b21203ec-f60b-4cd6-b372-3ccf97bc00fe, ID Proposta: a9806d04-43fa-454a-9234-c36ddec9e6c8
+2025-01-24 08:29:59,961 - services.revision_service - INFO - Verificando se revisão 2 é a mais recente...
+2025-01-24 08:30:01,811 - services.revision_service - INFO - 
+                Verificando se revisão 2 é a maior:
+                - Maior revisão encontrada: 2
+                - Nova revisão: 2
+                - É a maior? True
+            
+2025-01-24 08:30:01,811 - services.revision_service - INFO - Revisão 2 é a mais recente. Atualizando proposta...
+2025-01-24 08:30:01,814 - services.revision_service - INFO - 
+    Iniciando atualização da proposta:
+    - ID: a9806d04-43fa-454a-9234-c36ddec9e6c8
+    - Escopo: 1,530 MVA
+    - Valor: 325025.0
+    - Última Revisão: 2
+    - ID Revisão (se fornecido): None
+    
+2025-01-24 08:30:03,080 - services.revision_service - INFO - Buscando ID da revisão mais recente para proposta a9806d04-43fa-454a-9234-c36ddec9e6c8 e revisão 2
+2025-01-24 08:30:03,498 - services.revision_service - INFO - ID da revisão para atualização: b21203ec-f60b-4cd6-b372-3ccf97bc00fe
+2025-01-24 08:30:03,704 - services.revision_service - INFO - 
+            Valores atuais da proposta antes da atualização:
+            - Escopo: 0,030 MVA
+            - Valor: 91230.00
+            - Última Revisão: 1
+            
+2025-01-24 08:30:03,704 - services.revision_service - INFO - 
+        Executando query de atualização com parâmetros:
+        - Escopo: 1,530 MVA
+        - Valor: 325025.0
+        - Última Revisão: 2
+        - ID Proposta: a9806d04-43fa-454a-9234-c36ddec9e6c8
+        
+2025-01-24 08:30:03,914 - services.revision_service - INFO - 
+            Proposta atualizada com sucesso:
+            - ID: a9806d04-43fa-454a-9234-c36ddec9e6c8
+            - Novo Escopo: 1,530 MVA
+            - Novo Valor: 325025.00
+            - Nova Última Revisão: 2
+            
+2025-01-24 08:30:04,119 - services.revision_service - INFO - Commit realizado com sucesso
+2025-01-24 08:30:04,523 - services.revision_service - INFO - 
+            Valores finais da proposta após atualização:
+            - Escopo: 1,530 MVA
+            - Valor: 325025.00
+            - Última Revisão: 2
+            
+2025-01-24 08:30:04,525 - services.revision_service - INFO - Conexão fechada com sucesso
+2025-01-24 08:31:08,274 - services.revision_service - INFO - 
+        Iniciando inserção/atualização de revisão:
+        - ID Proposta: a9806d04-43fa-454a-9234-c36ddec9e6c8
+        - Valor: 388786.0
+        - Número Revisão: 3
+        - Word Path: Proposta Blutrafos nº BT 810000-Rev03.docx
+        - PDF Path: Resumo_Proposta_BT_810000-Rev03_EXTRATO.pdf
+        - Escopo: 1,530 MVA
+        
+2025-01-24 08:31:08,277 - services.revision_service - INFO - Verificando se já existe uma revisão com este número...
+2025-01-24 08:31:08,676 - services.revision_service - INFO - Resultado da busca por revisão existente: None
+2025-01-24 08:31:08,676 - services.revision_service - INFO - Verificando se é a próxima revisão válida...
+2025-01-24 08:31:08,876 - services.revision_service - INFO - Última revisão: 2, Próxima revisão: 3
+2025-01-24 08:31:08,876 - services.revision_service - INFO - Preparando dados para nova revisão 3...
+2025-01-24 08:31:08,876 - services.revision_service - INFO - Inserindo nova revisão no banco...
+2025-01-24 08:31:09,076 - services.revision_service - INFO - Nova revisão criada com ID: 262b31e9-3c84-4ae3-8a01-7cfa8c612b16
+2025-01-24 08:31:09,076 - services.revision_service - INFO - Verificando necessidade de atualizar proposta (última revisão: 2)
+2025-01-24 08:31:10,729 - services.revision_service - INFO - 
+                Verificando se revisão 3 é a maior:
+                - Maior revisão encontrada: 2
+                - Nova revisão: 3
+                - É a maior? True
+            
+2025-01-24 08:31:10,734 - services.revision_service - INFO - Chamando atualização da proposta...
+2025-01-24 08:31:10,735 - services.revision_service - INFO - 
+    Iniciando atualização da proposta:
+    - ID: a9806d04-43fa-454a-9234-c36ddec9e6c8
+    - Escopo: 1,530 MVA
+    - Valor: 388786.0
+    - Última Revisão: 3
+    - ID Revisão (se fornecido): 262b31e9-3c84-4ae3-8a01-7cfa8c612b16
+    
+2025-01-24 08:31:11,967 - services.revision_service - INFO - ID da revisão para atualização: 262b31e9-3c84-4ae3-8a01-7cfa8c612b16
+2025-01-24 08:31:12,378 - services.revision_service - INFO - 
+            Valores atuais da proposta antes da atualização:
+            - Escopo: 1,530 MVA
+            - Valor: 325025.00
+            - Última Revisão: 2
+            
+2025-01-24 08:31:12,379 - services.revision_service - INFO - 
+        Executando query de atualização com parâmetros:
+        - Escopo: 1,530 MVA
+        - Valor: 388786.0
+        - Última Revisão: 3
+        - ID Proposta: a9806d04-43fa-454a-9234-c36ddec9e6c8
+        
+2025-01-24 08:31:12,583 - services.revision_service - INFO - 
+            Proposta atualizada com sucesso:
+            - ID: a9806d04-43fa-454a-9234-c36ddec9e6c8
+            - Novo Escopo: 1,530 MVA
+            - Novo Valor: 388786.00
+            - Nova Última Revisão: 3
+            
+2025-01-24 08:31:12,776 - services.revision_service - INFO - Commit realizado com sucesso
+2025-01-24 08:31:13,188 - services.revision_service - INFO - 
+            Valores finais da proposta após atualização:
+            - Escopo: 1,530 MVA
+            - Valor: 388786.00
+            - Última Revisão: 3
+            
+2025-01-24 08:31:13,188 - services.revision_service - INFO - Conexão fechada com sucesso
+2025-01-24 08:32:25,830 - services.revision_service - INFO - 
+        Iniciando inserção/atualização de revisão:
+        - ID Proposta: a9806d04-43fa-454a-9234-c36ddec9e6c8
+        - Valor: 71577.0
+        - Número Revisão: 4
+        - Word Path: Proposta Blutrafos nº BT 810000-Rev04.docx
+        - PDF Path: Resumo_Proposta_BT_810000-Rev04_EXTRATO.pdf
+        - Escopo: 0,030 MVA
+        
+2025-01-24 08:32:25,830 - services.revision_service - INFO - Verificando se já existe uma revisão com este número...
+2025-01-24 08:32:26,241 - services.revision_service - INFO - Resultado da busca por revisão existente: None
+2025-01-24 08:32:26,241 - services.revision_service - INFO - Verificando se é a próxima revisão válida...
+2025-01-24 08:32:26,445 - services.revision_service - INFO - Última revisão: 3, Próxima revisão: 4
+2025-01-24 08:32:26,446 - services.revision_service - INFO - Preparando dados para nova revisão 4...
+2025-01-24 08:32:26,446 - services.revision_service - INFO - Inserindo nova revisão no banco...
+2025-01-24 08:32:26,647 - services.revision_service - INFO - Nova revisão criada com ID: 1a64f297-7900-42bb-82de-4f68693aee3c
+2025-01-24 08:32:26,652 - services.revision_service - INFO - Verificando necessidade de atualizar proposta (última revisão: 3)
+2025-01-24 08:32:28,329 - services.revision_service - INFO - 
+                Verificando se revisão 4 é a maior:
+                - Maior revisão encontrada: 3
+                - Nova revisão: 4
+                - É a maior? True
+            
+2025-01-24 08:32:28,337 - services.revision_service - INFO - Chamando atualização da proposta...
+2025-01-24 08:32:28,337 - services.revision_service - INFO - 
+    Iniciando atualização da proposta:
+    - ID: a9806d04-43fa-454a-9234-c36ddec9e6c8
+    - Escopo: 0,030 MVA
+    - Valor: 71577.0
+    - Última Revisão: 4
+    - ID Revisão (se fornecido): 1a64f297-7900-42bb-82de-4f68693aee3c
+    
+2025-01-24 08:32:29,597 - services.revision_service - INFO - ID da revisão para atualização: 1a64f297-7900-42bb-82de-4f68693aee3c
+2025-01-24 08:32:30,012 - services.revision_service - INFO - 
+            Valores atuais da proposta antes da atualização:
+            - Escopo: 1,530 MVA
+            - Valor: 388786.00
+            - Última Revisão: 3
+            
+2025-01-24 08:32:30,012 - services.revision_service - INFO - 
+        Executando query de atualização com parâmetros:
+        - Escopo: 0,030 MVA
+        - Valor: 71577.0
+        - Última Revisão: 4
+        - ID Proposta: a9806d04-43fa-454a-9234-c36ddec9e6c8
+        
+2025-01-24 08:32:30,220 - services.revision_service - INFO - 
+            Proposta atualizada com sucesso:
+            - ID: a9806d04-43fa-454a-9234-c36ddec9e6c8
+            - Novo Escopo: 0,030 MVA
+            - Novo Valor: 71577.00
+            - Nova Última Revisão: 4
+            
+2025-01-24 08:32:30,439 - services.revision_service - INFO - Commit realizado com sucesso
+2025-01-24 08:32:30,847 - services.revision_service - INFO - 
+            Valores finais da proposta após atualização:
+            - Escopo: 0,030 MVA
+            - Valor: 71577.00
+            - Última Revisão: 4
+            
+2025-01-24 08:32:30,850 - services.revision_service - INFO - Conexão fechada com sucesso
+2025-01-24 08:33:44,921 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-24 08:36:37,726 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-24 08:37:09,859 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-24 08:37:39,100 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-24 09:38:59,723 - services.revision_service - INFO - 
+        Iniciando inserção/atualização de revisão:
+        - ID Proposta: be50593c-0208-4131-935f-26a78a6e95fc
+        - Valor: 233795.0
+        - Número Revisão: 0
+        - Word Path: Proposta Blutrafos nº BT 810001-Rev00.docx
+        - PDF Path: Resumo_Proposta_BT_810001-Rev00_EXTRATO.pdf
+        - Escopo: 1,500 MVA
+        
+2025-01-24 09:38:59,727 - services.revision_service - INFO - Verificando se já existe uma revisão com este número...
+2025-01-24 09:39:00,242 - services.revision_service - INFO - Resultado da busca por revisão existente: None
+2025-01-24 09:39:00,244 - services.revision_service - INFO - Verificando se é a próxima revisão válida...
+2025-01-24 09:39:00,447 - services.revision_service - INFO - Última revisão: -1, Próxima revisão: 0
+2025-01-24 09:39:00,447 - services.revision_service - INFO - Preparando dados para nova revisão 0...
+2025-01-24 09:39:00,447 - services.revision_service - INFO - Inserindo nova revisão no banco...
+2025-01-24 09:39:00,747 - services.revision_service - INFO - Nova revisão criada com ID: 2956b3f9-21b8-4778-8dee-db4c0f7045d6
+2025-01-24 09:39:00,747 - services.revision_service - INFO - Verificando necessidade de atualizar proposta (última revisão: -1)
+2025-01-24 09:39:03,089 - services.revision_service - INFO - Nenhuma revisão encontrada para proposta be50593c-0208-4131-935f-26a78a6e95fc. Esta será a primeira.
+2025-01-24 09:39:03,091 - services.revision_service - INFO - Chamando atualização da proposta...
+2025-01-24 09:39:03,092 - services.revision_service - INFO - 
+    Iniciando atualização da proposta:
+    - ID: be50593c-0208-4131-935f-26a78a6e95fc
+    - Escopo: 1,500 MVA
+    - Valor: 233795.0
+    - Última Revisão: 0
+    - ID Revisão (se fornecido): 2956b3f9-21b8-4778-8dee-db4c0f7045d6
+    
+2025-01-24 09:39:05,826 - services.revision_service - INFO - ID da revisão para atualização: 2956b3f9-21b8-4778-8dee-db4c0f7045d6
+2025-01-24 09:39:06,356 - services.revision_service - INFO - 
+            Valores atuais da proposta antes da atualização:
+            - Escopo: 0 mVA
+            - Valor: 0.00
+            - Última Revisão: 0
+            
+2025-01-24 09:39:06,358 - services.revision_service - INFO - 
+        Executando query de atualização com parâmetros:
+        - Escopo: 1,500 MVA
+        - Valor: 233795.0
+        - Última Revisão: 0
+        - ID Proposta: be50593c-0208-4131-935f-26a78a6e95fc
+        
+2025-01-24 09:39:06,776 - services.revision_service - INFO - 
+            Proposta atualizada com sucesso:
+            - ID: be50593c-0208-4131-935f-26a78a6e95fc
+            - Novo Escopo: 1,500 MVA
+            - Novo Valor: 233795.00
+            - Nova Última Revisão: 0
+            
+2025-01-24 09:39:07,094 - services.revision_service - INFO - Commit realizado com sucesso
+2025-01-24 09:39:07,697 - services.revision_service - INFO - 
+            Valores finais da proposta após atualização:
+            - Escopo: 1,500 MVA
+            - Valor: 233795.00
+            - Última Revisão: 0
+            
+2025-01-24 09:39:07,701 - services.revision_service - INFO - Conexão fechada com sucesso
+2025-01-24 10:02:06,632 - services.revision_service - INFO - 
+        Iniciando inserção/atualização de revisão:
+        - ID Proposta: be50593c-0208-4131-935f-26a78a6e95fc
+        - Valor: 20655.0
+        - Número Revisão: 1
+        - Word Path: Proposta Blutrafos nº BT 810001-Rev01.docx
+        - PDF Path: Resumo_Proposta_BT_810001-Rev01_EXTRATO.pdf
+        - Escopo: 0,015 MVA
+        
+2025-01-24 10:02:06,634 - services.revision_service - INFO - Verificando se já existe uma revisão com este número...
+2025-01-24 10:02:07,246 - services.revision_service - INFO - Resultado da busca por revisão existente: None
+2025-01-24 10:02:07,246 - services.revision_service - INFO - Verificando se é a próxima revisão válida...
+2025-01-24 10:02:07,653 - services.revision_service - INFO - Última revisão: 0, Próxima revisão: 1
+2025-01-24 10:02:07,657 - services.revision_service - INFO - Preparando dados para nova revisão 1...
+2025-01-24 10:02:07,658 - services.revision_service - INFO - Inserindo nova revisão no banco...
+2025-01-24 10:02:07,921 - services.revision_service - INFO - Nova revisão criada com ID: cfbf3b83-cda3-49b8-886b-c5a41303fcd1
+2025-01-24 10:02:07,923 - services.revision_service - INFO - Verificando necessidade de atualizar proposta (última revisão: 0)
+2025-01-24 10:02:10,011 - services.revision_service - INFO - 
+                Verificando se revisão 1 é a maior:
+                - Maior revisão encontrada: 0
+                - Nova revisão: 1
+                - É a maior? True
+            
+2025-01-24 10:02:10,014 - services.revision_service - INFO - Chamando atualização da proposta...
+2025-01-24 10:02:10,014 - services.revision_service - INFO - 
+    Iniciando atualização da proposta:
+    - ID: be50593c-0208-4131-935f-26a78a6e95fc
+    - Escopo: 0,015 MVA
+    - Valor: 20655.0
+    - Última Revisão: 1
+    - ID Revisão (se fornecido): cfbf3b83-cda3-49b8-886b-c5a41303fcd1
+    
+2025-01-24 10:02:11,757 - services.revision_service - INFO - ID da revisão para atualização: cfbf3b83-cda3-49b8-886b-c5a41303fcd1
+2025-01-24 10:02:12,366 - services.revision_service - INFO - 
+            Valores atuais da proposta antes da atualização:
+            - Escopo: 1,500 MVA
+            - Valor: 233795.00
+            - Última Revisão: 0
+            
+2025-01-24 10:02:12,367 - services.revision_service - INFO - 
+        Executando query de atualização com parâmetros:
+        - Escopo: 0,015 MVA
+        - Valor: 20655.0
+        - Última Revisão: 1
+        - ID Proposta: be50593c-0208-4131-935f-26a78a6e95fc
+        
+2025-01-24 10:02:12,674 - services.revision_service - INFO - 
+            Proposta atualizada com sucesso:
+            - ID: be50593c-0208-4131-935f-26a78a6e95fc
+            - Novo Escopo: 0,015 MVA
+            - Novo Valor: 20655.00
+            - Nova Última Revisão: 1
+            
+2025-01-24 10:02:12,981 - services.revision_service - INFO - Commit realizado com sucesso
+2025-01-24 10:02:13,595 - services.revision_service - INFO - 
+            Valores finais da proposta após atualização:
+            - Escopo: 0,015 MVA
+            - Valor: 20655.00
+            - Última Revisão: 1
+            
+2025-01-24 10:02:13,597 - services.revision_service - INFO - Conexão fechada com sucesso
+2025-01-24 15:53:20,694 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-24 15:57:13,460 - googlemaps.client - INFO - API queries_quota: 60
+2025-01-24 16:33:50,837 - googlemaps.client - INFO - API queries_quota: 60

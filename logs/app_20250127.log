@@ -1,0 +1,117 @@
+2025-01-27 17:59:18,880 - services.revision_service - INFO - 
+        Iniciando inserção/atualização de revisão:
+        - ID Proposta: 86c846cc-b8eb-44f1-a9f6-b5a0970457c8
+        - Valor: 233795.0
+        - Número Revisão: 0
+        - Word Path: Proposta Blutrafos nº BT 80001-Rev00.docx
+        - PDF Path: Resumo_Proposta_BT_80001-Rev00_EXTRATO.pdf
+        - Escopo: 1,500 MVA
+        
+2025-01-27 17:59:18,884 - services.revision_service - INFO - Verificando se já existe uma revisão com este número...
+2025-01-27 17:59:19,416 - services.revision_service - INFO - Resultado da busca por revisão existente: None
+2025-01-27 17:59:19,416 - services.revision_service - INFO - Verificando se é a próxima revisão válida...
+2025-01-27 17:59:19,654 - services.revision_service - INFO - Última revisão: -1, Próxima revisão: 0
+2025-01-27 17:59:19,654 - services.revision_service - INFO - Preparando dados para nova revisão 0...
+2025-01-27 17:59:19,654 - services.revision_service - INFO - Inserindo nova revisão no banco...
+2025-01-27 17:59:19,900 - services.revision_service - INFO - Nova revisão criada com ID: e450199d-ef0a-40f1-b042-95c4c6effabe
+2025-01-27 17:59:19,900 - services.revision_service - INFO - Verificando necessidade de atualizar proposta (última revisão: -1)
+2025-01-27 17:59:22,258 - services.revision_service - INFO - Nenhuma revisão encontrada para proposta 86c846cc-b8eb-44f1-a9f6-b5a0970457c8. Esta será a primeira.
+2025-01-27 17:59:22,258 - services.revision_service - INFO - Chamando atualização da proposta...
+2025-01-27 17:59:22,258 - services.revision_service - INFO - 
+    Iniciando atualização da proposta:
+    - ID: 86c846cc-b8eb-44f1-a9f6-b5a0970457c8
+    - Escopo: 1,500 MVA
+    - Valor: 233795.0
+    - Última Revisão: 0
+    - ID Revisão (se fornecido): e450199d-ef0a-40f1-b042-95c4c6effabe
+    
+2025-01-27 17:59:24,001 - services.revision_service - INFO - ID da revisão para atualização: e450199d-ef0a-40f1-b042-95c4c6effabe
+2025-01-27 17:59:24,614 - services.revision_service - INFO - 
+            Valores atuais da proposta antes da atualização:
+            - Escopo: 0 mVA
+            - Valor: 0.00
+            - Última Revisão: 0
+            
+2025-01-27 17:59:24,616 - services.revision_service - INFO - 
+        Executando query de atualização com parâmetros:
+        - Escopo: 1,500 MVA
+        - Valor: 233795.0
+        - Última Revisão: 0
+        - ID Proposta: 86c846cc-b8eb-44f1-a9f6-b5a0970457c8
+        
+2025-01-27 17:59:24,917 - services.revision_service - INFO - 
+            Proposta atualizada com sucesso:
+            - ID: 86c846cc-b8eb-44f1-a9f6-b5a0970457c8
+            - Novo Escopo: 1,500 MVA
+            - Novo Valor: 233795.00
+            - Nova Última Revisão: 0
+            
+2025-01-27 17:59:25,151 - services.revision_service - INFO - Commit realizado com sucesso
+2025-01-27 17:59:25,635 - services.revision_service - INFO - 
+            Valores finais da proposta após atualização:
+            - Escopo: 1,500 MVA
+            - Valor: 233795.00
+            - Última Revisão: 0
+            
+2025-01-27 17:59:25,640 - services.revision_service - INFO - Conexão fechada com sucesso
+2025-01-27 18:03:02,523 - services.revision_service - INFO - 
+        Iniciando inserção/atualização de revisão:
+        - ID Proposta: 86c846cc-b8eb-44f1-a9f6-b5a0970457c8
+        - Valor: 463028.0
+        - Número Revisão: 1
+        - Word Path: Proposta Blutrafos nº BT 80001-Rev01.docx
+        - PDF Path: Resumo_Proposta_BT_80001-Rev01_EXTRATO.pdf
+        - Escopo: 4,000 MVA
+        
+2025-01-27 18:03:02,525 - services.revision_service - INFO - Verificando se já existe uma revisão com este número...
+2025-01-27 18:03:03,135 - services.revision_service - INFO - Resultado da busca por revisão existente: None
+2025-01-27 18:03:03,140 - services.revision_service - INFO - Verificando se é a próxima revisão válida...
+2025-01-27 18:03:03,440 - services.revision_service - INFO - Última revisão: 0, Próxima revisão: 1
+2025-01-27 18:03:03,440 - services.revision_service - INFO - Preparando dados para nova revisão 1...
+2025-01-27 18:03:03,440 - services.revision_service - INFO - Inserindo nova revisão no banco...
+2025-01-27 18:03:03,751 - services.revision_service - INFO - Nova revisão criada com ID: a750bc8b-5d57-4675-b596-7fbfd288a9f6
+2025-01-27 18:03:03,751 - services.revision_service - INFO - Verificando necessidade de atualizar proposta (última revisão: 0)
+2025-01-27 18:03:06,001 - services.revision_service - INFO - 
+                Verificando se revisão 1 é a maior:
+                - Maior revisão encontrada: 0
+                - Nova revisão: 1
+                - É a maior? True
+            
+2025-01-27 18:03:06,008 - services.revision_service - INFO - Chamando atualização da proposta...
+2025-01-27 18:03:06,008 - services.revision_service - INFO - 
+    Iniciando atualização da proposta:
+    - ID: 86c846cc-b8eb-44f1-a9f6-b5a0970457c8
+    - Escopo: 4,000 MVA
+    - Valor: 463028.0
+    - Última Revisão: 1
+    - ID Revisão (se fornecido): a750bc8b-5d57-4675-b596-7fbfd288a9f6
+    
+2025-01-27 18:03:07,745 - services.revision_service - INFO - ID da revisão para atualização: a750bc8b-5d57-4675-b596-7fbfd288a9f6
+2025-01-27 18:03:08,358 - services.revision_service - INFO - 
+            Valores atuais da proposta antes da atualização:
+            - Escopo: 1,500 MVA
+            - Valor: 233795.00
+            - Última Revisão: 0
+            
+2025-01-27 18:03:08,358 - services.revision_service - INFO - 
+        Executando query de atualização com parâmetros:
+        - Escopo: 4,000 MVA
+        - Valor: 463028.0
+        - Última Revisão: 1
+        - ID Proposta: 86c846cc-b8eb-44f1-a9f6-b5a0970457c8
+        
+2025-01-27 18:03:08,667 - services.revision_service - INFO - 
+            Proposta atualizada com sucesso:
+            - ID: 86c846cc-b8eb-44f1-a9f6-b5a0970457c8
+            - Novo Escopo: 4,000 MVA
+            - Novo Valor: 463028.00
+            - Nova Última Revisão: 1
+            
+2025-01-27 18:03:08,974 - services.revision_service - INFO - Commit realizado com sucesso
+2025-01-27 18:03:09,586 - services.revision_service - INFO - 
+            Valores finais da proposta após atualização:
+            - Escopo: 4,000 MVA
+            - Valor: 463028.00
+            - Última Revisão: 1
+            
+2025-01-27 18:03:09,592 - services.revision_service - INFO - Conexão fechada com sucesso
