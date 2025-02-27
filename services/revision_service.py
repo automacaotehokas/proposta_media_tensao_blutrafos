@@ -126,7 +126,7 @@ class StreamlitApiService:
             return {'Content-Type': 'application/json; charset=utf-8'}
 
     def _convert_to_serializable(self, obj: Any) -> Any:
-        logger.info("Convertendo para serializável...")
+
         """Converte objetos para tipos serializáveis JSON"""
         if obj is None or isinstance(obj, (str, int, float, bool)):
             return obj
@@ -186,8 +186,7 @@ class StreamlitApiService:
                     url += f"?token={self.token}"
             
             serialized_data = json.dumps(data, ensure_ascii=False)
-            self.logger.info(f"Enviando requisição para {url}")
-            self.logger.info(f"Payload: {serialized_data}")
+
             
             response = requests.request(
                 method=method,
@@ -247,29 +246,37 @@ class StreamlitApiService:
         return True
 
     def calcular_potencia_bt(self, itens_configurados_bt):
-        """Calcula a potência total dos transformadores BT"""
+        """Calcula a potência total dos transformadores BT multiplicando pela quantidade"""
         soma = 0
         if itens_configurados_bt and isinstance(itens_configurados_bt, list):
             for item in itens_configurados_bt:
                 try:
-                    if isinstance(item, dict) and "potencia_numerica" in item:
-                        soma += float(item["potencia_numerica"])
+                    if isinstance(item, dict) and "potencia_numerica" in item and "quantidade" in item:
+                        potencia = float(item["potencia_numerica"])
+                        quantidade = int(item["quantidade"])
+                        soma += potencia * quantidade
+                        self.logger.info(f"Bola azul Potência: {potencia}, Quantidade: {quantidade}, Soma: {soma}")  # Multiplicação pela quantidade
                 except (ValueError, TypeError) as e:
                     self.logger.warning(f"Erro ao converter potência BT: {e}")
         return soma
 
+
     def calcular_potencia_mt(self, itens_configurados_mt):
-        """Calcula a potência total dos transformadores MT"""
+        """Calcula a potência total dos transformadores MT multiplicando pela quantidade"""
         soma = 0
         if itens_configurados_mt and isinstance(itens_configurados_mt, list):
             for item in itens_configurados_mt:
                 try:
-                    if isinstance(item, dict) and "Potência" in item:
+                    if isinstance(item, dict) and "Potência" in item and "quantidade" in item:
                         potencia_str = ''.join(c for c in str(item["Potência"]) if c.isdigit() or c == '.')
-                        soma += float(potencia_str)
+                        potencia = float(potencia_str)
+                        quantidade = int(item["quantidade"])
+                        soma += potencia * quantidade  # Multiplicação pela quantidade
+                        self.logger.info(f"Bola azul Potência: {potencia}, Quantidade: {quantidade}, Soma: {soma}")
                 except (ValueError, TypeError, AttributeError) as e:
                     self.logger.warning(f"Erro ao converter potência MT: {e}")
         return soma
+
 
     def somar_potencias_transformadores(self, itens_configurados_bt, itens_configurados_mt, tipo='ambos'):
         """
@@ -421,9 +428,6 @@ class StreamlitApiService:
         """
         try:
             # Log todos os itens no session_state
-
-            self.logger.info(f"Itens MT: {st.session_state.get('itens', {}).get('itens_configurados_mt')}")
-            self.logger.info(f"Itens BT: {st.session_state.get('itens', {}).get('itens_configurados_bt')}")
             
             
             itens_mt = st.session_state.get('itens', {}).get('itens_configurados_mt', [])
@@ -441,7 +445,7 @@ class StreamlitApiService:
                 'prazo_entrega': st.session_state.get('prazo_entrega', {}),
                 'desvios': st.session_state.get('desvios', {})
             }
-            logger.info(f"Dados da revisão: {dados_revisao}")
+
             self._update_itens_totais()
 
             valor_total = sum(
@@ -474,7 +478,7 @@ class StreamlitApiService:
 
                 # Converte dados para JSON e imprime para debug
                 json_str = json.dumps(dados_revisao, default=custom_serializer, ensure_ascii=False)
-                self.logger.info(f"JSON gerado: {json_str}")
+               
 
                 # Tenta parsear o JSON para garantir que é válido
                 dados_serializados = json.loads(json_str)

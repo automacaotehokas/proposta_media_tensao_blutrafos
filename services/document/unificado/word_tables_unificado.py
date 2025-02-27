@@ -78,7 +78,7 @@ def inserir_tabelas_separadas(
     for i, paragraph in enumerate(doc.paragraphs):
         # Inserir tabela de preços MT
         if not mt_price_inserted and "{{ QUADRO_PRECOS_MT}}" in paragraph.text and itens_mt:
-            logger.info(f"Processando itens MT: {len(itens_mt)} itens")
+
             try:
                 # Criar tabela de MT
                 table = word_tables_mt.create_custom_table(doc, itens_mt, observacao)
