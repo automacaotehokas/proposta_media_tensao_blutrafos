@@ -10,6 +10,7 @@ import streamlit as st
 import pandas as pd
 from typing import List, Dict
 from .componentsBT import ComponenteBT
+from ..pagamento_entrega.components import ComponentsPagamentoEntrega
 from .calculo_item_bt import (
     buscar_cod_caixa_proj,
     buscar_preco_por_potencia
@@ -92,6 +93,8 @@ def pagina_configuracao_MT():
         percentuais = calcular_percentuais(st.session_state['impostos'])
 
         componentsMT.render_item_config(item_index, df, item_data)
+
+    ComponentsPagamentoEntrega.inicializar_session_state_itens()
     
     # Renderização do resumo
     

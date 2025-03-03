@@ -16,6 +16,7 @@ from streamlit.components.v1 import html as components_html
 from decimal import Decimal
 from services.document.mt.test import formatar_numero_inteiro_ou_decimal
 from utils.formatters import formatar_numero_brasileiro
+from pages.pagamento_entrega.components import ComponentsPagamentoEntrega
 
 dotenv.load_dotenv()
 
@@ -521,6 +522,8 @@ def main():
     st.set_page_config(layout="wide")
     st.title("Proposta Automatizada - Transformadores")
     st.markdown("---")
+
+    
         # Verifica se está rodando em produção
     if os.getenv('ENVIRONMENT') == 'PRODUCTION':
         params = st.query_params
