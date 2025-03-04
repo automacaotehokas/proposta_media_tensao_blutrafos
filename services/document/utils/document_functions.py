@@ -165,14 +165,6 @@ def highlight_work_days(paragraph, input_text):
         run.font.name = 'Calibri Light'
         run.font.size = Pt(11)
 
-# Example usage:
-# doc = Document()
-# paragraph = doc.add_paragraph()
-# highlight_work_days(paragraph, "Prazo de Fabricação: 60 dias úteis após PRAZO DE FABRICAÇÃO.")
-# Example usage:
-# doc = Document()
-# paragraph = doc.add_paragraph()
-# highlight_work_days(paragraph, "Prazo de entrega: 60 dias úteis após aprovação.")
 
 def inserir_prazo_entrega(doc):
     """
@@ -182,13 +174,13 @@ def inserir_prazo_entrega(doc):
     # Função auxiliar para processar texto com marcações de negrito
     def processar_texto_com_negrito(paragraph, texto, valor_colorido=None, incluir_dias_uteis=False):
         """
-        Processa texto com marcações de negrito e aplica cor vermelha ao valor e 'dias úteis'.
+        Processa texto com marcações de negrito e aplica cor vermelha ao valor e 'dias'.
         
         Args:
             paragraph: O parágrafo onde o texto será inserido
             texto: O texto com marcações de negrito
             valor_colorido: O valor que deve aparecer em vermelho
-            incluir_dias_uteis: Se True, também colore 'dias úteis' em vermelho
+            incluir_dias_uteis: Se True, também colore 'dias' em vermelho
         """
         partes = texto.split("**")
         
@@ -214,12 +206,12 @@ def inserir_prazo_entrega(doc):
                     if i % 2 == 1:
                         run.bold = True
                 
-                # Se precisamos colorir "dias úteis", vamos procurar por isso no resto do texto
-                if incluir_dias_uteis and "dias úteis" in resto:
-                    # Dividimos o resto do texto em: antes dos "dias úteis", "dias úteis", e depois
-                    antes_dias, dias_uteis, depois = resto.partition("dias úteis")
+                # Se precisamos colorir "dias", vamos procurar por isso no resto do texto
+                if incluir_dias_uteis and "dias" in resto:
+                    # Dividimos o resto do texto em: antes dos "dias", "dias", e depois
+                    antes_dias, dias_uteis, depois = resto.partition("dias")
                     
-                    # Adiciona o texto antes de "dias úteis"
+                    # Adiciona o texto antes de "dias"
                     if antes_dias:
                         run = paragraph.add_run(antes_dias)
                         run.font.name = 'Calibri Light'
@@ -227,8 +219,8 @@ def inserir_prazo_entrega(doc):
                         if i % 2 == 1:
                             run.bold = True
                     
-                    # Adiciona "dias úteis" em vermelho
-                    run = paragraph.add_run("dias úteis")
+                    # Adiciona "dias" em vermelho
+                    run = paragraph.add_run("dias")
                     run.font.name = 'Calibri Light'
                     run.font.size = Pt(11)
                     run.font.color.rgb = RGBColor(255, 0, 0)  # Vermelho
@@ -243,7 +235,7 @@ def inserir_prazo_entrega(doc):
                         if i % 2 == 1:
                             run.bold = True
                 else:
-                    # Se não precisamos colorir "dias úteis", adiciona o resto normalmente
+                    # Se não precisamos colorir "dias", adiciona o resto normalmente
                     if resto:
                         run = paragraph.add_run(resto)
                         run.font.name = 'Calibri Light'

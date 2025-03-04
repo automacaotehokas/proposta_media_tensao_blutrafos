@@ -125,6 +125,12 @@ class ComponentsPagamentoEntrega:
     @staticmethod
     def inicializar_session_state():
         """Inicializa todas as variáveis necessárias no session_state"""
+        
+        # Inicialização do estado para prazo de fabricação com texto padrão
+        if 'prazo_entrega_global' not in st.session_state:
+            st.session_state['prazo_entrega_global'] = {
+                'prazo_fabricacao': "Prazo de fabricação: Até 60 dias contados a partir da data da aprovação definitiva dos desenhos + transporte."
+            }
 
         
         if 'eventos_pagamento' not in st.session_state:
@@ -145,11 +151,66 @@ class ComponentsPagamentoEntrega:
         # Inicializa os checkboxes "A combinar"
         if 'a_combinar' not in st.session_state:
             st.session_state['a_combinar'] = False
-        
 
 
     @staticmethod
+    def inicializar_session_state_itens():
+        """Inicializa todas as variáveis necessárias no session_state"""
 
+        produtos = ComponentsPagamentoEntrega.carregar_tipo_produto(st.session_state['itens'])
+        # Garantir que a lista de eventos existe e está inicializada
+        if 'eventos_pagamento' not in st.session_state:
+            # Se tiver apenas BT, usa os eventos predefinidos de BT
+            if produtos['bt'] and not produtos['mt']:
+                st.session_state['eventos_pagamento'] = ComponentsPagamentoEntrega.EVENTOS_PREDEFINIDOS_BT.copy()
+            # Se tiver MT ou ambos, usa os eventos predefinidos padrão (MT)
+            else:
+                st.session_state['eventos_pagamento'] = ComponentsPagamentoEntrega.EVENTOS_PREDEFINIDOS.copy()
+        # Se a lista estiver vazia, inicializa com os eventos predefinidos
+        if len(st.session_state['eventos_pagamento']) == 0:
+            if produtos['bt'] and not produtos['mt']:
+                st.session_state['eventos_pagamento'] = ComponentsPagamentoEntrega.EVENTOS_PREDEFINIDOS_BT.copy()
+            else:
+                st.session_state['eventos_pagamento'] = ComponentsPagamentoEntrega.EVENTOS_PREDEFINIDOS.copy()
+
+        
+        # Garantir que a flag a_combinar existe
+        if 'a_combinar_pagamento' not in st.session_state:
+            st.session_state['a_combinar_pagamento'] = False
+    
+        
+        
+        # Inicialização do estado para prazo de fabricação com texto padrão
+        if 'prazo_entrega_global' not in st.session_state:
+            st.session_state['prazo_entrega_global'] = {
+                'prazo_fabricacao': "Prazo de fabricação: Até 60 dias contados a partir da data da aprovação definitiva dos desenhos + transporte."
+            }
+
+        
+        if 'eventos_pagamento' not in st.session_state:
+            st.session_state['eventos_pagamento'] = {}
+            
+        if 'prazo_entrega' not in st.session_state:
+            st.session_state['prazo_entrega'] = {
+                'prazo_desenho': 5,
+                'prazo_cliente': 2,
+                'prazo': {}
+            }
+        
+        # Inicializa eventos MT e BT se não existirem
+        if 'eventos_pagamento' not in st.session_state:
+            st.session_state['eventos_pagamento'] = ComponentsPagamentoEntrega.EVENTOS_PREDEFINIDOS.copy()
+        
+
+        # Inicializa os checkboxes "A combinar"
+        if 'a_combinar' not in st.session_state:
+            st.session_state['a_combinar'] = False
+
+
+                
+
+
+    @staticmethod
     def configurar_eventos_pagamento():
         """
         Configura eventos de pagamento de forma unificada para todos os produtos.
@@ -255,7 +316,7 @@ class ComponentsPagamentoEntrega:
         # Inicialização do estado para prazo de fabricação com texto padrão
         if 'prazo_entrega_global' not in st.session_state:
             st.session_state['prazo_entrega_global'] = {
-                'prazo_fabricacao': "Prazo de fabricação: Até 60 dias úteis contados a partir da data da aprovação definitiva dos desenhos + transporte."
+                'prazo_fabricacao': "Prazo de fabricação: Até 60 dias contados a partir da data da aprovação definitiva dos desenhos + transporte."
             }
 
         # Seção de Prazos Gerais - Organizada em duas colunas para melhor visualização

@@ -16,6 +16,7 @@ from streamlit.components.v1 import html as components_html
 from decimal import Decimal
 from services.document.mt.test import formatar_numero_inteiro_ou_decimal
 from utils.formatters import formatar_numero_brasileiro
+from pages.pagamento_entrega.components import ComponentsPagamentoEntrega
 
 dotenv.load_dotenv()
 
@@ -215,7 +216,7 @@ logger = logging.getLogger(__name__)
 def carregar_dados_revisao(revisao_id: str):
     """Carrega dados de uma revisão existente com tratamento para JSON duplamente codificado"""
     logger = logging.getLogger(__name__)
-    logger.info(f"Iniciando carregamento da revisão: {revisao_id}")
+
     
     conn = DatabaseConfig.get_connection()
     cur = conn.cursor()
@@ -235,56 +236,46 @@ def carregar_dados_revisao(revisao_id: str):
            WHERE r.id_revisao = %s
         """
         
-        logger.info(f"Executando query com revisao_id: {revisao_id}")
+
         cur.execute(query, (revisao_id,))
         resultado = cur.fetchone()
         
         if resultado:
-            logger.info("Dados encontrados no banco")
+
             conteudo, numero_revisao, cliente, proposta, obra, dt_oferta, contato = resultado
-            logger.info(f"Número da revisão: {numero_revisao}")
-            logger.info(f"Cliente: {cliente}")
-            logger.info(f"Proposta: {proposta}")
+
             
             if conteudo:
                 try:
-                    # Primeiro decode: converter para string JSON
-                    logger.info("Primeiro decode: convertendo dados do banco")
-                    logger.info(f"Tipo do conteúdo original: {type(conteudo)}")
-                    logger.info(f"Primeiros 100 caracteres do conteúdo: {str(conteudo)[:100]}")
+                    # Primeiro decode: converter para string JS
                     
                     if isinstance(conteudo, str):
                         primeiro_decode = json.loads(conteudo)
-                        logger.info(f"Tipo após primeiro decode: {type(primeiro_decode)}")
-                        logger.info(f"Estrutura após primeiro decode: {list(primeiro_decode.keys()) if isinstance(primeiro_decode, dict) else 'Não é um dicionário'}")
+
                         
                         # Se ainda é string, precisa de segundo decode
                         if isinstance(primeiro_decode, str):
-                            logger.info("Segundo decode necessário")
                             dados = json.loads(primeiro_decode)
-                            logger.info(f"Estrutura após segundo decode: {list(dados.keys()) if isinstance(dados, dict) else 'Não é um dicionário'}")
                         else:
                             dados = primeiro_decode
                     else:
                         dados = conteudo
 
-                    logger.info(f"Tipo final dos dados: {type(dados)}")
-                    logger.info(f"Chaves disponíveis: {dados.keys() if isinstance(dados, dict) else 'Não é um dicionário'}")
 
                     # Garante que temos um dicionário
                     if not isinstance(dados, dict):
-                        logger.error(f"Dados finais não são um dicionário: {type(dados)}")
+
                         return False
 
                     # Inicializa a estrutura de itens
-                    logger.info("Inicializando estrutura de itens")
+
                     st.session_state['itens'] = {
                         'itens_configurados_mt': dados.get('itens_configurados_mt', []),
                         'itens_configurados_bt': dados.get('itens_configurados_bt', [])
                     }
                     
                     # Log detalhado dos itens
-                    logger.info(f"Quantidade de itens MT: {len(st.session_state['itens']['itens_configurados_mt'])}")
+
                     if st.session_state['itens']['itens_configurados_mt']:
                         logger.info(f"Primeiro item MT: {st.session_state['itens']['itens_configurados_mt'][0]}")
                     
@@ -531,6 +522,8 @@ def main():
     st.set_page_config(layout="wide")
     st.title("Proposta Automatizada - Transformadores")
     st.markdown("---")
+
+    
         # Verifica se está rodando em produção
     if os.getenv('ENVIRONMENT') == 'PRODUCTION':
         params = st.query_params

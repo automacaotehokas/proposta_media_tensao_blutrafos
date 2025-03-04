@@ -126,7 +126,7 @@ class StreamlitApiService:
             return {'Content-Type': 'application/json; charset=utf-8'}
 
     def _convert_to_serializable(self, obj: Any) -> Any:
-        logger.info("Convertendo para serializável...")
+
         """Converte objetos para tipos serializáveis JSON"""
         if obj is None or isinstance(obj, (str, int, float, bool)):
             return obj
@@ -186,8 +186,7 @@ class StreamlitApiService:
                     url += f"?token={self.token}"
             
             serialized_data = json.dumps(data, ensure_ascii=False)
-            self.logger.info(f"Enviando requisição para {url}")
-            self.logger.info(f"Payload: {serialized_data}")
+
             
             response = requests.request(
                 method=method,
@@ -247,29 +246,47 @@ class StreamlitApiService:
         return True
 
     def calcular_potencia_bt(self, itens_configurados_bt):
-        """Calcula a potência total dos transformadores BT"""
+        """Calcula a potência total dos transformadores BT multiplicando pela quantidade"""
         soma = 0
-        if itens_configurados_bt and isinstance(itens_configurados_bt, list):
+        if not itens_configurados_bt:  # Verifica se é None ou vazio
+            return 0
+                
+        if isinstance(itens_configurados_bt, list):
             for item in itens_configurados_bt:
                 try:
-                    if isinstance(item, dict) and "potencia_numerica" in item:
-                        soma += float(item["potencia_numerica"])
+                    if isinstance(item, dict) and "potencia_numerica" in item and "quantidade" in item:
+                        potencia = float(item["potencia_numerica"])
+                        quantidade = int(item["quantidade"])
+                        soma += potencia * quantidade
+                        self.logger.info(f"Potência BT: {potencia}, Quantidade: {quantidade}, Soma parcial: {soma}")
                 except (ValueError, TypeError) as e:
                     self.logger.warning(f"Erro ao converter potência BT: {e}")
+        
+        self.logger.info(f"Soma total de potência BT: {soma}")
         return soma
 
+
     def calcular_potencia_mt(self, itens_configurados_mt):
-        """Calcula a potência total dos transformadores MT"""
+        """Calcula a potência total dos transformadores MT multiplicando pela quantidade"""
         soma = 0
-        if itens_configurados_mt and isinstance(itens_configurados_mt, list):
+        if not itens_configurados_mt:  # Verifica se é None ou vazio
+            return 0
+                
+        if isinstance(itens_configurados_mt, list):
             for item in itens_configurados_mt:
                 try:
-                    if isinstance(item, dict) and "Potência" in item:
-                        potencia_str = ''.join(c for c in str(item["Potência"]) if c.isdigit() or c == '.')
-                        soma += float(potencia_str)
+                    if isinstance(item, dict) and "Potência" in item and "Quantidade" in item:
+                        # O valor já é um Decimal, podemos convertê-lo diretamente para float
+                        potencia = float(item["Potência"])
+                        quantidade = int(item["Quantidade"])
+                        soma += potencia * quantidade
+                        self.logger.info(f"Potência MT: {potencia}, Quantidade: {quantidade}, Soma parcial: {soma}")
                 except (ValueError, TypeError, AttributeError) as e:
                     self.logger.warning(f"Erro ao converter potência MT: {e}")
+        
+        self.logger.info(f"Soma total de potência MT: {soma}")
         return soma
+
 
     def somar_potencias_transformadores(self, itens_configurados_bt, itens_configurados_mt, tipo='ambos'):
         """
@@ -280,29 +297,41 @@ class StreamlitApiService:
         """
         soma_total = 0
         
-        if tipo in ('bt', 'ambos'):
-            soma_total += self.calcular_potencia_bt(itens_configurados_bt)
+        self.logger.info(f"Somando potências para tipo: {tipo}")
+        self.logger.info(f"Itens BT: {len(itens_configurados_bt) if itens_configurados_bt else 'Nenhum'}")
+        self.logger.info(f"Itens MT: {len(itens_configurados_mt) if itens_configurados_mt else 'Nenhum'}")
+        
+        if tipo in ('bt', 'ambos') and itens_configurados_bt:
+            bt_potencia = self.calcular_potencia_bt(itens_configurados_bt)
+            self.logger.info(f"Potência total BT: {bt_potencia}")
+            soma_total += bt_potencia
             
-        if tipo in ('mt', 'ambos'):
-            soma_total += self.calcular_potencia_mt(itens_configurados_mt)
+        if tipo in ('mt', 'ambos') and itens_configurados_mt:
+            mt_potencia = self.calcular_potencia_mt(itens_configurados_mt)
+            self.logger.info(f"Potência total MT: {mt_potencia}")
+            soma_total += mt_potencia
 
+        self.logger.info(f"Soma total antes da conversão: {soma_total}")
+        
         try:
             soma_mva = soma_total / 1000
-            return f"{soma_mva:,.2f}".replace(".", ",").replace(",", ".", 1) + " MVA"
+            resultado = f"{soma_mva:,.2f}".replace(".", ",").replace(",", ".", 1) + " MVA"
+            self.logger.info(f"Resultado final: {resultado}")
+            return resultado
         except Exception as e:
             self.logger.error(f"Erro ao formatar potência: {e}")
             return "0,00 MVA"
 
     def inserir_revisao(self, 
-                       comentario: str,
-                       usuario: str,
-                       id_proposta: str, 
-                       escopo: str,
-                       escopo_mt: str,
-                       escopo_bt: str,
-                       valor: float, 
-                       revisao: int, 
-                       dados: Dict) -> Dict:
+                    comentario: str,
+                    usuario: str,
+                    id_proposta: str, 
+                    escopo: str,
+                    escopo_mt: str,
+                    escopo_bt: str,
+                    valor: float, 
+                    revisao: int, 
+                    dados: Dict) -> Dict:
         """
         Insere uma nova revisão via API do Django
         
@@ -336,7 +365,6 @@ class StreamlitApiService:
         valor_mt = sum(get_preco_total(item) for item in itens_mt)
         valor_bt = sum(get_preco_total(item) for item in itens_bt)
 
-
         dados_serializaveis = self._convert_to_serializable(dados)
         
 
@@ -357,15 +385,15 @@ class StreamlitApiService:
         return self._make_request('POST', 'api/streamlit/inserir_revisao/', payload)
 
     def atualizar_revisao(self, 
-                          comentario: str,
-                          usuario: str,
-                          id_proposta: str, 
-                          id_revisao: str,
-                          escopo: str,
-                          escopo_mt: str, 
-                          escopo_bt: str, 
-                          valor: float, 
-                          dados: dict) -> dict:
+                        comentario: str,
+                        usuario: str,
+                        id_proposta: str, 
+                        id_revisao: str,
+                        escopo: str,
+                        escopo_mt: str, 
+                        escopo_bt: str, 
+                        valor: float, 
+                        dados: dict) -> dict:
         """
         Atualiza uma revisão existente via API do Django
         
@@ -386,7 +414,6 @@ class StreamlitApiService:
         if not id_proposta:
             raise ValueError("ID da proposta é obrigatório")
 
-
         url = f"{self.base_url}/api/streamlit/atualizar_revisao/"
         
         if not dados:
@@ -394,16 +421,16 @@ class StreamlitApiService:
             
         if not isinstance(dados, dict):
             raise ValueError("Dados devem estar em formato dict")
-
+        
+        # Obtenha os itens do session_state
         itens_mt = st.session_state.get('itens', {}).get('itens_configurados_mt', [])
         itens_bt = st.session_state.get('itens', {}).get('itens_configurados_bt', [])
-
+        
         def get_preco_total(item):
             preco_total_keys = ['Preço Total', 'Preço_Total', 'preco_total', 'valor_total']
             for key in preco_total_keys:
                 if key in item:
                     try:
-                        # Convert Decimal to float
                         value = item[key]
                         if isinstance(value, Decimal):
                             return float(value)
@@ -411,14 +438,13 @@ class StreamlitApiService:
                     except (TypeError, ValueError):
                         continue
             return 0.0
-        print("Calculando valores...")
-        # Corrigindo a chamada da função
+        
         valor_mt = sum(get_preco_total(item) for item in itens_mt)
         valor_bt = sum(get_preco_total(item) for item in itens_bt)
-
+        
+        # Converta dados para formato serializável
         dados_serializaveis = self._convert_to_serializable(dados)
-
-
+        
         payload = {
             'id_proposta': str(id_proposta),
             'id_revisao': str(id_revisao),
@@ -444,9 +470,6 @@ class StreamlitApiService:
         """
         try:
             # Log todos os itens no session_state
-
-            self.logger.info(f"Itens MT: {st.session_state.get('itens', {}).get('itens_configurados_mt')}")
-            self.logger.info(f"Itens BT: {st.session_state.get('itens', {}).get('itens_configurados_bt')}")
             
             
             itens_mt = st.session_state.get('itens', {}).get('itens_configurados_mt', [])
@@ -466,7 +489,7 @@ class StreamlitApiService:
                 'prazo_entrega': st.session_state.get('prazo_entrega', {}),
                 'desvios': st.session_state.get('desvios', {})
             }
-            logger.info(f"Dados da revisão: {dados_revisao}")
+
             self._update_itens_totais()
 
             valor_total = sum(
@@ -476,12 +499,19 @@ class StreamlitApiService:
 
             logger.info(f"Valor total: {valor_total}")
 
-            # Primeiro calcula os escopos individuais
-            escopo_mt = self.somar_potencias_transformadores([], itens_mt, tipo='mt')  # Para MT, não precisa dos itens BT
-            escopo_bt = self.somar_potencias_transformadores(itens_bt, [], tipo='bt')  # Para BT, não precisa dos itens MT
+            # Registre o que será passado para os métodos de cálculo de escopo
+            logger.info(f"Itens MT para cálculo de escopo: {len(itens_mt)} itens")
+            logger.info(f"Itens BT para cálculo de escopo: {len(itens_bt)} itens")
             
-            # Depois calcula o escopo total
+            # Corrija a forma como você calcula os escopos
+            escopo_mt = self.somar_potencias_transformadores(None, itens_mt, tipo='mt')
+            escopo_bt = self.somar_potencias_transformadores(itens_bt, None, tipo='bt')
             escopo = self.somar_potencias_transformadores(itens_bt, itens_mt, tipo='ambos')
+            
+            # Registre os valores calculados
+            logger.info(f"Escopo MT calculado: {escopo_mt}")
+            logger.info(f"Escopo BT calculado: {escopo_bt}")
+            logger.info(f"Escopo total calculado: {escopo}")
 
             is_nova_revisao = st.session_state.get('tipo_proposta') == "Nova revisão"
             
@@ -499,7 +529,7 @@ class StreamlitApiService:
 
                 # Converte dados para JSON e imprime para debug
                 json_str = json.dumps(dados_revisao, default=custom_serializer, ensure_ascii=False)
-                self.logger.info(f"JSON gerado: {json_str}")
+            
 
                 # Tenta parsear o JSON para garantir que é válido
                 dados_serializados = json.loads(json_str)
@@ -516,6 +546,7 @@ class StreamlitApiService:
                         revisao=int(st.session_state['dados_iniciais']['rev']),
                         dados=dados_serializados
                     )
+                    logger.info(f'Escopo BT: {escopo_bt} Escopo MT: {escopo_mt}')
                     st.session_state['id_revisao'] = resultado.get('id')
                     st.success("Nova revisão inserida com sucesso!")
                 else:
@@ -544,5 +575,6 @@ class StreamlitApiService:
                 return False
                 
         except Exception as e:
+            logger.error(f"Erro inesperado ao processar dados: {str(e)}")
             st.error(f"Erro inesperado ao processar dados: {str(e)}")
             return False
