@@ -93,7 +93,7 @@ from docx.shared import RGBColor, Pt
 
 def highlight_work_days(paragraph, input_text):
     """
-    Highlights numbers followed by variations of 'dias uteis' in red color
+    Highlights numbers followed by variations of 'dias uteis' or 'dias' in red color
     and 'Prazo de fabricação' in bold.
     
     Args:
@@ -104,7 +104,7 @@ def highlight_work_days(paragraph, input_text):
     paragraph.clear()
     
     # Patterns
-    dias_pattern = r'(\d+)(\s*(?:dias?\s*[uú]te[ie]s?))'
+    dias_pattern = r'(\d+)(\s*(?:dias?\s*[uú]te[ie]s?|dias?))'
     prazo_pattern = r'(prazo\s+de\s+fabrica[çc][aã]o)'
     
     # Function to convert text to lowercase for comparison
@@ -114,7 +114,7 @@ def highlight_work_days(paragraph, input_text):
     # Combine both patterns to process text in order
     combined_matches = []
     
-    # Find all matches for dias uteis
+    # Find all matches for dias uteis or dias
     for match in re.finditer(dias_pattern, input_text, re.IGNORECASE):
         combined_matches.append(('dias', match))
     
@@ -142,7 +142,7 @@ def highlight_work_days(paragraph, input_text):
             run.font.name = 'Calibri Light'
             run.font.size = Pt(11)
             
-            # Add "dias uteis" in red
+            # Add "dias uteis" or "dias" in red
             dias_uteis = match.group(2)
             run = paragraph.add_run(dias_uteis)
             run.font.color.rgb = RGBColor(255, 0, 0)  # Red color
@@ -250,12 +250,6 @@ def inserir_prazo_entrega(doc):
                 if i % 2 == 1:
                     run.bold = True
 
-    # Agora, ao usar a função para o prazo de desenho:
-
-
-    # Na parte do código onde processamos o prazo de desenho:
-
-    # Localiza o parágrafo inicial
     paragrafo_inicial = None
     for paragraph in doc.paragraphs:
         if "A partir destes eventos, consideramos os seguintes prazos:" in paragraph.text:
