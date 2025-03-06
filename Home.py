@@ -189,18 +189,6 @@ def exibir_tabela_unificada():
         total_geral = total_mt_float + total_bt_float
         # Formatando o total geral usando formatar_numero_brasileiro
         st.metric("Total Geral", f"R$ {formatar_numero_brasileiro(total_geral)}")
-
-
-
-
-    
-    # st.divider()
-
-        
-        
-        
-    # total_mt = df_mt['Preço Total'].sum() if not df_mt.empty else 0
-    # total_bt = df_bt['Preço Total'].sum() if not df_mt.empty else 0
     
 import logging
 
@@ -448,7 +436,7 @@ def inicializar_dados():
             return
 
         # IMPORTANTE: Verifica se já temos dados carregados de uma revisão
-        if st.session_state.get('revisao_loaded'):
+        if id_revisao and st.session_state.get('revisao_loaded'):
             print("Dados de revisão já carregados, pulando inicialização básica")
             return
             
@@ -472,8 +460,9 @@ def inicializar_dados():
                         print(f"Próxima revisão definida: {proxima_revisao}")
                         
                         print("Buscando dados da proposta")
+                        # Consulta direta à tabela propostas sem join
                         cur.execute("""
-                            SELECT proposta, cliente, obra, contato
+                            SELECT proposta, cliente, obra, contato, dt_oferta
                             FROM propostas 
                             WHERE id_proposta = %s
                         """, (id_proposta,))
@@ -481,32 +470,69 @@ def inicializar_dados():
                         resultado = cur.fetchone()
                         print(f"Resultado da busca: {resultado}")
                         if resultado:
-                            proposta, cliente, obra, contato = resultado
+                            proposta, cliente, obra, contato, dt_oferta = resultado
                             
-                            # Verifica se já existe dados_iniciais antes de criar novos
-                            if 'dados_iniciais' not in st.session_state:
+                            # CORREÇÃO: Se não tiver id_revisao, sempre criar novos dados iniciais
+                            if not id_revisao:
+                                # Formata a data atual ou usa a data da oferta se disponível
+                                data_hoje = dt_oferta if dt_oferta else datetime.today()
+                                from pages.inicial.utils import get_meses_pt
+                                
+                                meses = get_meses_pt()
+                                mes_atual = data_hoje.month
+                                
                                 dados_iniciais = {
                                     'cliente': cliente,
                                     'bt': proposta,
                                     'obra': obra,
                                     'id_proposta': id_proposta,
                                     'rev': proxima_revisao,
-                                    'dia': st.session_state.get('dia', ''),
-                                    'mes': st.session_state.get('mes', ''),
-                                    'ano': st.session_state.get('ano', ''),
+                                    'dia': data_hoje.strftime('%d'),
+                                    'mes': meses[mes_atual],
+                                    'ano': data_hoje.strftime('%Y'),
                                     'nomeCliente': contato,
                                     'local_frete': 'São Paulo/SP',
                                     'email': '',  # Campo vazio para email
-                                    'fone': ''    # Campo vazio para fone 
+                                    'fone': '',   # Campo vazio para fone
+                                    'comentario': ''  # Campo vazio para comentário
                                 }
-                                print(f"Dados iniciais montados: {dados_iniciais}")
+                                print(f"Novos dados iniciais criados para proposta sem revisão: {dados_iniciais}")
                                 
                                 st.session_state['dados_iniciais'] = dados_iniciais
-                            else:
-                                # Se já existem dados_iniciais, atualiza apenas alguns campos
-                                print("Atualizando apenas campos básicos dos dados_iniciais existentes")
-                                st.session_state['dados_iniciais']['rev'] = proxima_revisao
                                 
+                                # Inicializa a estrutura de itens vazia para nova revisão
+                                st.session_state['itens'] = {
+                                    'itens_configurados_mt': [],
+                                    'itens_configurados_bt': []
+                                }
+                            # Caso tenha id_revisao mas ainda não tenha carregado os dados
+                            elif id_revisao and not st.session_state.get('revisao_loaded'):
+                                if not carregar_dados_revisao(id_revisao):
+                                    # Se falhar o carregamento, cria dados parciais
+                                    if 'dados_iniciais' not in st.session_state:
+                                        # Formata a data atual ou usa a data da oferta se disponível
+                                        data_hoje = dt_oferta if dt_oferta else datetime.today()
+                                        from pages.inicial.utils import get_meses_pt
+                                        
+                                        meses = get_meses_pt()
+                                        mes_atual = data_hoje.month
+                                        
+                                        st.session_state['dados_iniciais'] = {
+                                            'cliente': cliente,
+                                            'bt': proposta,
+                                            'obra': obra,
+                                            'id_proposta': id_proposta,
+                                            'rev': proxima_revisao,
+                                            'dia': data_hoje.strftime('%d'),
+                                            'mes': meses[mes_atual],
+                                            'ano': data_hoje.strftime('%Y'),
+                                            'nomeCliente': contato,
+                                            'local_frete': 'São Paulo/SP',
+                                            'email': '',
+                                            'fone': '',
+                                            'comentario': ''
+                                        }
+                                    
                             st.session_state['revisao_numero_definido'] = True
                             st.session_state['proposta_loaded'] = True
             finally:
@@ -569,15 +595,13 @@ def configurar_dados_iniciais():
     return False
 
 def main():
-
-
     """Função principal da aplicação"""
     st.set_page_config(layout="wide")
     st.title("Proposta Automatizada - Transformadores")
     st.markdown("---")
 
     
-        # Verifica se está rodando em produção
+    # Verifica se está rodando em produção
     if os.getenv('ENVIRONMENT') == 'PRODUCTION':
         params = st.query_params
         print("Estamos em produção")
