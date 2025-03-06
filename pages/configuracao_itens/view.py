@@ -131,6 +131,7 @@ def pagina_configuracao():
         with st.expander("Editar Item MT", expanded=True):
             df = CustoMediaTensaoRepository().buscar_todos()
             componentsMT.render_item_config(item_em_edicao['index'], df, item_em_edicao['dados'])
+            st.session_state['impostos'] = componentsMT.render_tax_inputs(st.session_state['impostos'])
     
     elif 'editando_item_bt' in st.session_state:
         item_em_edicao = st.session_state.editando_item_bt
@@ -140,6 +141,7 @@ def pagina_configuracao():
                 modo_edicao=True,
                 item_edicao=item_em_edicao['dados']
             )
+            st.session_state['impostos'] = componentsMT.render_tax_inputs(st.session_state['impostos'])
             
             # Adicionar um botão de salvar específico para edição
         # if st.button("💾 Salvar Alterações"):
@@ -348,6 +350,8 @@ def render_impostos(dados_impostos: Dict[str, Any]) -> None:
         index=0 if dados_impostos.get('contribuinte_icms') != "Não" else 1,
         key='radio_contribuinte'
     )
+
+    st.session_state['impostos']['contribuinte_icms'] = contribuinte_icms
     
     # Campos condicionais baseados na escolha do contribuinte
     if contribuinte_icms == "Não":

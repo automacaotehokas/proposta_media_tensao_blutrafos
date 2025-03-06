@@ -213,11 +213,11 @@ logging.basicConfig(
 
 logger = logging.getLogger(__name__)
 
+# Fix 1: Enhance the carregar_dados_revisao function
 def carregar_dados_revisao(revisao_id: str):
     """Carrega dados de uma revisão existente com tratamento para JSON duplamente codificado"""
     logger = logging.getLogger(__name__)
 
-    
     conn = DatabaseConfig.get_connection()
     cur = conn.cursor()
     
@@ -230,28 +230,24 @@ def carregar_dados_revisao(revisao_id: str):
                p.proposta, 
                p.obra,
                p.dt_oferta,
-               p.contato
+               p.contato,
+               p.id_proposta
            FROM revisoes r 
            JOIN propostas p ON r.id_proposta_id = p.id_proposta 
            WHERE r.id_revisao = %s
         """
         
-
         cur.execute(query, (revisao_id,))
         resultado = cur.fetchone()
         
         if resultado:
-
-            conteudo, numero_revisao, cliente, proposta, obra, dt_oferta, contato = resultado
-
+            conteudo, numero_revisao, cliente, proposta, obra, dt_oferta, contato, id_proposta = resultado
             
             if conteudo:
                 try:
                     # Primeiro decode: converter para string JS
-                    
                     if isinstance(conteudo, str):
                         primeiro_decode = json.loads(conteudo)
-
                         
                         # Se ainda é string, precisa de segundo decode
                         if isinstance(primeiro_decode, str):
@@ -260,22 +256,21 @@ def carregar_dados_revisao(revisao_id: str):
                             dados = primeiro_decode
                     else:
                         dados = conteudo
-
+                        
+                    # Log dos dados brutos após desserialização
+                    logger.info(f"Dados desserializados: {dados}")
 
                     # Garante que temos um dicionário
                     if not isinstance(dados, dict):
-
                         return False
 
                     # Inicializa a estrutura de itens
-
                     st.session_state['itens'] = {
                         'itens_configurados_mt': dados.get('itens_configurados_mt', []),
                         'itens_configurados_bt': dados.get('itens_configurados_bt', [])
                     }
                     
                     # Log detalhado dos itens
-
                     if st.session_state['itens']['itens_configurados_mt']:
                         logger.info(f"Primeiro item MT: {st.session_state['itens']['itens_configurados_mt'][0]}")
                     
@@ -283,11 +278,53 @@ def carregar_dados_revisao(revisao_id: str):
                     if st.session_state['itens']['itens_configurados_bt']:
                         logger.info(f"Primeiro item BT: {st.session_state['itens']['itens_configurados_bt'][0]}")
 
+                    # Preserva os dados originais de dados_iniciais se existirem
+                    dados_iniciais_json = dados.get('dados_iniciais', {})
+                    
                     # Carrega dados iniciais
                     if 'dados_iniciais' in dados:
                         logger.info("Carregando dados iniciais do JSON")
-                        st.session_state['dados_iniciais'] = dados['dados_iniciais']
-                        logger.info(f"Dados iniciais carregados: {st.session_state['dados_iniciais']}")
+                        
+                        # Verificamos se existem todos os campos necessários no dados_iniciais
+                        dt = dt_oferta or datetime.now()
+                        dados_iniciais_completos = {
+                            'cliente': cliente,
+                            'bt': str(proposta),
+                            'obra': obra,
+                            'id_proposta': id_proposta,  # Agora vem do resultado da consulta
+                            'rev': str(numero_revisao).zfill(2),
+                            'dia': dt.strftime('%d'),
+                            'mes': dt.strftime('%m'),
+                            'ano': dt.strftime('%Y'),
+                            'nomeCliente': contato,
+                            'local_frete': 'São Paulo/SP',
+                            'email': '',
+                            'fone': '',
+                            'comentario': ''
+                        }
+                        
+                        # Obtemos os valores do JSON
+                        for key, value in dados_iniciais_json.items():
+                            dados_iniciais_completos[key] = value
+                        
+                        # Garantimos explicitamente que email e fone existem
+                        if 'email' not in dados_iniciais_completos or not dados_iniciais_completos['email']:
+                            logger.warning("Campo email vazio ou ausente")
+                            if 'email' in dados_iniciais_json:
+                                logger.info(f"Email original do JSON: '{dados_iniciais_json['email']}'")
+                        else:
+                            logger.info(f"Email carregado: '{dados_iniciais_completos['email']}'")
+                            
+                        if 'fone' not in dados_iniciais_completos or not dados_iniciais_completos['fone']:
+                            logger.warning("Campo fone vazio ou ausente")
+                            if 'fone' in dados_iniciais_json:
+                                logger.info(f"Fone original do JSON: '{dados_iniciais_json['fone']}'")
+                        else:
+                            logger.info(f"Fone carregado: '{dados_iniciais_completos['fone']}'")
+                            
+                        # Atribuímos ao session_state
+                        st.session_state['dados_iniciais'] = dados_iniciais_completos
+                        
                     else:
                         logger.info("Criando dados iniciais a partir do banco")
                         dt = dt_oferta or datetime.now()
@@ -295,17 +332,19 @@ def carregar_dados_revisao(revisao_id: str):
                             'cliente': cliente,
                             'bt': str(proposta),
                             'obra': obra,
-                            'id_proposta': id_proposta,
+                            'id_proposta': id_proposta,  # Agora vem do resultado da consulta
                             'rev': str(numero_revisao).zfill(2),
                             'dia': dt.strftime('%d'),
                             'mes': dt.strftime('%m'),
                             'ano': dt.strftime('%Y'),
                             'nomeCliente': contato,
+                            'local_frete': 'São Paulo/SP',
                             'email': '',
                             'fone': '',
-                            'local_frete': 'São Paulo/SP'
+                            'comentario': ''
                         }
-                        logger.info(f"Dados iniciais criados: {st.session_state['dados_iniciais']}")
+                    
+                    logger.info(f"Dados iniciais finais: {st.session_state['dados_iniciais']}")
 
                     # Carrega outros dados
                     chaves_para_carregar = [
@@ -328,7 +367,6 @@ def carregar_dados_revisao(revisao_id: str):
                     st.session_state['revisao_atual'] = revisao_id
                     
                     logger.info("Carregamento concluído com sucesso")
-                    logger.info(f"Estado final do session_state: {list(st.session_state.keys())}")
                     return True
                     
                 except json.JSONDecodeError as e:
@@ -337,6 +375,8 @@ def carregar_dados_revisao(revisao_id: str):
                     return False
                 except Exception as e:
                     logger.error(f"Erro inesperado ao processar dados: {e}")
+                    import traceback
+                    logger.error(traceback.format_exc())  # Adiciona o stack trace completo
                     return False
         else:
             logger.error(f"Nenhum resultado encontrado para revisao_id: {revisao_id}")
@@ -344,6 +384,8 @@ def carregar_dados_revisao(revisao_id: str):
             
     except Exception as e:
         logger.error(f"Erro ao carregar revisão: {e}")
+        import traceback
+        logger.error(traceback.format_exc())  # Adiciona o stack trace completo
         return False
     finally:
         cur.close()
@@ -379,7 +421,6 @@ def verificar_carregamento(id_revisao):
 
 
 def inicializar_dados():
-
     id_proposta = st.session_state['id_proposta']
     id_revisao = st.session_state['id_revisao']
     token = st.session_state['token']
@@ -406,6 +447,11 @@ def inicializar_dados():
             print("App já inicializado, retornando")
             return
 
+        # IMPORTANTE: Verifica se já temos dados carregados de uma revisão
+        if st.session_state.get('revisao_loaded'):
+            print("Dados de revisão já carregados, pulando inicialização básica")
+            return
+            
         # Se não tiver id_revisao ou falhar o carregamento, carrega dados da proposta
         if id_proposta and not st.session_state.get('proposta_loaded'):
             print("Iniciando carregamento da proposta do banco")
@@ -437,23 +483,30 @@ def inicializar_dados():
                         if resultado:
                             proposta, cliente, obra, contato = resultado
                             
-                            dados_iniciais = {
-                                'cliente': cliente,
-                                'bt': proposta,
-                                'obra': obra,
-                                'id_proposta': id_proposta,
-                                'rev': proxima_revisao,
-                                'dia': st.session_state.get('dia', ''),
-                                'mes': st.session_state.get('mes', ''),
-                                'ano': st.session_state.get('ano', ''),
-                                'nomeCliente': contato,
-                                'email': '',
-                                'fone': '',
-                                'local_frete': 'São Paulo/SP'
-                            }
-                            print(f"Dados iniciais montados: {dados_iniciais}")
-                            
-                            st.session_state['dados_iniciais'] = dados_iniciais
+                            # Verifica se já existe dados_iniciais antes de criar novos
+                            if 'dados_iniciais' not in st.session_state:
+                                dados_iniciais = {
+                                    'cliente': cliente,
+                                    'bt': proposta,
+                                    'obra': obra,
+                                    'id_proposta': id_proposta,
+                                    'rev': proxima_revisao,
+                                    'dia': st.session_state.get('dia', ''),
+                                    'mes': st.session_state.get('mes', ''),
+                                    'ano': st.session_state.get('ano', ''),
+                                    'nomeCliente': contato,
+                                    'local_frete': 'São Paulo/SP',
+                                    'email': '',  # Campo vazio para email
+                                    'fone': ''    # Campo vazio para fone 
+                                }
+                                print(f"Dados iniciais montados: {dados_iniciais}")
+                                
+                                st.session_state['dados_iniciais'] = dados_iniciais
+                            else:
+                                # Se já existem dados_iniciais, atualiza apenas alguns campos
+                                print("Atualizando apenas campos básicos dos dados_iniciais existentes")
+                                st.session_state['dados_iniciais']['rev'] = proxima_revisao
+                                
                             st.session_state['revisao_numero_definido'] = True
                             st.session_state['proposta_loaded'] = True
             finally:
@@ -591,4 +644,5 @@ PAGES = {
 
 if __name__ == "__main__":
     load_dotenv()
+    
     main()
