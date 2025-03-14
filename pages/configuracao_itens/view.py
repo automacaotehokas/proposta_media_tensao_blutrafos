@@ -121,9 +121,6 @@ def pagina_configuracao():
     """Página principal de configuração de itens"""
     st.title("Configuração de Itens")
     
-    # Adicione este bloco para debug
-    with st.expander("Debug - Session State", expanded=False):
-        st.write(st.session_state)
     
     # Inicializa o session state se necessário
     initialize_session_state()
