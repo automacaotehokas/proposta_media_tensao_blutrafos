@@ -1,7 +1,6 @@
 import streamlit as st
 import pandas as pd
 import os
-import json
 from dotenv import load_dotenv
 from repositories.custos_media_tensao_repository import CustoMediaTensaoRepository
 from pages.inicial.view import carregar_cidades
@@ -17,8 +16,18 @@ from decimal import Decimal
 from services.document.mt.test import formatar_numero_inteiro_ou_decimal
 from utils.formatters import formatar_numero_brasileiro
 from pages.pagamento_entrega.components import ComponentsPagamentoEntrega
+import json
+from decimal import Decimal
 
 dotenv.load_dotenv()
+
+
+class DecimalEncoder(json.JSONEncoder):
+    def default(self, obj):
+        if isinstance(obj, Decimal):
+            return float(obj)  # Converte Decimal para float
+        return super(DecimalEncoder, self).default(obj)
+    
 
 def converter_para_float(valor):
     """Converte um valor monetário formatado para float"""
@@ -211,18 +220,21 @@ def carregar_dados_revisao(revisao_id: str):
     
     try:
         query = """
-           SELECT 
-               r.conteudo::text, 
-               r.revisao, 
-               p.cliente, 
-               p.proposta, 
-               p.obra,
-               p.dt_oferta,
-               p.contato,
-               p.id_proposta
-           FROM revisoes r 
-           JOIN propostas p ON r.id_proposta_id = p.id_proposta 
-           WHERE r.id_revisao = %s
+            SELECT
+                r.conteudo::text,
+                r.revisao,
+                p.proposta,
+                p.obra,
+                p.id_proposta,
+                c.nome AS contato_nome,
+                c.email AS contato_email,
+                c.telefone AS contato_telefone,
+                cl.nome AS cliente_nome
+            FROM revisoes r
+            JOIN propostas p ON r.id_proposta_id = p.id_proposta
+            LEFT JOIN gerenciadorpropostas_contato c ON p.contato_id_id = c.id_contato
+            LEFT JOIN gerenciadorpropostas_cliente cl ON p.cliente_id_id = cl.id_cliente
+            WHERE r.id_revisao= %s
         """
         
         cur.execute(query, (revisao_id,))
@@ -408,6 +420,10 @@ def verificar_carregamento(id_revisao):
     return None
 
 
+# 1. Adicione esta nova função para salvar dados iniciais no banco
+
+
+# 2. Modifique a função inicializar_dados para definir a configuração como completa
 def inicializar_dados():
     id_proposta = st.session_state['id_proposta']
     id_revisao = st.session_state['id_revisao']
@@ -438,6 +454,8 @@ def inicializar_dados():
         # IMPORTANTE: Verifica se já temos dados carregados de uma revisão
         if id_revisao and st.session_state.get('revisao_loaded'):
             print("Dados de revisão já carregados, pulando inicialização básica")
+            # Definir como configurado para ir direto para as páginas
+            st.session_state['configuracao_inicial_completa'] = True
             return
             
         # Se não tiver id_revisao ou falhar o carregamento, carrega dados da proposta
@@ -460,29 +478,39 @@ def inicializar_dados():
                         print(f"Próxima revisão definida: {proxima_revisao}")
                         
                         print("Buscando dados da proposta")
-                        # Consulta direta à tabela propostas sem join
                         cur.execute("""
-                            SELECT proposta, cliente, obra, contato, dt_oferta
-                            FROM propostas 
-                            WHERE id_proposta = %s
+                            SELECT
+                                p.ultima_revisao,
+                                p.proposta,
+                                p.obra,
+                                p.id_proposta,
+                                c.nome AS contato_nome,
+                                c.email AS contato_email,
+                                c.telefone AS contato_telefone,
+                                p.cliente AS cliente_nome,
+                                cl.endereco as local_cliente
+                            FROM propostas p
+                            LEFT JOIN gerenciadorpropostas_contato c ON p.contato_id_id = c.id_contato
+                            LEFT JOIN gerenciadorpropostas_cliente cl ON p.cliente_id_id = cl.id_cliente
+                            WHERE p.id_proposta = %s;
                         """, (id_proposta,))
                         
                         resultado = cur.fetchone()
                         print(f"Resultado da busca: {resultado}")
                         if resultado:
-                            proposta, cliente, obra, contato, dt_oferta = resultado
+                            ultima_revisao, proposta, obra, id_proposta, contato_nome, contato_email, contato_telefone, cliente_nome, local_cliente = resultado
                             
                             # CORREÇÃO: Se não tiver id_revisao, sempre criar novos dados iniciais
                             if not id_revisao:
-                                # Formata a data atual ou usa a data da oferta se disponível
-                                data_hoje = dt_oferta if dt_oferta else datetime.today()
-                                from pages.inicial.utils import get_meses_pt
+                                # Definindo data_hoje ANTES de usá-la
+                                data_hoje = datetime.today()
                                 
+                                from pages.inicial.utils import get_meses_pt
                                 meses = get_meses_pt()
                                 mes_atual = data_hoje.month
                                 
                                 dados_iniciais = {
-                                    'cliente': cliente,
+                                    'cliente': cliente_nome,
                                     'bt': proposta,
                                     'obra': obra,
                                     'id_proposta': id_proposta,
@@ -490,11 +518,11 @@ def inicializar_dados():
                                     'dia': data_hoje.strftime('%d'),
                                     'mes': meses[mes_atual],
                                     'ano': data_hoje.strftime('%Y'),
-                                    'nomeCliente': contato,
-                                    'local_frete': 'São Paulo/SP',
-                                    'email': '',  # Campo vazio para email
-                                    'fone': '',   # Campo vazio para fone
-                                    'comentario': ''  # Campo vazio para comentário
+                                    'nomeCliente': contato_nome,
+                                    'local_frete': local_cliente or 'São Paulo/SP',
+                                    'email': contato_email or '',  # Usa o email do banco ou string vazia
+                                    'fone': contato_telefone or '',   # Usa o telefone do banco ou string vazia
+                                    'comentario': ''
                                 }
                                 print(f"Novos dados iniciais criados para proposta sem revisão: {dados_iniciais}")
                                 
@@ -505,20 +533,24 @@ def inicializar_dados():
                                     'itens_configurados_mt': [],
                                     'itens_configurados_bt': []
                                 }
+                                
+                                # Define configuração como completa para pular a tela de configuração inicial
+                                st.session_state['configuracao_inicial_completa'] = True
+                                
                             # Caso tenha id_revisao mas ainda não tenha carregado os dados
                             elif id_revisao and not st.session_state.get('revisao_loaded'):
                                 if not carregar_dados_revisao(id_revisao):
                                     # Se falhar o carregamento, cria dados parciais
                                     if 'dados_iniciais' not in st.session_state:
-                                        # Formata a data atual ou usa a data da oferta se disponível
-                                        data_hoje = dt_oferta if dt_oferta else datetime.today()
-                                        from pages.inicial.utils import get_meses_pt
+                                        # Definindo data_hoje ANTES de usá-la
+                                        data_hoje = datetime.today()
                                         
+                                        from pages.inicial.utils import get_meses_pt
                                         meses = get_meses_pt()
                                         mes_atual = data_hoje.month
                                         
                                         st.session_state['dados_iniciais'] = {
-                                            'cliente': cliente,
+                                            'cliente': cliente_nome,
                                             'bt': proposta,
                                             'obra': obra,
                                             'id_proposta': id_proposta,
@@ -526,12 +558,18 @@ def inicializar_dados():
                                             'dia': data_hoje.strftime('%d'),
                                             'mes': meses[mes_atual],
                                             'ano': data_hoje.strftime('%Y'),
-                                            'nomeCliente': contato,
-                                            'local_frete': 'São Paulo/SP',
-                                            'email': '',
-                                            'fone': '',
+                                            'nomeCliente': contato_nome,
+                                            'local_frete': local_cliente or 'São Paulo/SP',
+                                            'email': contato_email or '',  # Usa o email do banco ou string vazia
+                                            'fone': contato_telefone or '',   # Usa o telefone do banco ou string vazia
                                             'comentario': ''
                                         }
+                                        
+                                    # Define configuração como completa para pular a tela de configuração inicial
+                                    st.session_state['configuracao_inicial_completa'] = True
+                                else:
+                                    # Se carregou com sucesso, também define como configurado
+                                    st.session_state['configuracao_inicial_completa'] = True
                                     
                             st.session_state['revisao_numero_definido'] = True
                             st.session_state['proposta_loaded'] = True
@@ -546,54 +584,7 @@ def inicializar_dados():
         print(f"Erro detalhado na inicialização: {str(e)}")
         st.error(f"Erro ao inicializar dados: {str(e)}")
 
-
-def configurar_dados_iniciais():
-    """Configura os dados iniciais necessários"""
-    dados = st.session_state['dados_iniciais']
-    st.subheader("Configure os dados iniciais")
-    col1, col2 = st.columns(2)
-    
-    with col1:
-        dados['bt'] = st.text_input('Nº BT:', dados.get('bt', ''), autocomplete='off')
-        dados['cliente'] = st.text_input('Cliente:', dados.get('cliente', ''), 
-                                       autocomplete='off', placeholder='Digite o nome da empresa')
-        dados['obra'] = st.text_input('Obra:', dados.get('obra', ''), autocomplete='off')
-        dados['rev'] = st.text_input('Rev:', dados.get('rev', ''), autocomplete='off')
-    
-    with col2:
-        dados['nomeCliente'] = st.text_input('Nome do Contato:', dados.get('nomeCliente', ''),
-                                           autocomplete='off', placeholder='Digite o nome do contato')
-        dados['email'] = st.text_input('E-mail do Contato:', dados.get('email', ''), autocomplete='off')
-        fone = st.text_input('Telefone do Contato:', dados.get('fone', ''),
-                           max_chars=15, autocomplete='off',
-                           placeholder="Digite sem formação, exemplo: 47999998888")
-        from pages.inicial.utils import aplicar_mascara_telefone
-        dados['fone'] = aplicar_mascara_telefone(fone)
-        dados['local_frete'] = st.selectbox('Local Frete:', st.session_state['cidades'])
-    
-    # Data atual
-    from datetime import datetime
-    from pages.inicial.utils import get_meses_pt
-    data_hoje = datetime.today()
-    dados.update({
-        'dia': data_hoje.strftime('%d'),
-        'mes': get_meses_pt()[data_hoje.month],
-        'ano': data_hoje.strftime('%Y'),
-    })
-    
-    if st.button("Continuar", type="primary"):
-        # Verifica campos obrigatórios
-        campos_vazios = [k for k, v in dados.items() if not v and k not in ['id_proposta', 'dia', 'mes', 'ano','comentario','obra']]
-        if campos_vazios:
-            st.error("Por favor, preencha todos os campos obrigatórios:")
-            for campo in campos_vazios:
-                st.warning(f"• {campo}")
-            return False
-        
-        st.session_state['configuracao_inicial_completa'] = True
-        st.rerun()
-    return False
-
+# 3. Modifique a função main para definir "Configuração de Itens" como página padrão
 def main():
     """Função principal da aplicação"""
     st.set_page_config(layout="wide")
@@ -648,7 +639,19 @@ def main():
             
             # Sidebar navigation
             st.sidebar.title('Navegação')
-            selection = st.sidebar.radio("Ir para", ["Configuração de Itens", "Entrega/Pagamento/Desvio", "Resumo", "Administrativo"])
+            
+            # Definindo a página padrão como "Configuração de Itens" se não houver uma página atual
+            if 'pagina_atual' not in st.session_state:
+                st.session_state['pagina_atual'] = "Configuração de Itens"
+                
+            selection = st.sidebar.radio(
+                "Ir para", 
+                ["Configuração de Itens", "Entrega/Pagamento/Desvio", "Resumo", "Administrativo"],
+                index=0  # Define o primeiro item (Configuração de Itens) como selecionado por padrão
+            )
+            
+            # Atualiza a página atual
+            st.session_state['pagina_atual'] = selection
             
             # Render selected page
             PAGES[selection]()
@@ -656,8 +659,6 @@ def main():
             # Show unified table if there are items
             st.markdown("---")
             exibir_tabela_unificada()
-        else:
-            configurar_dados_iniciais()
 
 PAGES = {
     "Configuração de Itens": pagina_configuracao,

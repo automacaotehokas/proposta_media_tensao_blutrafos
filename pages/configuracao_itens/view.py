@@ -8,6 +8,7 @@ from typing import Dict, Any, Optional , List
 from utils.constants import VOLTAGE_DEFAULTS
 import streamlit as st
 import pandas as pd
+
 from typing import List, Dict
 from .componentsBT import ComponenteBT
 from ..pagamento_entrega.components import ComponentsPagamentoEntrega
@@ -120,6 +121,10 @@ def pagina_configuracao():
     """Página principal de configuração de itens"""
     st.title("Configuração de Itens")
     
+    # Adicione este bloco para debug
+    with st.expander("Debug - Session State", expanded=False):
+        st.write(st.session_state)
+    
     # Inicializa o session state se necessário
     initialize_session_state()
     
@@ -142,14 +147,6 @@ def pagina_configuracao():
                 item_edicao=item_em_edicao['dados']
             )
             st.session_state['impostos'] = componentsMT.render_tax_inputs(st.session_state['impostos'])
-            
-            # Adicionar um botão de salvar específico para edição
-        # if st.button("💾 Salvar Alterações"):
-        #         updated_item = format_bt_values(st.session_state['current_bt_item'])
-        #         st.session_state['itens']['itens_configurados_bt'][item_em_edicao['index']] = updated_item
-        #         del st.session_state.editando_item_bt
-        #         st.success("Item atualizado com sucesso!")
-        #         st.rerun()
     else:
         # Se não houver item em edição, exibe a interface normal
         n_itens_mt = len(st.session_state['itens']['itens_configurados_mt'])
@@ -248,6 +245,10 @@ def get_default_voltage_values(classe_tensao: str) -> Dict[str, str]:
 
 def configuracao_itens_page():
     """Página principal de configuração de itens"""
+    st.write(st.session_state)
+    # Inicialização do state
+    initialize_session_state()
+
     st.title('Configuração Itens')
     st.markdown("---")
     
@@ -256,9 +257,8 @@ def configuracao_itens_page():
         st.error("Por favor, preencha todos os dados iniciais antes de continuar.")
         return
     
-    # Inicialização do state
-    initialize_session_state()
-    
+
+
     # Carregamento dos dados do banco
 
     
@@ -293,7 +293,8 @@ def render_impostos(dados_impostos: Dict[str, Any]) -> None:
             'comissao': dados_impostos.get('comissao', 5.0),
             'difal': dados_impostos.get('difal', 0.0),
             'f_pobreza': dados_impostos.get('f_pobreza', 0.0),
-            'tipo_frete': dados_impostos.get('tipo_frete', "CIP")
+            'tipo_frete': dados_impostos.get('tipo_frete', "CIP"),
+            'local_frete': dados_impostos.get('local_frete', 'São Paulo/SP')
         }
 
     # Valores básicos
@@ -333,6 +334,21 @@ def render_impostos(dados_impostos: Dict[str, Any]) -> None:
         on_change=on_tipo_frete_change,
         index=0 if st.session_state['impostos']['tipo_frete'] == "FOB" else 1
     )
+    
+    # Adicionar o selectbox de local_frete logo abaixo do tipo_frete
+    local_frete = st.sidebar.selectbox(
+        'Local Frete:',
+        st.session_state['cidades'],
+        index=st.session_state['cidades'].index(st.session_state['dados_iniciais']['local_frete']) 
+        if st.session_state['dados_iniciais']['local_frete'] in st.session_state['cidades'] 
+        else 3829,
+        key='select_local_frete'
+    )
+    
+    # Atualizar o valor no session_state
+    st.session_state['impostos']['local_frete'] = local_frete
+    # Também atualizar o valor nos dados_iniciais para consistência
+    st.session_state['dados_iniciais']['local_frete'] = local_frete
 
     # Input do frete
     st.session_state['impostos']['frete'] = st.sidebar.number_input(
