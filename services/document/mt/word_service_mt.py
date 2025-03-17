@@ -33,7 +33,7 @@ def gerar_documento(template_path: str, dados_iniciais: Dict,
         '{{ANO}}': str(dados_iniciais.get('ano', '')),
         '{{REV}}': str(dados_iniciais.get('rev', '')),
         '{{LOCAL}}': str(dados_iniciais.get('local_frete', '')),
-        '{{LOCALFRETE}}': str(impostos.get('local_frete_itens', '')),
+        '{{LOCALFRETE}}': str(impostos.get('local_frete', '')),
         '{{ICMS}}': f"{formatar_numero_inteiro_ou_decimal(impostos.get('icms', 0))}%",
         '{{IP}}': ', '.join(set(str(item['IP']) for item in itens_configurados 
                               if item['IP'] != '00')),

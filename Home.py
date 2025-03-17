@@ -487,7 +487,7 @@ def inicializar_dados():
                                 c.nome AS contato_nome,
                                 c.email AS contato_email,
                                 c.telefone AS contato_telefone,
-                                p.cliente AS cliente_nome,
+                                cl.nome AS cliente_nome,
                                 cl.endereco as local_cliente
                             FROM propostas p
                             LEFT JOIN gerenciadorpropostas_contato c ON p.contato_id_id = c.id_contato

@@ -6,7 +6,7 @@ def render_dados_iniciais(dados: Dict[str, Any]):
     st.subheader("Dados Iniciais")
     campos = [
         ('Cliente', 'cliente'),
-        ('Nome do Cliente', 'nomeCliente'),
+        ('Nome do Contato', 'nomeCliente'),
         ('Telefone', 'fone'),
         ('Email', 'email'),
         ('BT', 'bt'),
