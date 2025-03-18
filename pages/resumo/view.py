@@ -36,7 +36,7 @@ def verificar_dados_completos():
     dados_iniciais = st.session_state.get('dados_iniciais', {})
 
     campos_obrigatorios = [
-        'cliente', 'nomeCliente', 'fone', 'email', 'bt', 
+        'cliente', 'nomeCliente','bt', 
         'dia', 'mes', 'ano', 'rev', 'local_frete'
     ]
 
