@@ -159,7 +159,7 @@ class componentsMT:
                     st.session_state[checkbox_key] = default_value
                 
                 if st.checkbox(
-                    f"{acessorio['descricao']} (+R$ {acessorio['valor']:,.2f})",
+                    f"{acessorio['descricao']}",
                     key=checkbox_key,  # Chave única baseada no item_index e descrição
                     value=st.session_state[checkbox_key]
                 ):
@@ -193,7 +193,7 @@ class componentsMT:
                     st.session_state[checkbox_key] = default_value
                 
                 if st.checkbox(
-                    f"{acessorio['descricao']} (+R$ {acessorio['valor']:,.2f})",
+                    f"{acessorio['descricao']}",
                     key=checkbox_key,  # Chave única baseada no item_index e descrição
                     value=st.session_state[checkbox_key]
                 ):

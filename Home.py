@@ -180,23 +180,40 @@ def exibir_tabela_unificada():
                     st.session_state.itens['itens_configurados_bt'].pop(row['origem_index'])
                 st.rerun()
 
-    # Exibir totais
-    total_mt = formatar_numero_brasileiro(float(df_mt['Preço Total'].iloc[0].replace('R$ ', '').replace('.', '').replace(',', '.'))) if not df_mt.empty else "0"
-    total_bt = formatar_numero_brasileiro(float(df_bt['Preço Total'].iloc[0].replace('R$ ', '').replace('.', '').replace(',', '.'))) if not df_bt.empty else "0"
+    # Calcular a soma total para MT
+    if not df_mt.empty:
+        # 1. Converter a coluna 'Preço Total' para float
+        total_mt_numeric = df_mt['Preço Total'].str.replace('R$ ', '', regex=False).str.replace('.', '', regex=False).str.replace(',', '.', regex=False).astype(float)
+        # 2. Somar os valores
+        soma_total_mt = total_mt_numeric.sum()
+        # 3. Formatar o resultado
+        total_mt_formatado = formatar_numero_brasileiro(soma_total_mt)
+    else:
+        soma_total_mt = 0.0
+        total_mt_formatado = formatar_numero_brasileiro(0) # Ou "0,00"
 
+    # Calcular a soma total para BT
+    if not df_bt.empty:
+        # 1. Converter a coluna 'Preço Total' para float
+        total_bt_numeric = df_bt['Preço Total'].str.replace('R$ ', '', regex=False).str.replace('.', '', regex=False).str.replace(',', '.', regex=False).astype(float)
+        # 2. Somar os valores
+        soma_total_bt = total_bt_numeric.sum()
+        # 3. Formatar o resultado
+        total_bt_formatado = formatar_numero_brasileiro(soma_total_bt)
+    else:
+        soma_total_bt = 0.0
+        total_bt_formatado = formatar_numero_brasileiro(0) # Ou "0,00"
 
     st.divider()
     col1, col2, col3 = st.columns(3)
     with col1:
-        st.metric("Total MT", f"R$ {total_mt}")
+        st.metric("Total MT", f"R$ {total_mt_formatado}")
     with col2:
-        st.metric("Total BT", f"R$ {total_bt}")
+        st.metric("Total BT", f"R$ {total_bt_formatado}")
     with col3:
-        # Convertendo strings para float para soma correta
-        total_mt_float = float(total_mt.replace('.', '').replace(',', '.'))
-        total_bt_float = float(total_bt.replace('.', '').replace(',', '.'))
+        total_mt_float = float(total_mt_formatado.replace('.', '').replace(',', '.'))
+        total_bt_float = float(total_bt_formatado.replace('.', '').replace(',', '.'))
         total_geral = total_mt_float + total_bt_float
-        # Formatando o total geral usando formatar_numero_brasileiro
         st.metric("Total Geral", f"R$ {formatar_numero_brasileiro(total_geral)}")
     
 import logging
@@ -241,11 +258,14 @@ def carregar_dados_revisao(revisao_id: str):
         resultado = cur.fetchone()
         
         if resultado:
-            conteudo, numero_revisao, cliente, proposta, obra, dt_oferta, contato, id_proposta = resultado
-            
+            conteudo, numero_revisao, proposta_num, obra, id_proposta_db, contato_nome, contato_email, contato_telefone, cliente_nome = resultado
+            cliente = cliente_nome
+            proposta = proposta_num
+            contato = contato_nome
+            dt_oferta = datetime.now()
+            id_proposta = id_proposta_db
             if conteudo:
                 try:
-                    # Primeiro decode: converter para string JS
                     if isinstance(conteudo, str):
                         primeiro_decode = json.loads(conteudo)
                         
@@ -578,6 +598,7 @@ def inicializar_dados():
                 print("Conexão com banco fechada")
         
         st.session_state['app_initialized'] = True
+        print("Cliente nome:" + st.session_state['dados_iniciais']['cliente'])
         print("Inicialização concluída com sucesso")
             
     except Exception as e:

@@ -83,7 +83,7 @@ class DataConverter:
 
 class StreamlitApiService:
     def __init__(self, base_url=None):
-        self.base_url = 'https://site-comercial.onrender.com'
+        self.base_url = os.getenv('API_BASE_URL', base_url)
         # Add token validation
         token = st.session_state.get('token')
         self.token = token if token else None
