@@ -519,6 +519,19 @@ def inicializar_dados():
                         print(f"Resultado da busca: {resultado}")
                         if resultado:
                             ultima_revisao, proposta, obra, id_proposta, contato_nome, contato_email, contato_telefone, cliente_nome, local_cliente = resultado
+                            # --- LÓGICA DA REVISÃO ---
+                            if st.session_state.get('tipo_proposta') == "Nova revisão":
+                                print("Tipo: Nova revisão. Calculando próximo número.")
+                                cur.execute("""
+                                    SELECT MAX(CAST(revisao AS INTEGER))
+                                    FROM revisoes
+                                    WHERE id_proposta_id = %s
+                                """, (id_proposta,))
+                                ultima_revisao = cur.fetchone()[0]
+                                proxima_revisao_num = ultima_revisao + 1 if ultima_revisao is not None else 0
+                                revisao_para_usar = str(proxima_revisao_num).zfill(2)
+                                print(f"Última revisão: {ultima_revisao}, Próxima revisão a usar: {revisao_para_usar}")
+                                st.session_state['rev']= revisao_para_usar
                             
                             # CORREÇÃO: Se não tiver id_revisao, sempre criar novos dados iniciais
                             if not id_revisao:
@@ -656,7 +669,7 @@ def main():
         if st.session_state.get('configuracao_inicial_completa'):
             dados = st.session_state['dados_iniciais']
             if dados.get('cliente'):
-                st.success(f" Proposta {dados.get('bt')} - {dados.get('cliente')} - {dados.get('obra')}")
+                st.success(f" Proposta {dados.get('bt')} - {dados.get('cliente')} - {dados.get('obra')} - Revisão {dados.get('rev')}")
             
             # Sidebar navigation
             st.sidebar.title('Navegação')
