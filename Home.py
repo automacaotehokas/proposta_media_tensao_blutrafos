@@ -258,11 +258,14 @@ def carregar_dados_revisao(revisao_id: str):
         resultado = cur.fetchone()
         
         if resultado:
-            conteudo, numero_revisao, proposta_num, obra, id_proposta_db, contato_nome, contato_email, contato_telefone, cliente_nome = resultado
+            conteudo, revisao, proposta_num, obra, id_proposta_db, contato_nome, contato_email, contato_telefone, cliente_nome = resultado
             cliente = cliente_nome
             proposta = proposta_num
             contato = contato_nome
             dt_oferta = datetime.now()
+            numero_revisao = revisao
+            st.session_state['rev_atual']= numero_revisao 
+            print("rev atual: ", st.session_state['rev_atual'])
             id_proposta = id_proposta_db
             if conteudo:
                 try:
@@ -307,12 +310,13 @@ def carregar_dados_revisao(revisao_id: str):
                         
                         # Verificamos se existem todos os campos necessários no dados_iniciais
                         dt = dt_oferta or datetime.now()
+
                         dados_iniciais_completos = {
                             'cliente': cliente,
                             'bt': str(proposta),
                             'obra': obra,
                             'id_proposta': id_proposta,  # Agora vem do resultado da consulta
-                            'rev': str(numero_revisao).zfill(2),
+                            'rev': st.session_state['rev_atual'],
                             'dia': dt.strftime('%d'),
                             'mes': dt.strftime('%m'),
                             'ano': dt.strftime('%Y'),
@@ -353,7 +357,7 @@ def carregar_dados_revisao(revisao_id: str):
                             'bt': str(proposta),
                             'obra': obra,
                             'id_proposta': id_proposta,  # Agora vem do resultado da consulta
-                            'rev': str(numero_revisao).zfill(2),
+                             'rev': st.session_state['rev_atual'],
                             'dia': dt.strftime('%d'),
                             'mes': dt.strftime('%m'),
                             'ano': dt.strftime('%Y'),
@@ -547,7 +551,7 @@ def inicializar_dados():
                                     'bt': proposta,
                                     'obra': obra,
                                     'id_proposta': id_proposta,
-                                    'rev': proxima_revisao,
+                                    'rev': st.session_state['rev_atual'],
                                     'dia': data_hoje.strftime('%d'),
                                     'mes': meses[mes_atual],
                                     'ano': data_hoje.strftime('%Y'),
@@ -587,7 +591,7 @@ def inicializar_dados():
                                             'bt': proposta,
                                             'obra': obra,
                                             'id_proposta': id_proposta,
-                                            'rev': proxima_revisao,
+                                            'rev': st.session_state['rev_atual'],
                                             'dia': data_hoje.strftime('%d'),
                                             'mes': meses[mes_atual],
                                             'ano': data_hoje.strftime('%Y'),
@@ -617,6 +621,77 @@ def inicializar_dados():
     except Exception as e:
         print(f"Erro detalhado na inicialização: {str(e)}")
         st.error(f"Erro ao inicializar dados: {str(e)}")
+
+
+def atualizar_numero_revisao_final():
+    """
+    Busca a última revisão salva no banco para a proposta atual
+    e atualiza o st.session_state['dados_iniciais']['rev'] para o próximo número,
+    respeitando as condições de 'Nova revisão' vs 'Atualizar revisão'.
+    """
+    logger.info("Iniciando atualização final do número da revisão.")
+
+    tipo_proposta = st.session_state.get('tipo_proposta')
+    id_proposta = st.session_state.get('id_proposta')
+
+    print("Número da revisão até aqui:" ,st.session_state['dados_iniciais']['rev'])
+
+    if  st.session_state['id_revisao'] == '':
+        st.session_state['dados_iniciais']['rev'] = '00'
+        logger.info("ID da revisão não encontrado, número da revisão definido como '00'.")
+        return
+    
+    # Condição 1: Se for "Atualizar revisão", não faz nada e sai.
+    if tipo_proposta == "Atualizar revisão":
+        logger.info("Tipo: Atualizar revisão. Número da revisão não será alterado aqui.")
+        st.session_state['dados_iniciais']['rev'] = str(st.session_state['rev_atual']).zfill(2)
+        return # Sai da função sem modificar
+
+    # Condição 2: Se for "Nova revisão" (e tem id_proposta)
+    if tipo_proposta == "Nova revisão":
+        if not id_proposta:
+            logger.error("ID da proposta não encontrado em session_state para calcular nova revisão.")
+            # Define como '00' como fallback se não houver proposta? Ou mantém o que estava?
+            # Vamos manter o que estava para evitar inconsistência se a proposta não carregou.
+            return
+
+        logger.info(f"Tipo: Nova revisão. Buscando MAX(revisao) para proposta ID: {id_proposta}")
+        conn = None
+        try:
+            conn = DatabaseConfig.get_connection()
+            with conn.cursor() as cur:
+                cur.execute("""
+                    SELECT MAX(CAST(revisao AS INTEGER))
+                    FROM revisoes
+                    WHERE id_proposta_id = %s
+                """, (id_proposta,))
+                ultima_revisao = cur.fetchone()[0]
+
+                # Calcula o próximo número (max + 1 ou 0 se for a primeira)
+                proxima_revisao_num = ultima_revisao + 1 if ultima_revisao is not None else 0
+                revisao_formatada = str(proxima_revisao_num).zfill(2)
+
+                logger.info(f"Última revisão no DB: {ultima_revisao}. Próxima revisão calculada: {revisao_formatada}")
+
+                # Atualiza o valor em session_state
+                st.session_state['dados_iniciais']['rev'] = revisao_formatada
+                logger.info(f"Número da revisão em 'dados_iniciais' atualizado para: {revisao_formatada}")
+
+        except psycopg2.Error as db_err:
+            logger.error(f"Erro de banco de dados ao buscar última revisão final: {db_err}", exc_info=True)
+            # Não atualiza se der erro, mantém o que estava antes
+        except Exception as e:
+            logger.error(f"Erro geral ao buscar última revisão final: {e}", exc_info=True)
+            # Não atualiza se der erro
+        finally:
+            if conn:
+                conn.close()
+                logger.info("Conexão com banco fechada (atualizar_numero_revisao_final).")
+
+    # Caso não seja nem "Atualizar" nem "Nova" (ou falte id_proposta em "Nova")
+    else:
+        logger.warning(f"Tipo de proposta '{tipo_proposta}' não permite atualização do número da revisão ou ID da proposta ausente. Número da revisão não atualizado.")
+
 
 # 3. Modifique a função main para definir "Configuração de Itens" como página padrão
 def main():
@@ -664,6 +739,7 @@ def main():
         })
 
         inicializar_dados()
+        atualizar_numero_revisao_final()
         
         # Verifica se já completou a configuração inicial
         if st.session_state.get('configuracao_inicial_completa'):
@@ -693,6 +769,7 @@ def main():
             # Show unified table if there are items
             st.markdown("---")
             exibir_tabela_unificada()
+
 
 PAGES = {
     "Configuração de Itens": pagina_configuracao,
