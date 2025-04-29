@@ -453,6 +453,9 @@ def inicializar_dados():
     id_revisao = st.session_state['id_revisao']
     token = st.session_state['token']
 
+    if 'rev_atual' not in session_state:
+        st.session_state['rev_atual'] = '00'
+
     try:
         print("Iniciando função inicializar_dados()")
         
