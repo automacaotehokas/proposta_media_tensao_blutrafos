@@ -2,12 +2,13 @@ import streamlit as st
 from datetime import datetime
 from .api import buscar_cidades
 from .utils import aplicar_mascara_telefone, get_meses_pt
+from cidades import cidades
 
 
 def carregar_cidades():
     """Carrega e armazena a lista de cidades no session_state"""
     if 'cidades' not in st.session_state:
-        st.session_state['cidades'] = buscar_cidades()
+        st.session_state['cidades'] = cidades
 
 
 def configurar_informacoes():
