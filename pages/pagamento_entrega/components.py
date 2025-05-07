@@ -129,7 +129,7 @@ class ComponentsPagamentoEntrega:
         # Inicialização do estado para prazo de fabricação com texto padrão
         if 'prazo_entrega_global' not in st.session_state:
             st.session_state['prazo_entrega_global'] = {
-                'prazo_fabricacao': "Prazo de fabricação: Até 60 dias contados a partir da data da aprovação definitiva dos desenhos + transporte."
+                'prazo_fabricacao': "**Transformadores**: Até 60 dias contados a partir da data da aprovação definitiva dos desenhos + transporte."
             }
 
         
@@ -183,7 +183,7 @@ class ComponentsPagamentoEntrega:
         # Inicialização do estado para prazo de fabricação com texto padrão
         if 'prazo_entrega_global' not in st.session_state:
             st.session_state['prazo_entrega_global'] = {
-                'prazo_fabricacao': "Prazo de fabricação: Até 60 dias contados a partir da data da aprovação definitiva dos desenhos + transporte."
+                'prazo_fabricacao': "**Transformadores**: Até 60 dias contados a partir da data da aprovação definitiva dos desenhos + transporte."
             }
 
         
@@ -316,7 +316,7 @@ class ComponentsPagamentoEntrega:
         # Inicialização do estado para prazo de fabricação com texto padrão
         if 'prazo_entrega_global' not in st.session_state:
             st.session_state['prazo_entrega_global'] = {
-                'prazo_fabricacao': "Prazo de fabricação: Até 60 dias contados a partir da data da aprovação definitiva dos desenhos + transporte."
+                'prazo_fabricacao': "**Transformadores**: Até 60 dias contados a partir da data da aprovação definitiva dos desenhos + transporte."
             }
 
         # Seção de Prazos Gerais - Organizada em duas colunas para melhor visualização

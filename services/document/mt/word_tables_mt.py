@@ -3,6 +3,11 @@ from docx import Document
 from docx.shared import Pt, RGBColor, Cm
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.enum.table import WD_TABLE_ALIGNMENT
+from docx.shared import Cm, Pt
+from docx.enum.table import WD_TABLE_ALIGNMENT
+from docx.shared import Cm, Pt
+from docx.oxml import OxmlElement
+from docx.oxml.ns import qn
 from .test import formatar_numero_inteiro_ou_decimal
 from typing import Dict, List, Any
 from .word_formatter_mt import (
@@ -175,7 +180,7 @@ def create_custom_table(doc: Document, itens_configurados: List[Dict], observaca
             str(item["Quantidade"]),
             potencia_texto,
             str(item["Fator K"]),
-            f"{item['Tensão Primária']}kV /{item['Tensão Secundária']} V",
+            f"{item['Tensão Primária']}kV/{(str(int(item['Tensão Secundária'])*0.001).replace(".",","))}kV",
             str(item["IP"]),
             str(item["Perdas"]),
             f"{item['Preço Unitário']:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."),
@@ -224,21 +229,49 @@ def create_custom_table(doc: Document, itens_configurados: List[Dict], observaca
 
     return table
 
+def substituir_icms_cirurgico(doc, replacements):
+    icms_value = replacements.get("{{ICMS}}", "")
+    if not icms_value:
+        return
+
+    for paragraph in doc.paragraphs:
+        if "{{ICMS}}" not in paragraph.text:
+            continue
+            
+        # Mantém todos os runs originais, só substitui o placeholder
+        for run in paragraph.runs:
+            if "{{ICMS}}" in run.text:
+                # Substitui APENAS o placeholder, mantendo TODO o resto
+                original_text = run.text
+                before, placeholder, after = original_text.partition("{{ICMS}}")
+                
+                # Reconstroi o run com o valor novo no meio
+                run.text = before + icms_value + after
+                
+                # Para garantir que não alterou nada além do necessário:
+                # 1. Mantém o negrito original do run
+                # 2. Não toca em nenhuma outra formatação
+                # 3. Não mexe nos runs vizinhos
+                break  # Uma única substituição por parágrafo
+
+from docx.shared import Cm,Pt  # Importe a classe Cm para trabalhar com centímetros
+from docx.enum.table import WD_TABLE_ALIGNMENT
+
 def create_custom_table_escopo(doc: Document, itens_configurados: List[Dict]) -> object:
     """Cria a tabela de escopo"""
-    table = doc.add_table(rows=len(itens_configurados) + 1, cols=2)
+    table = doc.add_table(rows=len(itens_configurados) + 1, cols=3)
     table.alignment = WD_TABLE_ALIGNMENT.LEFT
     set_table_left_indent(table, 0)
     table.left_indent = Cm(0)
     table.autofit = False
 
     # Definir larguras das colunas
-    col_widths = [Cm(1.5), Cm(15.0)]
+    col_widths = [Cm(1.5), Cm(1.5),Cm(15.0)]
     set_column_widths(table, col_widths)
 
     # Cabeçalho
     header_row = table.rows[0]
-    header_data = ["Item", "Escopo do Fornecimento:"]
+    header_data = ["Item","Qtde", "Escopo do Fornecimento:"]
 
     for idx, cell in enumerate(header_row.cells):
         cell.text = header_data[idx]
@@ -262,8 +295,13 @@ def create_custom_table_escopo(doc: Document, itens_configurados: List[Dict]) ->
         apply_paragraph_formatting(row.cells[0].paragraphs[0], alignment='center')
         add_double_borders(row.cells[0])
 
+        row.cells[1].text = str(item.get("Quantidade", "1"))
+        apply_paragraph_formatting(row.cells[1].paragraphs[0], alignment='center')
+        add_double_borders(row.cells[1])
+
         # Preparar dados para o escopo
         classe_tensao = item.get('classe_tensao', '').replace('kV', '').strip()
+        qtde= item.get('Quantidade', 'N/A')
         tensao_secundaria = item.get('Tensão Secundária', 'N/A').replace('kV', '').strip()
         eficiencia = determinar_eficiencia(item['Perdas'])
         NBI = item.get('nbi', 'N/A')
@@ -309,7 +347,7 @@ def create_custom_table_escopo(doc: Document, itens_configurados: List[Dict]) ->
         )
 
         # Aplicar o texto com formatação
-        escopo_paragraph = row.cells[1].paragraphs[0]
+        escopo_paragraph = row.cells[2].paragraphs[0]
         escopo_paragraph.text = ""
         escopo_parts = escopo_text.split("**")
         
@@ -322,7 +360,7 @@ def create_custom_table_escopo(doc: Document, itens_configurados: List[Dict]) ->
 
         escopo_paragraph.alignment = WD_ALIGN_PARAGRAPH.JUSTIFY
         escopo_paragraph.paragraph_format.space_after = Pt(2)
-        add_double_borders(row.cells[1])
+        add_double_borders(row.cells[2])
 
     return table
 
@@ -367,20 +405,52 @@ def inserir_tabelas_word(doc: Document, itens_configurados: List[Dict],
     substituir_texto_documento(doc, replacements)
     logger.error("Substituições realizadas com sucesso!")
 
+    
+
     # Inserir tabela de preços
-    logger.error("Inserindo tabela de preços...")
+    logger.error("Inserindo tabela de preços...oo")
     for i, paragraph in enumerate(doc.paragraphs):
         if "Quadro de Preços" in paragraph.text:
             table = create_custom_table(doc, itens_configurados, observacao)
-            doc.paragraphs[i+1]._element.addnext(table._element)
+            # Ajusta o alinhamento e recuo da tabela
+            table.autofit = False
+            table.allow_autofit = False
+            
+            # 3. Ajuste via XML (recuo negativo de 1 cm)
+            tbl_pr = table._element.xpath('w:tblPr')
+            if tbl_pr:
+                tbl_pr = tbl_pr[0]
+                tbl_ind = OxmlElement('w:tblInd')
+                tbl_ind.set(qn('w:w'), str(int(-1 * 400)))  # -1 cm (567 twips = 1 cm)
+                tbl_ind.set(qn('w:type'), 'dxa')
+                tbl_pr.append(tbl_ind)
+            
+            # Insere a tabela após o parágrafo
+            doc.paragraphs[i + 1]._element.addnext(table._element)
+
+  
             break
 
    # Inserir tabela de escopo
     logger.error("Inserindo tabela de escopo...")
     for i, paragraph in enumerate(doc.paragraphs):
         if "Escopo de Fornecimento" in paragraph.text:
-            table_escopo = create_custom_table_escopo(doc, itens_configurados)
-            doc.paragraphs[i+1]._element.addnext(table_escopo._element)
+            table = create_custom_table_escopo(doc, itens_configurados)
+            # Ajusta o alinhamento e recuo da tabela
+            table.autofit = False
+            table.allow_autofit = False
+            
+            # 3. Ajuste via XML (recuo negativo de 1 cm)
+            tbl_pr = table._element.xpath('w:tblPr')
+            if tbl_pr:
+                tbl_pr = tbl_pr[0]
+                tbl_ind = OxmlElement('w:tblInd')
+                tbl_ind.set(qn('w:w'), str(int(-1 * 400)))  # -1 cm (567 twips = 1 cm)
+                tbl_ind.set(qn('w:type'), 'dxa')
+                tbl_pr.append(tbl_ind)
+            
+            # Insere a tabela após o parágrafo
+            doc.paragraphs[i + 1]._element.addnext(table._element)
             break
 
     return doc

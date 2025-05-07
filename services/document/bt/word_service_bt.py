@@ -238,8 +238,53 @@ def substituir_texto_documento(doc, replacements):
                     except Exception as e:
                         logger.error(f"Erro ao remover parágrafo: {str(e)}")      
 
+def substituir_icms_cirurgico(doc, replacements):
+    icms_value = replacements.get("{{ICMS}}", "")
+    if not icms_value:
+        return
 
- 
+    for paragraph in doc.paragraphs:
+        if "{{ICMS}}" in paragraph.text:
+            # Processa cada run separadamente
+            new_runs = []
+            for run in paragraph.runs:
+                if "{{ICMS}}" in run.text:
+                    # Divide o run em partes antes/depois do placeholder
+                    before, _, after = run.text.partition("{{ICMS}}")
+                    
+                    # Adiciona a parte anterior (com formatação original)
+                    if before:
+                        new_run = paragraph.add_run(before)
+                        copy_run_formatting(run, new_run)
+                    
+                    # Adiciona o novo valor (sem negrito)
+                    icms_run = paragraph.add_run(icms_value)
+                    icms_run.font.bold = False  # Força sem negrito
+                    icms_run.font.name = run.font.name
+                    icms_run.font.size = run.font.size
+                    
+                    # Adiciona a parte posterior (com formatação original)
+                    if after:
+                        new_run = paragraph.add_run(after)
+                        copy_run_formatting(run, new_run)
+                    
+                    # Marca o run original para remoção
+                    run._element.getparent().remove(run._element)
+                else:
+                    new_runs.append(run)
+
+def copy_run_formatting(source_run, target_run):
+    """Copia todas as propriedades de formatação de um run para outro"""
+    target_run.font.bold = source_run.font.bold
+    target_run.font.italic = source_run.font.italic
+    target_run.font.underline = source_run.font.underline
+    target_run.font.color.rgb = source_run.font.color.rgb if source_run.font.color else None
+    target_run.font.name = source_run.font.name
+    target_run.font.size = source_run.font.size
+
+from docx.shared import Cm,Pt  # Importe a classe Cm para trabalhar com centímetros
+from docx.enum.table import WD_TABLE_ALIGNMENT
+
 
 
 def inserir_tabelas_word(doc, itens_configurados, observacao):
@@ -280,6 +325,8 @@ def inserir_tabelas_word(doc, itens_configurados, observacao):
     try:
         substituir_texto_documento(doc, replacements)
         logging.debug("Texto substituído com sucesso usando replacements.")
+        substituir_icms_cirurgico(doc, replacements)   # Nossa correção específica
+        logging.debug("Texto ICMS cirúrgico substituído com sucesso.")
     except Exception as e:
         logging.error(f"Erro ao substituir texto no documento: {e}")
         raise
@@ -293,6 +340,14 @@ def inserir_tabelas_word(doc, itens_configurados, observacao):
                 if i + 1 < len(doc.paragraphs):
                       # Certifique-se de que i+1 é válido
                     table = create_custom_table(doc, itens_configurados, observacao)
+                    # Ajusta o alinhamento e recuo da tabela
+                    table.alignment = WD_TABLE_ALIGNMENT.LEFT
+                    table.autofit = False
+                    
+                    # Mover a tabela 1cm para a esquerda (ajuste conforme necessário)
+                    table.left_indent = Pt(-28.35)
+                    
+                    # Insere a tabela após o parágrafo
                     doc.paragraphs[i + 1]._element.addnext(table._element)
                     logging.debug("Tabela de Quadro de Preços inserida com sucesso após o parágrafo.")
                 else:

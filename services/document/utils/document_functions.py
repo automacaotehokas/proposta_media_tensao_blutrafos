@@ -93,75 +93,69 @@ from docx.shared import RGBColor, Pt
 
 def highlight_work_days(paragraph, input_text):
     """
-    Highlights numbers followed by variations of 'dias uteis' or 'dias' in red color
-    and 'Prazo de fabricação' in bold.
-    
-    Args:
-        paragraph: A python-docx paragraph object where the text will be inserted
-        input_text: The input text to process
+    Processa texto com:
+    - Negrito entre ** **
+    - Números de dias em vermelho
+    - "Prazo de fabricação" em negrito
     """
-    # Clear existing content from paragraph
+    # Limpa o parágrafo existente
     paragraph.clear()
+
+    # Padrões para detectar:
+    # 1. Texto entre ** ** (negrito)
+    bold_pattern = r'\*\*(.*?)\*\*'
+    # 2. Números seguidos de "dias"
+    dias_pattern = r'(\d+)(\s*dias?)'
     
-    # Patterns
-    dias_pattern = r'(\d+)(\s*(?:dias?\s*[uú]te[ie]s?|dias?))'
-    prazo_pattern = r'(prazo\s+de\s+fabrica[çc][aã]o)'
+    # Lista para armazenar todos os matches (negritos e dias)
+    matches = []
     
-    # Function to convert text to lowercase for comparison
-    def normalize_text(text):
-        return text.lower().replace('ú', 'u').replace('é', 'e').replace('í', 'i').replace('ç', 'c').replace('ã', 'a')
+    # Encontra todos os trechos entre ** **
+    for match in re.finditer(bold_pattern, input_text):
+        matches.append(('bold', match.start(), match.end(), match.group(1)))
     
-    # Combine both patterns to process text in order
-    combined_matches = []
-    
-    # Find all matches for dias uteis or dias
+    # Encontra todos os números de dias
     for match in re.finditer(dias_pattern, input_text, re.IGNORECASE):
-        combined_matches.append(('dias', match))
+        matches.append(('dias', match.start(), match.end(), match.group(1)))
     
-    # Find all matches for prazo de fabricação
-    for match in re.finditer(prazo_pattern, input_text, re.IGNORECASE):
-        combined_matches.append(('prazo', match))
+    # Ordena os matches pela posição no texto
+    matches.sort(key=lambda x: x[1])
     
-    # Sort matches by their position in text
-    combined_matches.sort(key=lambda x: x[1].start())
-    
-    # Process each match in order
-    last_end = 0
-    for match_type, match in combined_matches:
-        # Add text before the match
-        if match.start() > last_end:
-            run = paragraph.add_run(input_text[last_end:match.start()])
+    # Reconstrói o texto aplicando formatação
+    last_pos = 0
+    for match_type, start, end, content in matches:
+        # Texto antes do match (sem formatação)
+        if start > last_pos:
+            run = paragraph.add_run(input_text[last_pos:start])
             run.font.name = 'Calibri Light'
             run.font.size = Pt(11)
         
-        if match_type == 'dias':
-            # Add the number in red
-            number = match.group(1)
-            run = paragraph.add_run(number)
-            run.font.color.rgb = RGBColor(255, 0, 0)  # Red color
-            run.font.name = 'Calibri Light'
-            run.font.size = Pt(11)
-            
-            # Add "dias uteis" or "dias" in red
-            dias_uteis = match.group(2)
-            run = paragraph.add_run(dias_uteis)
-            run.font.color.rgb = RGBColor(255, 0, 0)  # Red color
-            run.font.name = 'Calibri Light'
-            run.font.size = Pt(11)
-        
-        elif match_type == 'prazo':
-            # Add "Prazo de fabricação" in bold, preserving original case
-            prazo_text = match.group(0)
-            run = paragraph.add_run(prazo_text)
+        # Aplica formatação conforme o tipo
+        if match_type == 'bold':
+            run = paragraph.add_run(content)
             run.font.name = 'Calibri Light'
             run.font.size = Pt(11)
             run.bold = True
+        elif match_type == 'dias':
+            # Número em vermelho
+            run = paragraph.add_run(content)
+            run.font.color.rgb = RGBColor(255, 0, 0)
+            run.font.name = 'Calibri Light'
+            run.font.size = Pt(11)
+            
+            # "dias" em vermelho (se existir no grupo)
+            dias_text = input_text[start:end].replace(content, '')
+            if dias_text:
+                run = paragraph.add_run(dias_text)
+                run.font.color.rgb = RGBColor(255, 0, 0)
+                run.font.name = 'Calibri Light'
+                run.font.size = Pt(11)
         
-        last_end = match.end()
+        last_pos = end
     
-    # Add any remaining text after the last match
-    if last_end < len(input_text):
-        run = paragraph.add_run(input_text[last_end:])
+    # Texto restante (sem formatação)
+    if last_pos < len(input_text):
+        run = paragraph.add_run(input_text[last_pos:])
         run.font.name = 'Calibri Light'
         run.font.size = Pt(11)
 
@@ -294,6 +288,7 @@ def inserir_prazo_entrega(doc):
                 texto_produto = f"{valor}"
                 
                 # Usa a função auxiliar para processar o texto
+                processar_texto_com_negrito(p_produto, texto_produto, valor, incluir_dias_uteis=True)
                 highlight_work_days(p_produto,texto_produto)
                 ultimo_paragrafo._element.addnext(p_produto._element)
                 ultimo_paragrafo = p_produto
