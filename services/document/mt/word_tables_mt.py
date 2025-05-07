@@ -180,7 +180,7 @@ def create_custom_table(doc: Document, itens_configurados: List[Dict], observaca
             str(item["Quantidade"]),
             potencia_texto,
             str(item["Fator K"]),
-            f"{item['Tensão Primária']}kV/{(str(int(item['Tensão Secundária'])*0.001).replace(".",","))}kV",
+            f"{item['Tensão Primária']}kV/{str(int(item['Tensão Secundária']*0.001)).replace('.',',')}kV",
             str(item["IP"]),
             str(item["Perdas"]),
             f"{item['Preço Unitário']:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."),
