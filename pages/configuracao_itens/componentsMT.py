@@ -94,12 +94,14 @@ class componentsMT:
         )
         item_data['Tensão Primária'] = tensao_primaria
         
-        tensao_secundaria = st.text_input(
+        tensao_secundaria = st.number_input(
             f'Tensão Secundária do Item {item_index + 1}:',
-            value=item_data['Tensão Secundária'] if item_data['Tensão Secundária'] else "",
+            value=item_data['Tensão Secundária'] if item_data['Tensão Secundária'] else 0.00,
+            step=0.1,
             key=f'tensao_secundaria_{item_index}'  # Chave única baseada no item_index
         )
         item_data['Tensão Secundária'] = tensao_secundaria
+        item_data['tensao_secundaria_texto'] = str(tensao_secundaria * 0.001).replace(".",",")
         
         derivacoes = st.text_input(
             f'Derivações do Item {item_index + 1}:',

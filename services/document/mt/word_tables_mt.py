@@ -180,7 +180,7 @@ def create_custom_table(doc: Document, itens_configurados: List[Dict], observaca
             str(item["Quantidade"]),
             potencia_texto,
             str(item["Fator K"]),
-            f"{item['Tensão Primária']}kV/{str(int(float(item['Tensão Secundária'])*0.001)).replace('.',',')}kV",
+            f"{item['Tensão Primária']}kV/{item['tensao_secundaria_texto']}kV",
             str(item["IP"]),
             str(item["Perdas"]),
             f"{item['Preço Unitário']:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."),
@@ -301,8 +301,6 @@ def create_custom_table_escopo(doc: Document, itens_configurados: List[Dict]) ->
 
         # Preparar dados para o escopo
         classe_tensao = item.get('classe_tensao', '').replace('kV', '').strip()
-        qtde= item.get('Quantidade', 'N/A')
-        tensao_secundaria = item.get('Tensão Secundária', 'N/A').replace('kV', '').strip()
         eficiencia = determinar_eficiencia(item['Perdas'])
         NBI = item.get('nbi', 'N/A')
         
@@ -312,9 +310,9 @@ def create_custom_table_escopo(doc: Document, itens_configurados: List[Dict]) ->
 
 
         # Calcular tensão secundária
-        tensao_secundaria_str = item.get('Tensão Secundária', '0')
+        tensao_secundaria_str = item.get('tensao_secundaria_texto', '0')
         try:
-            tensao_secundaria_float = float(tensao_secundaria_str)
+            tensao_secundaria_float = item.get('Tensão Secundária', 0.00)
             tensao_calculada = tensao_secundaria_float / 1.73
             tensao_calculada_arredondada = round(tensao_calculada)
             tensao_secundaria_arredondada = round(tensao_secundaria_float)
