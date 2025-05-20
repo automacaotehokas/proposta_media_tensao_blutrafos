@@ -12,11 +12,13 @@ from .test import formatar_numero_inteiro_ou_decimal
 from typing import Dict, List, Any
 from .word_formatter_mt import (
     set_row_height, set_column_widths, apply_paragraph_formatting,
-    set_cell_shading, add_double_borders, set_table_left_indent
+    set_cell_shading, add_double_borders, set_table_left_indent,set_cell_margins
 )
 import streamlit as st
 import logging
 logger = logging.getLogger(__name__)
+
+
 
 def substituir_texto_documento(doc, replacements):
     def process_run(run, replacements):
@@ -266,7 +268,7 @@ def create_custom_table_escopo(doc: Document, itens_configurados: List[Dict]) ->
     table.autofit = False
 
     # Definir larguras das colunas
-    col_widths = [Cm(1.5), Cm(1.5),Cm(15.0)]
+    col_widths = [Cm(1.5), Cm(1.5),Cm(14.43)]
     set_column_widths(table, col_widths)
 
     # Cabeçalho
@@ -289,6 +291,8 @@ def create_custom_table_escopo(doc: Document, itens_configurados: List[Dict]) ->
     # Preenchendo itens
     for idx, item in enumerate(itens_configurados, start=1):
         row = table.rows[idx]
+        for cell in row.cells:
+            set_cell_margins(cell, top=100, bottom=100)
         
         # Coluna "Item"
         row.cells[0].text = str(idx)

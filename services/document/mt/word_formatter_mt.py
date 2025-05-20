@@ -3,6 +3,24 @@ from docx.oxml import OxmlElement
 from docx.oxml.ns import qn
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 
+def set_cell_margins(cell, top=100, bottom=100, left=100, right=100):
+    """
+    Define as margens internas da célula (padding) em unidades de 1/20 de ponto.
+    Valores padrão: 5pt (100 = 5pt)
+    """
+    tc = cell._tc
+    tcPr = tc.get_or_add_tcPr()
+    tcMar = OxmlElement('w:tcMar')
+    
+    for margin, value in [('top', top), ('bottom', bottom), 
+                         ('left', left), ('right', right)]:
+        node = OxmlElement(f'w:{margin}')
+        node.set(qn('w:w'), str(value))
+        node.set(qn('w:type'), 'dxa')
+        tcMar.append(node)
+    
+    tcPr.append(tcMar)
+
 def set_row_height(row, height_cm: float) -> None:
     """
     Define a altura de uma linha da tabela.

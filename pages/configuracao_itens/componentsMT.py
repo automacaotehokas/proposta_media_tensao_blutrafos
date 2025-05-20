@@ -101,7 +101,7 @@ class componentsMT:
             key=f'tensao_secundaria_{item_index}'  # Chave única baseada no item_index
         )
         item_data['Tensão Secundária'] = tensao_secundaria
-        item_data['tensao_secundaria_texto'] = str(tensao_secundaria * 0.001).replace(".",",")
+        item_data['tensao_secundaria_texto'] =  f"{tensao_secundaria * 0.001:.2f}".replace(".", ",")
         
         derivacoes = st.text_input(
             f'Derivações do Item {item_index + 1}:',
