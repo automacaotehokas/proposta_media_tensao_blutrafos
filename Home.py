@@ -703,6 +703,7 @@ def main():
     st.title("Proposta Automatizada - Transformadores")
     st.markdown("---")
 
+
     
     # Verifica se está rodando em produção
     if os.getenv('ENVIRONMENT') == 'PRODUCTION':
@@ -773,6 +774,9 @@ def main():
             st.markdown("---")
             exibir_tabela_unificada()
 
+            with st.expander("Dados p/ Dev", expanded=False):
+                st.write(st.session_state)
+
 
 PAGES = {
     "Configuração de Itens": pagina_configuracao,
@@ -782,6 +786,8 @@ PAGES = {
 }
 
 if __name__ == "__main__":
+
     load_dotenv()
+
     
     main()

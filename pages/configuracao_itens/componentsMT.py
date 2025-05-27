@@ -86,6 +86,11 @@ class componentsMT:
         )
         item_data['IP'] = ip
         
+        if ip == '00':
+            item_data['cod_proj_caixa'] = "N/A"
+        else:
+            item_data['cod_proj_caixa'] = detalhes_item['cod_proj_caixa']
+            
         # Campos de tensão
         tensao_primaria = st.text_input(
             f'Tensão Primária do Item {item_index + 1}:',
