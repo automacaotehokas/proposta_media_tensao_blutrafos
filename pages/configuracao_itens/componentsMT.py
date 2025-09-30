@@ -108,10 +108,16 @@ class componentsMT:
         item_data['Tensão Secundária'] = tensao_secundaria
         item_data['tensao_secundaria_texto'] =  f"{tensao_secundaria * 0.001:.2f}".replace(".", ",")
         
+        derivacoes_value = (
+            item_data.get('Derivações') 
+            if editando_item 
+            else get_default_voltage_values(detalhes_item['classe_tensao'])['derivacoes']
+        )
+
         derivacoes = st.text_input(
             f'Derivações do Item {item_index + 1}:',
-            value=get_default_voltage_values(detalhes_item['classe_tensao'])['derivacoes'],
-            key=f'derivacoes_{item_index}'  # Chave única baseada no item_index
+            value=derivacoes_value,
+            key=f'derivacoes_{item_index}'
         )
         item_data['Derivações'] = derivacoes
 
