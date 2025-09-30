@@ -92,9 +92,15 @@ class componentsMT:
             item_data['cod_proj_caixa'] = detalhes_item['cod_proj_caixa']
             
         # Campos de tensão
+        tensao_primaria_value = (
+            item_data.get('Tensão Primária')
+            if editando_item
+            else get_default_voltage_values(detalhes_item['classe_tensao'])['tensao_primaria']
+        )
+
         tensao_primaria = st.text_input(
             f'Tensão Primária do Item {item_index + 1}:',
-            value=get_default_voltage_values(detalhes_item['classe_tensao'])['tensao_primaria'],
+            value=tensao_primaria_value,
             key=f'tensao_primaria_{item_index}'  # Chave única baseada no item_index
         )
         item_data['Tensão Primária'] = tensao_primaria
@@ -121,9 +127,15 @@ class componentsMT:
         )
         item_data['Derivações'] = derivacoes
 
+        nbi_value = (
+            item_data.get('nbi') 
+            if editando_item 
+            else get_default_voltage_values(detalhes_item['classe_tensao'])['nbi']
+        )
+
         nbi = st.text_input(
             f'NBI do Item {item_index + 1}:',
-            value=get_default_voltage_values(detalhes_item['classe_tensao'])['nbi'],
+            value=nbi_value,
             key=f'nbi_{item_index}'  # Chave única baseada no item_index
         )
         item_data['nbi'] = nbi
