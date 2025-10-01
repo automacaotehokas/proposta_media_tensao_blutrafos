@@ -2,18 +2,17 @@ from typing import Dict
 import logging
 import docx2pdf
 import tempfile
-from docx.shared import Pt,RGBColor,Inches
+from docx.shared import Pt, RGBColor, Inches
 from docx import Document
 import os
 import dotenv
-from shareplum import Site, Office365
-from shareplum.site import Version
 from dotenv import load_dotenv
 import streamlit as st
 from docx.enum.text import WD_ALIGN_PARAGRAPH
 from docx.enum.table import WD_TABLE_ALIGNMENT
 from ..utils import document_functions
 from ..unificado import word_tables_unificado
+
 # Importações dos serviços MT
 from services.document.mt import (
     pdf_service_mt,
@@ -32,7 +31,6 @@ from services.document.bt import (
 from pages.pagamento_entrega.components import ComponentsPagamentoEntrega
 import tempfile
 
-from services.sharepoint.sharepoint_service import SharePoint
 from pages.pagamento_entrega.components import ComponentsPagamentoEntrega
 import logging
 
@@ -43,13 +41,17 @@ logging.basicConfig(
     datefmt='%Y-%m-%d %H:%M:%S'
 )
 
-
 logger = logging.getLogger(__name__)
 dotenv.load_dotenv()
 
+
 class SharePoint:
+    """
+    Classe mantida para compatibilidade, mas agora usa templates locais
+    """
     def __init__(self, itens: Dict = None):
         load_dotenv()
+        # Mantém as variáveis de ambiente mas não as usa mais
         self.USERNAME = os.getenv("SHAREPOINT_USER")
         self.PASSWORD = os.getenv("SHAREPOINT_PASSWORD")
         self.SHAREPOINT_URL = os.getenv("SHAREPOINT_URL")
@@ -58,16 +60,23 @@ class SharePoint:
         
         # Determina qual pasta usar baseado nos produtos configurados
         self.FOLDER_NAME = self._get_folder_name(itens)
-
+        
+        # Define o diretório base dos templates
+        self.TEMPLATES_DIR = os.path.join(os.getcwd(), "output", "templates")
+        os.makedirs(self.TEMPLATES_DIR, exist_ok=True)
 
     def listar_arquivos(self):
         """
-        Lista todos os arquivos na pasta do SharePoint
+        Lista todos os arquivos na pasta local de templates
         """
         try:
-            self._folder = self.connect_folder()
-            arquivos = self._folder.files
-            logging.info(f"Listando arquivos da pasta {self.FOLDER_NAME}:")
+            arquivos = []
+            if os.path.exists(self.TEMPLATES_DIR):
+                for filename in os.listdir(self.TEMPLATES_DIR):
+                    if filename.endswith('.docx'):
+                        arquivos.append({'Name': filename})
+                        
+            logging.info(f"Listando arquivos da pasta local {self.TEMPLATES_DIR}:")
             for arquivo in arquivos:
                 logging.info(f"- {arquivo['Name']}")
             return arquivos
@@ -77,114 +86,80 @@ class SharePoint:
 
     def _get_folder_name(self, itens: Dict = None) -> str:
         """
-        Determina qual pasta do SharePoint usar baseado nos produtos configurados
+        Determina qual tipo de template usar baseado nos produtos configurados
         """
         try:
             from pages.pagamento_entrega.components import ComponentsPagamentoEntrega
             
             # Se não houver itens, usa BT como padrão
             if not itens:
-                logging.info("Sem itens configurados, usando pasta BT como padrão")
-                return os.getenv("SHAREPOINT_FOLDER_NAME_BT")
+                logging.info("Sem itens configurados, usando template BT como padrão")
+                return "BT"
 
             produtos_configurados = ComponentsPagamentoEntrega.carregar_tipo_produto(itens)
             tem_mt = produtos_configurados.get('mt', False)
             tem_bt = produtos_configurados.get('bt', False)
 
-            # Primeiro verifica se tem os dois tipos de produto
+            # Verifica se tem os dois tipos de produto
             if tem_mt and tem_bt:
-                logging.info("Detectados produtos MT e BT - usando pasta unificada")
-                return os.getenv("SHAREPOINT_FOLDER_NAME_UNIFICADO")  # "08 - Propostas Automatizadas Transformadores"
+                logging.info("Detectados produtos MT e BT - usando template unificado")
+                return "UNIFICADO"
             elif tem_mt:
-                logging.info("Detectado apenas produto MT - usando pasta MT")
-                return os.getenv("SHAREPOINT_FOLDER_NAME_MT")  # "04 - Propostas Automatizadas Média Tensão"
+                logging.info("Detectado apenas produto MT - usando template MT")
+                return "MT"
             elif tem_bt:
-                logging.info("Detectado apenas produto BT - usando pasta BT")
-                return os.getenv("SHAREPOINT_FOLDER_NAME_BT")  # "06 - Propostas Automatizadas BxBx"
+                logging.info("Detectado apenas produto BT - usando template BT")
+                return "BT"
             else:
-                # Se não houver nenhum produto configurado, usa MT como fallback
-                logging.warning("Nenhum produto MT ou BT detectado - usando pasta BT como fallback")
-                return os.getenv("SHAREPOINT_FOLDER_NAME_MT")
+                logging.warning("Nenhum produto MT ou BT detectado - usando template BT como fallback")
+                return "BT"
                     
         except Exception as e:
-            logging.error(f"Erro ao determinar pasta do SharePoint: {str(e)}")
-            return os.getenv("SHAREPOINT_FOLDER_NAME_BT")
-
+            logging.error(f"Erro ao determinar tipo de template: {str(e)}")
+            return "BT"
 
     def auth(self):
-        """Autenticação no SharePoint"""
-        self.authcookie = Office365(
-            self.SHAREPOINT_URL, 
-            username=self.USERNAME, 
-            password=self.PASSWORD
-        ).GetCookies()
-        self.site = Site(
-            self.SHAREPOINT_SITE, 
-            version=Version.v365, 
-            authcookie=self.authcookie
-        )
-        return self.site
+        """Método mantido para compatibilidade - não faz nada"""
+        logging.info("Método auth() chamado - usando templates locais")
+        return None
 
     def connect_folder(self):
-        """Conecta à pasta específica no SharePoint"""
-        self.auth_site = self.auth()
-        # Constrói o caminho completo para a pasta
-        self.sharepoint_dir = f"{self.SHAREPOINT_DOC}/{self.FOLDER_NAME}"
-        logging.info(f"Tentando acessar pasta: {self.sharepoint_dir}")
-        
-        try:
-            # Tenta acessar a pasta existente
-            self.folder = self.auth_site.Folder(self.sharepoint_dir)
-            logging.info(f"Conectado com sucesso à pasta: {self.sharepoint_dir}")
-            return self.folder
-        except Exception as e:
-            logging.error(f"Erro ao conectar à pasta {self.sharepoint_dir}: {str(e)}")
-            raise Exception(f"Pasta {self.FOLDER_NAME} não encontrada no SharePoint")
+        """Método mantido para compatibilidade - não faz nada"""
+        logging.info(f"Método connect_folder() chamado - usando pasta local: {self.TEMPLATES_DIR}")
+        return None
 
     def download_file(self, file_name):
         """
-        Baixa um arquivo do SharePoint
+        'Baixa' (copia) um arquivo da pasta local de templates
         
         Args:
-            file_name (str): Nome do arquivo para baixar
+            file_name (str): Nome do arquivo para copiar
             
         Returns:
-            str: Caminho do arquivo baixado
+            str: Caminho do arquivo local
         """
-        logging.info(f"Tentando baixar arquivo: {file_name}")
-        logging.info(f"Da pasta: {self.FOLDER_NAME}")
+        logging.info(f"Buscando arquivo local: {file_name}")
+        logging.info(f"Na pasta: {self.TEMPLATES_DIR}")
         
         try:
-            self._folder = self.connect_folder()
-            file = self._folder.get_file(file_name)
+            local_path = os.path.join(self.TEMPLATES_DIR, file_name)
             
+            if not os.path.exists(local_path):
+                raise FileNotFoundError(f"Arquivo {file_name} não encontrado em {self.TEMPLATES_DIR}")
+            
+            # Cria uma cópia temporária para manter compatibilidade
             temp_path = os.path.join(tempfile.gettempdir(), file_name)
             
-            with open(temp_path, 'wb') as f:
-                f.write(file)
-                
-            logging.info(f"Arquivo baixado com sucesso para: {temp_path}")
+            with open(local_path, 'rb') as source:
+                with open(temp_path, 'wb') as dest:
+                    dest.write(source.read())
+                    
+            logging.info(f"Arquivo copiado com sucesso para: {temp_path}")
             return temp_path
             
         except Exception as e:
-            logging.error(f"Erro ao baixar arquivo {file_name}: {str(e)}")
-            raise Exception(f"Não foi possível baixar o arquivo {file_name} da pasta {self.FOLDER_NAME}")
-        
-
-
-from docx.shared import Pt, Inches
-
-from docx.shared import Pt, Inches
-
-
-    
-
-    # Adicionar espaço após todos os prazos
-    
-
-
-
-
+            logging.error(f"Erro ao acessar arquivo {file_name}: {str(e)}")
+            raise Exception(f"Não foi possível acessar o arquivo {file_name} em {self.TEMPLATES_DIR}")
 
 
 class DocumentManager:
@@ -197,7 +172,7 @@ class DocumentManager:
             # Verifica quais produtos estão configurados
             produtos_configurados = ComponentsPagamentoEntrega.carregar_tipo_produto(itens or {})
             
-            # Instancia o SharePoint e lista os arquivos disponíveis
+            # Instancia o SharePoint (que agora usa arquivos locais)
             sp = SharePoint(itens)
             arquivos_disponiveis = sp.listar_arquivos()
             
@@ -207,30 +182,28 @@ class DocumentManager:
             
             # Determina qual template usar baseado na combinação de produtos
             if tem_mt and tem_bt:
-                # Caso para ambos MT e BT - usa template unificado
-                template_name = os.getenv('TEMPLATE_UNIFICADO')  # 'template_unificado_trafo.docx'
+                template_name = os.getenv('TEMPLATE_UNIFICADO', 'template_unificado_trafo.docx')
                 logging.info("Detectados produtos MT e BT - usando template unificado")
             elif tem_mt:
-                # Caso apenas MT
-                template_name = os.getenv('TEMPLATE_MT')  # 'Template_Proposta_Comercial.docx'
+                template_name = os.getenv('TEMPLATE_MT', 'Template_Proposta_Comercial.docx')
                 logging.info("Detectado apenas produto MT")
             else:
-                # Caso apenas BT
-                template_name = os.getenv('TEMPLATE_BT')  # 'template_baixa_tensao.docx'
+                template_name = os.getenv('TEMPLATE_BT', 'template_baixa_tensao.docx')
                 logging.info("Detectado apenas produto BT")
             
-            local_template_path = f"/tmp/{template_name}"
-            logging.info(f"Procurando template: {template_name}")
+            # Caminho direto para o template local
+            local_template_path = os.path.join(sp.TEMPLATES_DIR, template_name)
+            logging.info(f"Procurando template: {local_template_path}")
             
-            # Se o arquivo não existe localmente, faz o download
+            # Verifica se o arquivo existe
             if not os.path.exists(local_template_path):
-                try:
-                    local_template_path = sp.download_file(template_name)
-                except Exception as e:
-                    logging.error(f"Arquivo {template_name} não encontrado. Arquivos disponíveis na pasta:")
-                    for arquivo in arquivos_disponiveis:
-                        logging.info(f"- {arquivo['Name']}")
-                    raise Exception(f"Template {template_name} não encontrado na pasta {sp.FOLDER_NAME}")
+                logging.error(f"Template {template_name} não encontrado. Templates disponíveis:")
+                for arquivo in arquivos_disponiveis:
+                    logging.info(f"- {arquivo['Name']}")
+                raise FileNotFoundError(
+                    f"Template {template_name} não encontrado em {sp.TEMPLATES_DIR}. "
+                    f"Por favor, certifique-se de que o arquivo existe nesta pasta."
+                )
             
             return local_template_path
         
@@ -238,7 +211,6 @@ class DocumentManager:
             logging.error(f"Erro ao obter template: {str(e)}")
             raise
 
-        
     @staticmethod
     def get_document_services(produtos_configurados: Dict):
         """
@@ -250,7 +222,7 @@ class DocumentManager:
                 'word_service': word_service_mt,
                 'word_formatter': word_formatter_mt,
                 'word_table': word_tables_mt,
-                'template':os.getenv('TEMPLATE_MT')
+                'template': os.getenv('TEMPLATE_MT', 'Template_Proposta_Comercial.docx')
             }
         else:
             return {
@@ -258,11 +230,8 @@ class DocumentManager:
                 'word_service': word_service_bt,
                 'word_formatter': word_formatter_bt,
                 'word_table': word_tables_bt,
-                'template':os.getenv('TEMPLATE_BT')
+                'template': os.getenv('TEMPLATE_BT', 'template_baixa_tensao.docx')
             }
-            
-
-
 
     def gerar_documentos(itens: Dict, observacao: str):
         """
@@ -391,18 +360,3 @@ class DocumentManager:
         except Exception as e:
             logging.error(f"Erro ao gerar documentos: {str(e)}")
             raise Exception(f"Erro ao gerar documentos: {str(e)}")
-            
-    # @staticmethod
-    # def gerar_pdf(doc_path: str) -> str:
-    #     """
-    #     Converte o documento Word em PDF
-    #     """
-    #     try:
-    #         from docx2pdf import convert
-    #         pdf_path = doc_path.replace('.docx', '.pdf')
-    #         convert(doc_path, pdf_path)
-    #         logging.info(f"PDF gerado com sucesso: {pdf_path}")
-    #         return pdf_path
-    #     except Exception as e:
-    #         logging.error(f"Erro ao gerar PDF: {str(e)}")
-    #         raise Exception(f"Erro ao gerar PDF: {str(e)}")
