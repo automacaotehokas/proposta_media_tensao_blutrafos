@@ -176,13 +176,24 @@ def create_custom_table(doc: Document, itens_configurados: List[Dict], observaca
         potencia = item["Potência"]
         potencia_texto = f"{potencia:,.1f}".replace('.', ',') + " kVA" if potencia % 1 != 0 else f"{int(potencia)} kVA"
 
+        # Calcular tensão secundária
+        tensao_secundaria_str = str(item.get('tensao_secundaria_texto', '0'))
+        try:
+            tensao_secundaria_float = float(item.get('Tensão Secundária', 0.00))
+            tensao_calculada = tensao_secundaria_float / 1.73
+            tensao_calculada_arredondada = round(tensao_calculada)
+            tensao_secundaria_arredondada = round(tensao_secundaria_float)
+            tensao_secundaria_texto = f"{tensao_secundaria_arredondada}/{tensao_calculada_arredondada}"
+        except (ValueError, TypeError):
+            tensao_secundaria_texto = f"{tensao_secundaria_str}"
+
         # Preenchimento das células
         cells_data = [
             str(idx),
             str(item["Quantidade"]),
             potencia_texto,
             str(item["Fator K"]),
-            f"{item['Tensão Primária']}kV/{item['tensao_secundaria_texto']}kV",
+            f"{item['Tensão Primária']}kV/{tensao_secundaria_texto}V",
             str(item["IP"]),
             str(item["Perdas"]),
             f"{item['Preço Unitário']:,.2f}".replace(",", "X").replace(".", ",").replace("X", "."),
@@ -316,7 +327,7 @@ def create_custom_table_escopo(doc: Document, itens_configurados: List[Dict]) ->
         # Calcular tensão secundária
         tensao_secundaria_str = item.get('tensao_secundaria_texto', '0')
         try:
-            tensao_secundaria_float = item.get('Tensão Secundária', 0.00)
+            tensao_secundaria_float = float(item.get('Tensão Secundária', 0.00))
             tensao_calculada = tensao_secundaria_float / 1.73
             tensao_calculada_arredondada = round(tensao_calculada)
             tensao_secundaria_arredondada = round(tensao_secundaria_float)

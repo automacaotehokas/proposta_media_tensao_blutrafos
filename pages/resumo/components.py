@@ -13,7 +13,9 @@ def render_dados_iniciais(dados: Dict[str, Any]):
         ('Obra', 'obra'),
         ('Data', lambda d: f"{d.get('dia')}/{d.get('mes')}/{d.get('ano')}"),
         ('Revisão', 'rev'),
-        ('Local', 'local_frete')
+        ('Local', 'local_frete'),
+        ('Concessionária', 'concessionaria'),
+        ('Aplicação', 'aplicacao')
     ]
     
     for label, key in campos:

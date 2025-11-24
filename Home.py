@@ -141,7 +141,7 @@ def exibir_tabela_unificada():
                 'Preço Total': 'Valor Total'
             }),
             height=400,
-            use_container_width=True
+            width='stretch'
         )
 
     # Botões de Edição/Exclusão

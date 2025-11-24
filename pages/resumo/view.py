@@ -88,11 +88,16 @@ def pagina_resumo():
                     output_path = DocumentManager.gerar_documentos(
                         itens=st.session_state['itens'],
                         observacao=st.session_state['dados_iniciais'].get('comentario', ''),
+                    )                    
+                    # Gerar PDF
+                    from services.document.mt import pdf_service_mt
+                    pdf_buffer = pdf_service_mt.gerar_pdf(
+                        dados_iniciais=st.session_state['dados_iniciais'],
+                        impostos=st.session_state['impostos'],
+                        itens_configurados=st.session_state['itens']['itens_configurados_mt']
                     )
-                    # # Gerar PDF
-                    # pdf_path = doc_manager.gerar_pdf(output_path)
 
-                    if output_path :
+                    if output_path and pdf_buffer:
                         # Prepara os nomes dos arquivos
                         bt = st.session_state['dados_iniciais']['bt']
                         rev = st.session_state['dados_iniciais']['rev']
@@ -102,12 +107,13 @@ def pagina_resumo():
                         # Lê os arquivos em memória
                         with open(output_path, 'rb') as word_file:
                             buffer_word = word_file.read()
-                        # with open(pdf_path, 'rb') as pdf_file:
-                        #     buffer_pdf = pdf_file.read()
+                        
+                        # PDF já está como buffer
+                        buffer_pdf = pdf_buffer.read()
 
                         conn = DatabaseConfig.get_connection()
                         cur = conn.cursor()
-                        pdf_path = "bola azul"
+                        
                         # Salvar a revisão
                         try:
                             valor_total = sum(float(item['Preço Total']) for item in st.session_state.get('itens_configurados', []))
@@ -117,7 +123,7 @@ def pagina_resumo():
                             st.session_state.update({
                                 'buffer_word': buffer_word,
                                 'output_filename_word': output_filename_word,
-                                'buffer_pdf': "bola azul",
+                                'buffer_pdf': buffer_pdf,
                                 'pdf_filename': pdf_filename,
                                 'downloads_gerados': True
                             })

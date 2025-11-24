@@ -9,7 +9,6 @@ from io import BytesIO
 from typing import Dict, List, Any
 
 
-@staticmethod
 def gerar_pdf(dados_iniciais: Dict, impostos: Dict, itens_configurados: List[Dict]) -> BytesIO:
     """Gera o documento PDF com os dados fornecidos"""
     buffer = BytesIO()
@@ -34,7 +33,7 @@ def gerar_pdf(dados_iniciais: Dict, impostos: Dict, itens_configurados: List[Dic
     buffer.seek(0)
     return buffer
 
-@staticmethod
+
 def _criar_cabecalho(dados: Dict, styles: Dict) -> List:
     """Cria os elementos do cabeçalho do PDF"""
     elementos = [
@@ -50,6 +49,8 @@ def _criar_cabecalho(dados: Dict, styles: Dict) -> List:
         ('Email', dados.get('email')),
         ('BT', dados.get('bt')),
         ('Obra', dados.get('obra')),
+        ('Concessionária', dados.get('concessionaria')),
+        ('Aplicação', dados.get('aplicacao')),
         ('Data', f"{dados.get('dia')}/{dados.get('mes')}/{dados.get('ano')}"),
         ('Revisão', dados.get('rev')),
         ('Local', dados.get('local_frete'))
@@ -63,7 +64,6 @@ def _criar_cabecalho(dados: Dict, styles: Dict) -> List:
     elementos.append(Spacer(1, 12))
     return elementos
 
-@staticmethod
 def _criar_secao_variaveis(impostos: Dict, itens_configurados: List[Dict], styles: Dict) -> List:
     """Cria a seção de variáveis do PDF"""
     elementos = [
@@ -98,7 +98,7 @@ def _criar_secao_variaveis(impostos: Dict, itens_configurados: List[Dict], style
     elementos.append(Spacer(1, 12))
     return elementos
 
-@staticmethod
+
 def _criar_tabela_itens(itens_configurados: List[Dict], styles: Dict) -> List:
     """Cria a tabela de itens do PDF"""
     elementos = [

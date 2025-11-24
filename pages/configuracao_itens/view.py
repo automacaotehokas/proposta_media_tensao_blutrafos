@@ -84,6 +84,25 @@ def pagina_configuracao_MT():
     st.subheader("Configuração de Itens - Média Tensão")
     
     # Renderização dos inputs de impostos
+    col_conc, col_app = st.columns(2)
+    
+    with col_conc:
+        if 'dados_iniciais' not in st.session_state:
+            st.session_state['dados_iniciais'] = {}
+        
+        concessionaria = st.text_input(
+            'Concessionária:', 
+            value=st.session_state['dados_iniciais'].get('concessionaria', '')
+        )
+        st.session_state['dados_iniciais']['concessionaria'] = concessionaria
+
+    with col_app:
+        aplicacao = st.text_input(
+            'Aplicação:', 
+            value=st.session_state['dados_iniciais'].get('aplicacao', '')
+        )
+        st.session_state['dados_iniciais']['aplicacao'] = aplicacao
+
     st.session_state['impostos'] = componentsMT.render_tax_inputs(st.session_state['impostos'])
     
     # Renderização dos componentes MT
@@ -215,6 +234,17 @@ def initialize_session_state():
             'local_entrega': st.session_state['dados_iniciais'].get('local_frete', ''),
             'tipo_frete': "CIP"
         }
+    else:
+        # Garante que chaves novas existam mesmo em revisões antigas
+        defaults = {
+            'tipo_frete': "CIP",
+            'local_frete': st.session_state.get('dados_iniciais', {}).get('local_frete', 'São Paulo/SP'),
+            'difal': 0.0,
+            'f_pobreza': 0.0
+        }
+        for key, value in defaults.items():
+            if key not in st.session_state['impostos']:
+                st.session_state['impostos'][key] = value
     
     if 'configuracao' not in st.session_state:
         st.session_state['configuracao'] = 'MT'
@@ -262,6 +292,26 @@ def configuracao_itens_page():
     # Seção de impostos e taxas
     with st.container():
         st.subheader("Impostos e Taxas")
+        
+        col_conc, col_app = st.columns(2)
+        
+        with col_conc:
+            if 'dados_iniciais' not in st.session_state:
+                st.session_state['dados_iniciais'] = {}
+            
+            concessionaria = st.text_input(
+                'Concessionária:', 
+                value=st.session_state['dados_iniciais'].get('concessionaria', '')
+            )
+            st.session_state['dados_iniciais']['concessionaria'] = concessionaria
+
+        with col_app:
+            aplicacao = st.text_input(
+                'Aplicação:', 
+                value=st.session_state['dados_iniciais'].get('aplicacao', '')
+            )
+            st.session_state['dados_iniciais']['aplicacao'] = aplicacao
+
         st.session_state['impostos'] = componentsMT.render_tax_inputs(st.session_state['impostos'])
     
     st.markdown("---")
